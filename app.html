@@ -729,7 +729,26 @@ body.spelling.own-kb .answer-row #sp-check{display:none}
 .sr-reader mark.sr-hl{background:var(--hc);color:#1f2937;border-radius:3px;padding:0 1px}
 .sr-reader mark.sr-find{background:#fb923c;color:#111;border-radius:3px}
 .sr-reader .sr-word{background:#38bdf8;color:#0b1220;border-radius:4px;box-shadow:0 0 0 2px #38bdf8}
-.sr-reader p.sr-flash{animation:srFlash 1.6s ease}@keyframes srFlash{0%,40%{background:rgba(139,92,246,.35)}100%{background:transparent}}
+.sr-reader p.sr-flash{animation:srFlash 1.6s ease}
+/* 📖 Pages: the text view laid out like a printed book (one page on phones, two side by side on wide screens) */
+body #sr-reader.sr-pages{--pgp:34px;height:70vh;max-height:none;overflow:hidden;scroll-behavior:auto;padding-left:var(--pgp);padding-right:var(--pgp);padding-top:30px;padding-bottom:36px;column-count:1;column-gap:calc(var(--pgp) * 2);column-fill:auto;overflow-wrap:break-word;font-family:Georgia,"Iowan Old Style","Times New Roman",serif;font-size:calc(1em * 1.06);line-height:1.62;box-shadow:0 1px 0 var(--line),0 10px 26px rgba(15,23,42,.14);text-align:left}
+body #sr-reader.sr-pages.sr-two{column-count:2;background-image:linear-gradient(to right,transparent calc(50% - 26px),rgba(0,0,0,.07) 50%,transparent calc(50% + 26px))}
+#sr-reader.sr-pages[data-theme="dark"].sr-two,#sr-reader.sr-pages[data-theme="focus"].sr-two{background-image:linear-gradient(to right,transparent calc(50% - 26px),rgba(0,0,0,.45) 50%,transparent calc(50% + 26px))}
+#sr-reader.sr-pages p{content-visibility:visible;contain-intrinsic-size:none;padding:2px 4px;margin:0 0 .75em;text-indent:1.4em}
+#sr-reader.sr-pages p.highlight{box-shadow:none}
+#sr-reader.sr-pages .sr-h{break-after:avoid;text-indent:0;margin:.4em 0 .7em;text-align:center;font-size:1.15em}
+#sr-reader.sr-pages.sr-turn{animation:srTurn .28s ease}
+@keyframes srTurn{from{opacity:.35}to{opacity:1}}
+body.sr-full #sr-reader.sr-pages{height:calc(100vh - 128px);height:calc(100dvh - 128px)}
+body.sr-full.sr-focus #sr-reader.sr-pages{height:calc(100vh - 186px);height:calc(100dvh - 186px)}
+@media (max-width:600px){body #sr-reader.sr-pages{--pgp:20px;padding-top:22px;padding-bottom:26px}}
+.sr-pgnav{display:flex;align-items:center;justify-content:center;gap:14px;margin:8px 0 2px}
+.sr-pgb{min-width:52px;min-height:44px;border:2px solid var(--line);border-radius:999px;background:var(--paper);color:var(--ink);font:800 26px/1 system-ui,sans-serif;cursor:pointer}
+.sr-pgb:disabled{opacity:.35;cursor:default}
+.sr-pgnum{font:700 14.5px system-ui,sans-serif;color:var(--muted,#64748b);min-width:120px;text-align:center}
+@media (max-width:600px){.sr-pgnav{justify-content:flex-start;gap:8px}.sr-pgnum{min-width:0}}
+body.sr-bare #sr-reader.sr-pages{padding-left:var(--pgp)!important;padding-right:var(--pgp)!important;padding-bottom:70px}
+body.sr-bare .sr-pgnav{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:41;margin:0;background:rgba(255,255,255,.85);border-radius:999px;padding:4px 10px;box-shadow:0 4px 14px rgba(0,0,0,.15)}@keyframes srFlash{0%,40%{background:rgba(139,92,246,.35)}100%{background:transparent}}
 .sr-chat{display:flex;flex-direction:column;gap:8px;margin:10px 0;max-height:60vh;overflow-y:auto}
 .sr-msg{max-width:88%;padding:9px 12px;border-radius:16px;font-size:15px;line-height:1.5;overflow-wrap:anywhere}.sr-msg.me{align-self:flex-end;background:var(--berry);color:#fff;border-bottom-right-radius:4px}
 .sr-msg.bot{align-self:flex-start;background:var(--soft);border:2px solid var(--line);border-bottom-left-radius:4px}.sr-msg blockquote{margin:6px 0;padding:4px 10px;border-left:4px solid #8b5cf6;font-size:14px}
@@ -2136,6 +2155,7 @@ window.MWB_TRIAL_DAYS = 14;
               <button type="button" class="sr-rb" id="sr-rtheme">☀️ Paper</button>
               <button type="button" class="sr-rb" id="sr-rfit">↕ Whole page</button>
               <button type="button" class="sr-rb" id="sr-rtext">📄 Text view</button>
+              <button type="button" class="sr-rb" id="sr-rpages" hidden>📜 Scroll</button>
             </div>
           <div class="sr-book" id="sr-book" hidden>
             
@@ -2144,6 +2164,7 @@ window.MWB_TRIAL_DAYS = 14;
             <div class="sr-bookbody" id="sr-bookbody"></div>
           </div>
           <div class="sr-reader" id="sr-reader" data-theme="paper"></div>
+          <div class="sr-pgnav" id="sr-pgnav" hidden><button type="button" class="sr-pgb" id="sr-pgprev" aria-label="Previous page">‹</button><span class="sr-pgnum" id="sr-pgnum" aria-live="polite"></span><button type="button" class="sr-pgb" id="sr-pgnext" aria-label="Next page">›</button></div>
           <button type="button" class="sr-unbare" id="sr-unbare" hidden aria-label="Show the reading tools again">☰ <span>Show tools</span></button>
         </div>
         <div id="sr-t-ask" hidden>
@@ -34127,7 +34148,7 @@ function srRenderAll(force){
   const r = $("sr-reader"); r.innerHTML = SR.paras.map((p, i) => `${SR.heads[i] ? `<h4 class="sr-h" data-h="${i}">${esc(SR.heads[i])}</h4>` : ""}<p data-i="${i}"${SR.bm.includes(i) ? ' class="sr-bm"' : ""}>${srParaHTML(i)}</p>`).join("");
 }
 function srRenderPara(i){ const el = $("sr-reader").querySelector(`p[data-i="${i}"]`); if(el){ el.innerHTML = srParaHTML(i); el.classList.toggle("sr-bm", SR.bm.includes(i)); } }
-function srScrollTo(i, smooth){ const r = $("sr-reader"), el = r.querySelector(`p[data-i="${i}"]`); if(!el) return; r.scrollTo({top: Math.max(0, el.offsetTop - r.offsetTop - r.clientHeight * 0.25), behavior: smooth === false ? "auto" : "smooth"}); }
+function srScrollTo(i, smooth){ const r = $("sr-reader"), el = r.querySelector(`p[data-i="${i}"]`); if(!el) return; if(r.classList.contains("sr-pages")){ srPageShow(el); return; } r.scrollTo({top: Math.max(0, el.offsetTop - r.offsetTop - r.clientHeight * 0.25), behavior: smooth === false ? "auto" : "smooth"}); }
 function srFlash(i){ if(!(i >= 0 && i < SR.paras.length)) return; srTab("read");
   if(SR.view === "book" && SR.book){ if(SR.book.kind === "pdf" && SR.pp){ let pg = 0; for(let k = 0; k < SR.pp.length; k++){ if(SR.pp[k] <= i) pg = k; else break; } const c = SR.book.chapters.findIndex(c => pg >= c.s && pg < c.e);
       const go = () => { const P = (SR.book.pages || []).find(p => p.i === pg); if(P){ $("sr-bookbody").scrollTop = P.div.offsetTop - $("sr-bookbody").offsetTop - 8; P.div.classList.remove("sr-flash"); void P.div.offsetWidth; P.div.classList.add("sr-flash"); } };
@@ -34146,7 +34167,7 @@ function srTab(t){
   $("sr-askfab").hidden = t === "ask"; setTimeout(srBookFit, 30);
   if(t === "quiz") srQuizSetup(); else if(t === "sum") srSummary(); else if(t === "toc") srTOC(); else if(t === "notes") srNotes(); else if(t === "info") srInsights(); else if(t === "ask") setTimeout(() => $("sr-askin").focus({preventScroll: true}), 50);
 }
-function srProgress(){ const r = $("sr-reader"), el = $("sr-prog"); if(!SR.paras.length) return; const pct = Math.min(100, Math.round((r.scrollTop + r.clientHeight) / Math.max(1, r.scrollHeight) * 100)); el.style.width = pct + "%"; $("sr-progt").textContent = pct + "%";
+function srProgress(){ const r = $("sr-reader"), el = $("sr-prog"); if(!SR.paras.length) return; const pct = r.classList.contains("sr-pages") ? Math.min(100, Math.round((r.scrollLeft + r.clientWidth) / Math.max(1, r.scrollWidth) * 100)) : Math.min(100, Math.round((r.scrollTop + r.clientHeight) / Math.max(1, r.scrollHeight) * 100)); el.style.width = pct + "%"; $("sr-progt").textContent = pct + "%";
   clearTimeout(SR.posT); SR.posT = setTimeout(() => { if(!SR.playing){ SR.pos = srFirstVisible(); srSaveState(); } }, 600); }
 function srToast(t){ const el = $("sr-toast"); el.textContent = t; el.hidden = false; clearTimeout(SR.toastT); SR.toastT = setTimeout(() => el.hidden = true, 2600); }
 // ---------- read aloud (with spoken-word highlighting) ----------
@@ -34230,8 +34251,9 @@ function srPlayPause(){
   if(SR.view === "book" && SR.book){ srBookStartVisible(); return; }
   speakFrom(SR.cur >= 0 ? SR.cur : srFirstVisible());
 }
-function srFirstVisible(){ const r = $("sr-reader"), ps = r.querySelectorAll("p[data-i]"), top = r.getBoundingClientRect().top; if(!r.clientHeight) return SR.pos || 0; for(const p of ps){ if(p.getBoundingClientRect().bottom > top + 4) return +p.dataset.i; } return 0; }
-function srScrollTop(i){ const r = $("sr-reader"), el = r.querySelector(`p[data-i="${i}"]`); if(el) r.scrollTop += el.getBoundingClientRect().top - r.getBoundingClientRect().top - 6; }
+function srFirstVisible(){ const r = $("sr-reader"), ps = r.querySelectorAll("p[data-i]"), top = r.getBoundingClientRect().top; if(!r.clientHeight) return SR.pos || 0;
+  if(r.classList.contains("sr-pages")){ const L = r.getBoundingClientRect().left; for(const p of ps){ if(p.getBoundingClientRect().right > L + 4) return +p.dataset.i; } return 0; } for(const p of ps){ if(p.getBoundingClientRect().bottom > top + 4) return +p.dataset.i; } return 0; }
+function srScrollTop(i){ const r = $("sr-reader"), el = r.querySelector(`p[data-i="${i}"]`); if(el && r.classList.contains("sr-pages")){ srPageShow(el, true); return; } if(el) r.scrollTop += el.getBoundingClientRect().top - r.getBoundingClientRect().top - 6; }
 function srStop(){ if(typeof srHiClear === "function") srHiClear(); SR.tok = (SR.tok || 0) + 1; SR.playing = false; SR.paused = false; SR.loading = false; if("speechSynthesis" in window) speechSynthesis.cancel(); if(SR.audio){ SR.audio.pause(); SR.audio.onended = SR.audio.ontimeupdate = null; } const w = SR.word && SR.word.p; SR.word = null; if(w != null) srRenderPara(w); srBtns(); }
 function srBtns(){ const b = $("sr-play"); if(!b) return; try { SR.rbarSync && SR.rbarSync(); } catch(e){} b.textContent = SR.loading && SR.playing ? "⏳ Loading voice…" : SR.playing && !SR.paused ? "⏸ Pause" : SR.paused ? "▶ Resume" : srUseAI() ? "▶ Read aloud (AI voice)" : "▶ Read aloud"; }
 function srSay(text){ srStop(); if(srUseAI()){ srSayAI(text); return; } if(!("speechSynthesis" in window)) return; const u = new SpeechSynthesisUtterance(String(text).slice(0, 3000)), v = speechSynthesis.getVoices().find(x => x.voiceURI === $("sr-voice").value); if(v) u.voice = v; u.rate = +SR.set.rate || 1; speechSynthesis.speak(u); }
@@ -34781,7 +34803,44 @@ function openReader(){ SR.userOpened = true; window.__storeWanted = true; if(win
     const th = SR.set.bookTheme || "paper"; $("sr-rtheme").textContent = {paper: "☀️ Paper", sepia: "🟫 Sepia", night: "🌙 Night"}[th]; const bb = $("sr-bookbody"); bb.classList.remove("th-sepia", "th-night"); if(th !== "paper") bb.classList.add("th-" + th);
     const fr = SR.book && SR.book.doc; if(fr && fr.documentElement){ fr.documentElement.style.filter = th === "night" ? "invert(.9) hue-rotate(180deg)" : th === "sepia" ? "sepia(.5)" : ""; }
     $("sr-rplay").textContent = SR.playing && !SR.paused ? "⏸ Pause" : SR.paused ? "▶ Resume" : "▶ Read aloud"; $("sr-rfit").hidden = !(SR.book && SR.book.kind === "pdf" && SR.view === "book"); $("sr-rtext").hidden = !SR.book; $("sr-rtext").textContent = SR.view === "book" ? "📄 Text view" : "📖 Book view"; $("sr-rtheme").hidden = !(SR.book && SR.view === "book"); };
-  SR.rbarSync = srRbarSync;
+  SR.rbarSync = () => { srRbarSync(); try { srPagesApply(); } catch(e){} };
+  // ---------- 📖 Pages: the text view as a book with page turns ----------
+  const srPgR = () => $("sr-reader");
+  const srPgOn = () => SR.set.pages !== false && !(SR.book && SR.view === "book") && !srPgR().hidden && !$("sr-panel").hidden;
+  const srPgW = () => srPgR().clientWidth || 1;
+  const srPgCount = () => Math.max(1, Math.round(srPgR().scrollWidth / srPgW()));
+  const srPgCur = () => Math.round(srPgR().scrollLeft / srPgW());
+  // the gap between pages must equal the left + right page margins, so one turn moves exactly one page width
+  function srPgGap(){ const r = srPgR(); if(!r.classList.contains("sr-pages")){ r.style.columnGap = ""; return; } const c = getComputedStyle(r), g = (parseFloat(c.paddingLeft) || 0) + (parseFloat(c.paddingRight) || 0) + "px"; if(r.style.columnGap !== g) r.style.columnGap = g; }
+  function srPgNum(){ const r = srPgR(); if(!r.classList.contains("sr-pages")) return; srPgGap(); const n = srPgCount(), c = Math.min(srPgCur(), n - 1), two = r.classList.contains("sr-two");
+    $("sr-pgnum").textContent = two ? `Pages ${c * 2 + 1}–${c * 2 + 2} of ${n * 2}` : `Page ${c + 1} of ${n}`; $("sr-pgprev").disabled = c <= 0; $("sr-pgnext").disabled = c >= n - 1; }
+  function srPgGo(k, anim){ const r = srPgR(), n = srPgCount(); k = Math.max(0, Math.min(n - 1, k)); if(k === srPgCur() && Math.abs(r.scrollLeft - k * srPgW()) < 2){ srPgNum(); return; }
+    r.scrollLeft = k * srPgW(); if(anim){ r.classList.remove("sr-turn"); void r.offsetWidth; r.classList.add("sr-turn"); } srPgNum(); try { srProgress(); } catch(e){} }
+  window.srPageShow = function(el, instant){ const r = srPgR(); if(!el || !r.classList.contains("sr-pages")) return; const x = el.getBoundingClientRect().left - r.getBoundingClientRect().left + r.scrollLeft; srPgGo(Math.floor((x + 3) / srPgW()), !instant); };
+  function srPagesApply(){ const r = srPgR(), on = srPgOn(), was = r.classList.contains("sr-pages");
+    $("sr-rpages").hidden = (SR.book && SR.view === "book") || r.hidden; $("sr-rpages").textContent = SR.set.pages !== false ? "📜 Scroll" : "📖 Pages";
+    const wide = on && r.clientWidth >= 820 && window.innerWidth > window.innerHeight * 0.9;
+    if(on === was && (!on || wide === r.classList.contains("sr-two"))){ if(on) srPgNum(); $("sr-pgnav").hidden = !on; return; }
+    const keep = r.clientHeight ? srFirstVisible() : (SR.pos || 0);
+    r.classList.toggle("sr-pages", on); r.classList.toggle("sr-two", wide); srPgGap(); $("sr-pgnav").hidden = !on; r.scrollLeft = 0;
+    requestAnimationFrame(() => { const el = r.querySelector(`p[data-i="${keep}"]`); if(el){ if(on) srPageShow(el, true); else { r.style.scrollBehavior = "auto"; srScrollTop(keep); requestAnimationFrame(() => { srScrollTop(keep); setTimeout(() => { srScrollTop(keep); r.style.scrollBehavior = ""; }, 120); }); } } srPgNum(); }); }
+  window.srPagesApply = srPagesApply;
+  $("sr-rpages").onclick = () => { SR.set.pages = SR.set.pages === false; srSave(); srPagesApply(); };
+  $("sr-pgprev").onclick = () => srPgGo(srPgCur() - 1, true);
+  $("sr-pgnext").onclick = () => srPgGo(srPgCur() + 1, true);
+  { let sx = 0, sy = 0, st = 0; const r = srPgR();
+    r.addEventListener("touchstart", e => { if(e.touches.length !== 1) return; sx = e.touches[0].clientX; sy = e.touches[0].clientY; st = Date.now(); }, {passive: true});
+    r.addEventListener("touchend", e => { if(!r.classList.contains("sr-pages") || !st) return; const t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy; st = 0;
+      if(Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5){ const sel = window.getSelection && String(window.getSelection()); if(sel) return; srPgGo(srPgCur() + (dx < 0 ? 1 : -1), true); } }, {passive: true});
+    r.addEventListener("wheel", e => { if(!r.classList.contains("sr-pages")) return; const d = Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX; if(Math.abs(d) < 20 || r.__wl) return; e.preventDefault(); r.__wl = 1; setTimeout(() => r.__wl = 0, 450); srPgGo(srPgCur() + (d > 0 ? 1 : -1), true); }, {passive: false}); }
+  document.addEventListener("keydown", e => { const r = srPgR(); if(!r.classList.contains("sr-pages") || !r.offsetParent || /INPUT|TEXTAREA|SELECT/.test((e.target || {}).tagName || "")) return;
+    if(e.key === "ArrowRight" || e.key === "PageDown"){ e.preventDefault(); srPgGo(srPgCur() + 1, true); } else if(e.key === "ArrowLeft" || e.key === "PageUp"){ e.preventDefault(); srPgGo(srPgCur() - 1, true); } });
+  window.addEventListener("resize", () => { const r = srPgR(); if(!r.classList.contains("sr-pages")) return; const keep = srFirstVisible(); r.classList.remove("sr-pages"); requestAnimationFrame(() => { srPagesApply(); const el = r.querySelector(`p[data-i="${keep}"]`); if(el) srPageShow(el, true); }); });
+  // keep the layout right, and turn the page to follow the word being read aloud
+  setInterval(() => { const r = srPgR(); if(!r.offsetParent && !r.classList.contains("sr-pages")) return; const on = srPgOn();
+    const was = r.classList.contains("sr-pages"), wasTwo = r.classList.contains("sr-two"); srPagesApply(); if(!on || was !== on || wasTwo !== r.classList.contains("sr-two")) return;
+    if(SR.playing && !SR.paused){ const t = r.querySelector(".sr-word") || r.querySelector("p.highlight"); if(t){ const x = t.getBoundingClientRect().left - r.getBoundingClientRect().left, W = srPgW(); if(x < -3 || x > W - 6) srPageShow(t); } }
+    else if(Math.abs(r.scrollLeft - srPgCur() * srPgW()) > 2) srPgGo(srPgCur()); else srPgNum(); }, 300);
   // ⛶ Hide all: only the page is left on screen; the floating ☰ button brings the tools back
   let srDimT = 0; const srDim = () => { const u = $("sr-unbare"); u.classList.remove("dim"); clearTimeout(srDimT); srDimT = setTimeout(() => u.classList.add("dim"), 2500); };
   function srBare(on){ const was = document.body.classList.contains("sr-bare"); if(on === was) return; document.body.classList.toggle("sr-bare", on); $("sr-unbare").hidden = !on;
