@@ -2307,6 +2307,75 @@ window.MWB_TRIAL_DAYS = 14;
         <text x="290" y="24" text-anchor="middle" font-size="16" font-family="sans-serif" fill="#1E3A8A" font-weight="900" letter-spacing="1">Sounds Lab 🔤</text>
       </svg>
     </div>
+    <div class="k5" id="k5">
+      <div class="k5-top">
+        <h3 class="k5-title">🌟 K–5 Learning Studio</h3>
+        <div class="k5-score" aria-live="polite"><span id="k5-stars">⭐ 0</span><span id="k5-xp">✨ 0 XP</span><span id="k5-streak">🔥 1 day</span></div>
+      </div>
+      <div class="k5-tabs" role="tablist" aria-label="Learning studio activities">
+        <button type="button" role="tab" data-k5="trace" aria-selected="true">✍️ Trace</button>
+        <button type="button" role="tab" data-k5="blend" aria-selected="false">🧩 Blend</button>
+        <button type="button" role="tab" data-k5="sight" aria-selected="false">🃏 Sight words</button>
+        <button type="button" role="tab" data-k5="math" aria-selected="false">🔟 Math</button>
+        <button type="button" role="tab" data-k5="sci" aria-selected="false">🧪 Science</button>
+        <button type="button" role="tab" data-k5="sparky" aria-selected="false">🐻 Sparky</button>
+      </div>
+      <!-- ✍️ tracing -->
+      <div class="k5-pane" data-pane="trace">
+        <div class="k5-letters" id="k5-letters" role="group" aria-label="Pick a letter"></div>
+        <div class="k5-row"><div class="k5-seg" role="group" aria-label="Letter case"><button type="button" data-case="up" aria-pressed="true">ABC</button><button type="button" data-case="low" aria-pressed="false">abc</button></div>
+          <button type="button" class="k5-btn alt" id="k5-tsay">🔊 Hear it</button><button type="button" class="k5-btn alt" id="k5-tclear">🧽 Clear</button><button type="button" class="k5-btn" id="k5-tdone">✅ Done!</button></div>
+        <div class="k5-trace"><canvas id="k5-tcv" aria-label="Trace the letter with your finger"></canvas><div class="k5-tword" id="k5-tword"></div></div>
+        <p class="k5-fb" id="k5-tfb" aria-live="polite">Trace over the dotted letter with your finger, then tap Done!</p>
+      </div>
+      <!-- 🧩 blending -->
+      <div class="k5-pane" data-pane="blend" hidden>
+        <div class="k5-blendpic" id="k5-bpic">🐱</div>
+        <div class="k5-tiles" id="k5-btiles"></div>
+        <div class="k5-row"><button type="button" class="k5-btn" id="k5-bslow">🐢 Say it slowly</button><button type="button" class="k5-btn" id="k5-bfast">🐇 Blend it fast</button><button type="button" class="k5-btn alt" id="k5-bnext">🔀 Next word</button></div>
+        <div class="k5-card"><b>🧠 Spell it!</b> Tap the letters in the right order to spell the picture.
+          <div class="k5-spell" id="k5-sslots" aria-live="polite"></div><div class="k5-tiles small" id="k5-sletters"></div><p class="k5-fb" id="k5-sfb"></p></div>
+      </div>
+      <!-- 🃏 sight words -->
+      <div class="k5-pane" data-pane="sight" hidden>
+        <div class="k5-seg k5-wrap" id="k5-grades" role="group" aria-label="Grade"></div>
+        <div class="k5-flip" id="k5-flip" tabindex="0" role="button" aria-label="Flashcard. Tap to flip."><div class="k5-flipin"><div class="k5-face front"><span class="k5-tag">Tap to flip</span><b id="k5-fw">the</b><small id="k5-fs"></small></div><div class="k5-face back"><span class="k5-tag">In a sentence</span><p id="k5-fsent"></p></div></div></div>
+        <div class="k5-row"><button type="button" class="k5-btn alt" id="k5-fprev">‹ Back</button><button type="button" class="k5-btn" id="k5-fsay">🔊 Listen</button><button type="button" class="k5-btn alt" id="k5-fnext">Next ›</button></div>
+        <div class="k5-card"><div class="k5-row sp"><b>🎮 Listen &amp; match</b><span id="k5-mscore">Score: 0</span></div>
+          <button type="button" class="k5-big" id="k5-mplay">🔊 Hear the word</button><div class="k5-opts" id="k5-mopts"></div><p class="k5-fb" id="k5-mfb" aria-live="polite"></p></div>
+      </div>
+      <!-- 🔟 math -->
+      <div class="k5-pane" data-pane="math" hidden>
+        <div class="k5-card"><div class="k5-row sp"><b>🔟 Ten-frame</b><span id="k5-tfn">0 / 10</span></div>
+          <div class="k5-frame" id="k5-frame" role="group" aria-label="Ten-frame"></div>
+          <p class="k5-q" id="k5-mq">Tap the boxes to count!</p>
+          <div class="k5-row"><input id="k5-mans" type="number" inputmode="numeric" placeholder="?" aria-label="Your answer"><button type="button" class="k5-btn" id="k5-mchk">Check</button><button type="button" class="k5-btn alt" id="k5-mnew">🔀 New problem</button></div>
+          <div class="k5-seg" role="group" aria-label="Kind of problem"><button type="button" data-mk="add" aria-pressed="true">➕ Add</button><button type="button" data-mk="sub" aria-pressed="false">➖ Take away</button><button type="button" data-mk="ten" aria-pressed="false">🔟 Make 10</button></div>
+          <p class="k5-fb" id="k5-mfb2" aria-live="polite"></p></div>
+        <div class="k5-card"><div class="k5-row sp"><b>🍕 Fraction pizza</b><span class="k5-frac" id="k5-fr">3/4</span></div>
+          <div class="k5-pizza"><svg id="k5-psvg" viewBox="0 0 100 100" aria-label="Fraction circle. Tap slices to colour them."></svg><div class="k5-fword" id="k5-fword"></div></div>
+          <label class="k5-slide">Slices: <input type="range" id="k5-slices" min="2" max="12" value="4"> <b id="k5-sln">4</b></label>
+          <div class="k5-row"><button type="button" class="k5-btn alt" id="k5-fsayf">🔊 Say it</button><button type="button" class="k5-btn" id="k5-fq">❓ Fraction challenge</button></div><p class="k5-fb" id="k5-ffb" aria-live="polite"></p></div>
+      </div>
+      <!-- 🧪 science -->
+      <div class="k5-pane" data-pane="sci" hidden>
+        <div class="k5-card"><b>🌧️ The water cycle</b>
+          <svg class="k5-wc" id="k5-wc" viewBox="0 0 320 180" aria-label="Water cycle picture"></svg>
+          <div class="k5-seg k5-wrap" id="k5-wcs" role="group" aria-label="Water cycle stage"></div><p class="k5-fb" id="k5-wct"></p></div>
+        <div class="k5-card"><b>⚡ Electric circuit</b>
+          <svg class="k5-circ" id="k5-circ" viewBox="0 0 320 170" aria-label="Electric circuit"></svg>
+          <button type="button" class="k5-big" id="k5-sw">🔌 Close the switch</button><p class="k5-fb" id="k5-ct">A circuit is a loop. Electricity can only flow when the loop is closed.</p></div>
+        <div class="k5-card"><b>🌱 Grow a plant</b>
+          <div class="k5-plantbox"><svg id="k5-plant" viewBox="0 0 120 140" aria-label="Plant"></svg><div><label class="k5-slide">☀️ Sunlight <input type="range" id="k5-sun" min="0" max="5" value="3"></label><label class="k5-slide">💧 Water <input type="range" id="k5-water" min="0" max="5" value="3"></label><p class="k5-fb" id="k5-pt"></p></div></div></div>
+      </div>
+      <!-- 🐻 Sparky -->
+      <div class="k5-pane" data-pane="sparky" hidden>
+        <div class="k5-sparky"><div class="k5-bear" id="k5-bear" aria-hidden="true">🐻</div><button type="button" class="k5-mic" id="k5-mic" aria-label="Talk to Sparky">🎤</button><p id="k5-mst">Tap the mic and talk to Sparky — or type below.</p></div>
+        <div class="k5-row"><input id="k5-ask" placeholder="Ask Sparky anything… (e.g. Why is the sky blue?)" aria-label="Ask Sparky"><button type="button" class="k5-btn" id="k5-askgo">Ask</button></div>
+        <div class="k5-chips" id="k5-sug"></div>
+        <div class="k5-log" id="k5-log"></div>
+      </div>
+    </div>
     <p class="cell-intro" style="text-align:center;font-size:.95rem">Tap any word to hear it! The coloured letters show the special sound. ✨ Use AI to discover more words!</p>
     <div style="display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin:0 0 6px">
       <div class="cell-toggle" role="group" aria-label="Sound category" style="display:inline-flex;flex-wrap:wrap;gap:6px;justify-content:center">
@@ -21731,7 +21800,7 @@ function pronSyll(w){ // shows the word in syllables (from the dictionary) to he
   return hit ? hit.s.map(esc).join("·") : esc(w); }
 function pronWire(){ const mic = $("pron-mic"); if(!mic || mic.dataset.wired) return; mic.dataset.wired = "1"; mic.onclick = pronStart; $("pron-listen").onclick = pronListen;
   $("pron-fb").addEventListener("click", e => { if(e.target.closest("[data-pl]")) pronListen(); }); }
-function openSoundsLab(){ pronWire(); try { voicePrep(); } catch(e){}
+function openSoundsLab(){ pronWire(); try { voicePrep(); } catch(e){} setTimeout(() => { try { k5Init(); } catch(e){ console.warn("k5", e); } }, 0);
   ["words","stars","spell","play","ai","cell","folders","folder","lab","dna","math","books","book","eye","brain","bacteria","dict"].forEach(v => { const el = $("view-"+v); if(el) el.hidden = true; });
   $("view-sounds").hidden = false; soundCat = "abc"; sjStep = 0;
   // Reset quiz state if open
@@ -37143,6 +37212,251 @@ function vtInit(){ if(!$("vt")) return; requestAnimationFrame(() => vtPlot()); i
   const cv = $("vt-cv"); cv.addEventListener("pointermove", e => vtTrace(e)); cv.addEventListener("pointerdown", e => vtTrace(e, true)); cv.addEventListener("pointerleave", () => { $("vt-trace").hidden = true; vtPlot(); });
   $("vt-launch").onclick = vtLaunch; window.addEventListener("resize", () => { if(!$("vt").hidden) vtPlot(); });
   vtFileSetup(); setInterval(vtState, 300); vtLogRender(); vt.g = {marks: []}; vtPlot(); }
+</script>
+<style>
+/* ===== 🌟 K–5 Learning Studio (Sounds Lab) ===== */
+.k5{max-width:620px;margin:10px auto 14px;background:var(--paper);border:3px solid var(--line);border-radius:24px;padding:12px;box-shadow:0 5px 0 var(--line)}
+.k5-top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.k5-title{margin:0;font-size:20px}
+.k5-score{display:flex;gap:6px;flex-wrap:wrap}.k5-score span{font-weight:700;font-size:14px;padding:4px 10px;border-radius:999px;border:2px solid var(--line);background:#fef9c3;color:#713f12}
+.k5-score span:nth-child(2){background:#ede9fe;color:#4c1d95}.k5-score span:nth-child(3){background:#ffedd5;color:#9a3412}
+.k5-score span.pop{animation:k5Pop .5s}@keyframes k5Pop{40%{transform:scale(1.25)}}
+.k5-tabs{display:flex;gap:6px;overflow-x:auto;padding:10px 2px 8px;scrollbar-width:none}.k5-tabs::-webkit-scrollbar{display:none}
+.k5-tabs button{flex:none;font:inherit;font-size:15px;font-weight:700;padding:8px 12px;border-radius:14px;border:3px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
+.k5-tabs button[aria-selected="true"]{background:linear-gradient(135deg,#f97316,#ec4899);color:#fff;border-color:#9d174d}
+.k5-pane{display:flex;flex-direction:column;gap:10px}
+.k5-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center}.k5-row.sp{justify-content:space-between}
+.k5-btn{font:inherit;font-size:16px;font-weight:700;padding:9px 14px;border-radius:14px;border:3px solid var(--line);background:var(--grass);color:#fff;cursor:pointer;box-shadow:0 3px 0 var(--line)}
+.k5-btn.alt{background:var(--paper);color:var(--ink)}
+.k5-big{font:inherit;font-size:19px;font-weight:800;padding:12px;border-radius:16px;border:3px solid var(--line);background:linear-gradient(135deg,#ec4899,#f43f5e);color:#fff;cursor:pointer;width:100%;box-shadow:0 4px 0 var(--line)}
+.k5-card{border:3px solid var(--line);border-radius:18px;padding:10px 12px;display:flex;flex-direction:column;gap:8px;background:var(--paper)}
+.k5-fb{margin:0;text-align:center;font-weight:700;min-height:1.3em}
+.k5-seg{display:flex;gap:4px;justify-content:center}.k5-seg.k5-wrap{flex-wrap:wrap}
+.k5-seg button{font:inherit;font-size:14.5px;font-weight:700;padding:6px 12px;border-radius:999px;border:2px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
+.k5-seg button[aria-pressed="true"]{background:#fde047;color:#1b2a4a}
+.k5-letters{display:grid;grid-template-columns:repeat(auto-fill,minmax(42px,1fr));gap:5px}
+.k5-letters button{font:inherit;font-size:19px;font-weight:800;aspect-ratio:1;border-radius:12px;border:2px solid var(--line);background:hsl(var(--h),90%,88%);color:#1b2a4a;cursor:pointer;padding:0}
+.k5-letters button[aria-pressed="true"]{outline:4px solid #f59e0b;transform:scale(1.08)}
+.k5-trace{position:relative;border:4px dashed #f59e0b;border-radius:20px;background:#fffbeb;overflow:hidden;touch-action:none}
+#k5-tcv{display:block;width:100%;height:280px;cursor:crosshair}
+.k5-tword{position:absolute;right:10px;bottom:8px;font-size:15px;font-weight:700;color:#92400e;background:rgba(255,255,255,.8);padding:2px 8px;border-radius:10px;pointer-events:none}
+.k5-blendpic{font-size:72px;text-align:center;line-height:1.1}
+.k5-tiles{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.k5-tiles button{font:inherit;width:64px;height:76px;border-radius:16px;border:3px solid #4f46e5;background:#eef2ff;color:#3730a3;font-size:30px;font-weight:800;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:transform .15s,background .15s}
+.k5-tiles button small{font-size:11px;font-weight:600;color:#6366f1}
+.k5-tiles button.lit{background:#4f46e5;color:#fff;transform:translateY(-6px) scale(1.06)}.k5-tiles button.lit small{color:#e0e7ff}
+.k5-tiles.small button{width:52px;height:56px;font-size:24px}.k5-tiles.small button:disabled{opacity:.3}
+.k5-spell{display:flex;gap:8px;justify-content:center}.k5-spell span{width:48px;height:54px;border-bottom:4px solid var(--ink);font-size:30px;font-weight:800;display:flex;align-items:flex-end;justify-content:center}
+.k5-flip{perspective:900px;height:200px;cursor:pointer;outline:none}
+.k5-flipin{position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d}.k5-flip.on .k5-flipin{transform:rotateY(180deg)}
+.k5-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:20px;border:3px solid #db2777;background:linear-gradient(135deg,#fdf2f8,#fce7f3);color:#831843;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:10px;text-align:center}
+.k5-face b{font-size:56px;line-height:1}.k5-face small{font-size:15px;color:#be185d}.k5-face p{font-size:22px;font-weight:600;margin:0}
+.k5-face.back{transform:rotateY(180deg);background:linear-gradient(135deg,#eef2ff,#e0e7ff);border-color:#4f46e5;color:#1e1b4b}
+.k5-tag{position:absolute;top:8px;right:10px;font-size:12px;font-weight:700;opacity:.7}
+.k5-opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.k5-opts button{font:inherit;font-size:24px;font-weight:800;padding:14px 6px;border-radius:16px;border:3px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
+.k5-opts button.ok{background:#bbf7d0;border-color:#15803d}.k5-opts button.no{background:#fecaca;border-color:#b91c1c;animation:k5Shake .35s}
+@keyframes k5Shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.k5-frame{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;max-width:360px;margin:0 auto;width:100%;padding:8px;border:4px solid var(--line);border-radius:12px;background:#f8fafc}
+.k5-frame button{aspect-ratio:1;border-radius:10px;border:2px solid #94a3b8;background:#fff;font-size:26px;cursor:pointer;padding:0}
+.k5-frame button.a{background:#fde047;border-color:#ca8a04}.k5-frame button.b{background:#93c5fd;border-color:#2563eb}.k5-frame button.x{background:#fecaca;border-color:#dc2626;opacity:.6}
+.k5-q{margin:0;text-align:center;font-size:24px;font-weight:800}
+#k5-mans{width:90px;font:inherit;font-size:22px;font-weight:700;text-align:center;padding:6px;border-radius:12px;border:3px solid var(--line);background:var(--paper);color:var(--ink)}
+.k5-frac{font-size:26px;font-weight:800;color:#047857}
+.k5-pizza{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
+#k5-psvg{width:170px;height:170px;cursor:pointer}
+.k5-fword{font-size:18px;font-weight:700;max-width:200px;text-align:center}
+.k5-slide{display:flex;align-items:center;gap:8px;justify-content:center;font-weight:700}.k5-slide input{flex:1;max-width:220px;accent-color:#10b981}
+.k5-wc,.k5-circ{width:100%;height:auto;border-radius:14px;background:#e0f2fe}.k5-circ{background:#f8fafc}
+.k5-plantbox{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center}#k5-plant{width:120px;height:140px}
+.k5-plantbox > div{flex:1;min-width:180px;display:flex;flex-direction:column;gap:6px}
+.k5-sparky{text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px}
+.k5-bear{font-size:72px;line-height:1;transition:transform .3s}.k5-bear.talk{animation:k5Bob .6s infinite}.k5-bear.listen{transform:scale(1.1) rotate(-6deg)}
+@keyframes k5Bob{50%{transform:translateY(-6px) rotate(3deg)}}
+.k5-mic{width:76px;height:76px;border-radius:50%;border:4px solid #fff;background:linear-gradient(135deg,#6366f1,#a855f7);color:#fff;font-size:32px;box-shadow:0 6px 18px rgba(99,102,241,.5);cursor:pointer}
+.k5-mic.on{background:#e11d48;box-shadow:0 0 0 8px rgba(225,29,72,.3)}
+#k5-mst{margin:0;font-weight:600}
+#k5-ask{flex:1;min-width:180px;font:inherit;font-size:16px;padding:9px 12px;border-radius:14px;border:3px solid var(--line);background:var(--paper);color:var(--ink)}
+.k5-chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}.k5-chips button{font:inherit;font-size:14px;border:2px solid #6366f1;color:#4338ca;background:var(--paper);border-radius:999px;padding:5px 10px;cursor:pointer}
+.k5-log{display:flex;flex-direction:column;gap:6px;max-height:280px;overflow-y:auto}
+.k5-msg{padding:8px 12px;border-radius:14px;max-width:88%;line-height:1.4}.k5-msg.me{align-self:flex-end;background:#e0e7ff;color:#1e1b4b}.k5-msg.bot{align-self:flex-start;background:#fef9c3;color:#422006;border:2px solid #fde047}
+.k5-burst{position:fixed;pointer-events:none;font-size:28px;z-index:9999;animation:k5Fly 1s ease-out forwards}
+@keyframes k5Fly{to{transform:translate(var(--dx),-120px) scale(.6);opacity:0}}
+@media (prefers-reduced-motion:reduce){.k5-flipin,.k5-tiles button{transition:none}.k5-bear.talk,.k5-burst{animation:none}}
+:root[data-theme="dark"] .k5-trace{background:#2a2410}:root[data-theme="dark"] .k5-frame{background:#1e293b}:root[data-theme="dark"] .k5-wc{background:#0c2a43}:root[data-theme="dark"] .k5-circ{background:#0f172a}
+</style>
+<script>
+// ===== 🌟 K–5 Learning Studio (inside Sounds Lab) =====
+const K5_ABC = [["A","ah","Apple","🍎"],["B","buh","Ball","⚽"],["C","kuh","Cat","🐱"],["D","duh","Dog","🐶"],["E","eh","Elephant","🐘"],["F","fff","Fish","🐟"],["G","guh","Goat","🐐"],["H","hhh","House","🏠"],["I","ih","Igloo","🧊"],["J","juh","Jellyfish","🪼"],["K","kuh","Kite","🪁"],["L","lll","Lion","🦁"],["M","mmm","Monkey","🐒"],["N","nnn","Nest","🪹"],["O","aw","Octopus","🐙"],["P","puh","Penguin","🐧"],["Q","kwuh","Queen","👑"],["R","rrr","Robot","🤖"],["S","sss","Sun","☀️"],["T","tuh","Turtle","🐢"],["U","uh","Umbrella","☂️"],["V","vvv","Volcano","🌋"],["W","wuh","Watermelon","🍉"],["X","ks","Fox","🦊"],["Y","yuh","Yo-yo","🪀"],["Z","zzz","Zebra","🦓"]];
+const K5_SND = Object.fromEntries(K5_ABC.map(a => [a[0], a[1]]));
+const K5_CVC = [["CAT","🐱"],["DOG","🐶"],["SUN","☀️"],["PIG","🐷"],["BUG","🐛"],["HAT","🎩"],["BUS","🚌"],["CUP","🥤"],["FOX","🦊"],["HEN","🐔"],["JAM","🍓"],["MAP","🗺️"],["NET","🥅"],["PEN","🖊️"],["RAT","🐀"],["BED","🛏️"],["BOX","📦"],["CAN","🥫"],["FAN","🪭"],["LEG","🦵"],["MUG","☕"],["POT","🍲"],["TOP","🔝"],["WEB","🕸️"],["ZIP","🤐"],["VAN","🚐"],["KID","🧒"],["LOG","🪵"],["BAT","🦇"],["SIX","6️⃣"]];
+const K5_SIGHT = {
+  "Pre-K & K": [["the","The cat is playing."],["see","I can see the bright sun."],["like","We like to read books."],["play","Let us play outside."],["look","Look at the colourful bird."],["can","I can jump high."],["and","Mom and I bake bread."],["you","You are my friend."],["is","The dog is big."],["my","This is my hat."],["we","We go to school."],["go","Go to the park."]],
+  "Grade 1": [["where","Where are my shoes?"],["after","We eat a snack after lunch."],["give","Please give me a high five!"],["think","I think science is fun."],["every","She reads every single day."],["could","Could you help me?"],["know","I know the answer."],["once","Once upon a time…"],["walk","We walk to the store."],["thank","Thank you for the gift."],["fly","Birds can fly."],["again","Let's play again!"]],
+  "Grade 2–3": [["because","I am happy because we learned math."],["before","Wash your hands before eating."],["around","The Earth goes around the Sun."],["change","Caterpillars change into butterflies."],["always","I always brush my teeth."],["different","Every snowflake is different."],["thought","I thought it would rain."],["laugh","The joke made us laugh."],["through","We walked through the forest."],["enough","Is there enough cake for everyone?"],["special","Today is a special day."],["important","Sleep is important for your body."]],
+  "Grade 4–5": [["between","The blue line is between two numbers."],["fraction","One half is a simple fraction."],["distance","Measure the distance with a ruler."],["equation","Solve the equation to find x."],["temperature","The temperature dropped at night."],["environment","Plants and animals share an environment."],["experiment","Our experiment tested which ball bounces highest."],["paragraph","Start a new paragraph for a new idea."],["perimeter","The perimeter is the distance around a shape."],["recognize","Can you recognize this song?"],["necessary","Water is necessary for life."],["describe","Describe your favourite animal."]]};
+const k5 = {tab: "trace", stars: 0, xp: 0, streak: 1, last: "", letter: 0, lower: false, ink: [], bw: 0, sg: "Pre-K & K", si: 0, ms: 0, mt: null, mk: "add", frame: 0, prob: null, slices: 4, shaded: 3, fq: null, wcs: 0, sw: false, inited: false, log: [], rec: null};
+function k5Load(){ try { const s = JSON.parse(localStorage.getItem("wordbook-k5") || "{}"); k5.stars = s.stars || 0; k5.xp = s.xp || 0; k5.streak = s.streak || 1; k5.last = s.last || ""; } catch(e){}
+  const today = new Date().toDateString(), y = new Date(Date.now() - 864e5).toDateString(); if(k5.last !== today){ k5.streak = k5.last === y ? k5.streak + 1 : 1; k5.last = today; k5Save(); } }
+function k5Save(){ try { localStorage.setItem("wordbook-k5", JSON.stringify({stars: k5.stars, xp: k5.xp, streak: k5.streak, last: k5.last})); } catch(e){} }
+function k5Score(){ $("k5-stars").textContent = `⭐ ${k5.stars}`; $("k5-xp").textContent = `✨ ${k5.xp} XP`; $("k5-streak").textContent = `🔥 ${k5.streak} day${k5.streak === 1 ? "" : "s"}`; }
+function k5Win(xp, el){ k5.stars++; k5.xp += xp; k5Save(); k5Score(); ["k5-stars", "k5-xp"].forEach(id => { const s = $(id); s.classList.remove("pop"); void s.offsetWidth; s.classList.add("pop"); });
+  try { if(typeof playChime === "function") playChime(true); } catch(e){}
+  const r = (el || $("k5")).getBoundingClientRect(); for(let i = 0; i < 6; i++){ const b = document.createElement("span"); b.className = "k5-burst"; b.textContent = ["⭐", "✨", "🌟"][i % 3]; b.style.left = (r.left + r.width / 2) + "px"; b.style.top = (r.top + Math.min(r.height, 120) / 2) + "px"; b.style.setProperty("--dx", (i - 2.5) * 30 + "px"); document.body.appendChild(b); setTimeout(() => b.remove(), 1100); } }
+const k5Say = (t, pace) => { try { speak(t, pace || 0.95); } catch(e){} };
+const k5Shuffle = a => { a = a.slice(); for(let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+function k5Tab(t){ k5.tab = t; document.querySelectorAll("[data-k5]").forEach(b => b.setAttribute("aria-selected", String(b.dataset.k5 === t))); document.querySelectorAll(".k5-pane").forEach(p => p.hidden = p.dataset.pane !== t);
+  if(t === "trace") requestAnimationFrame(k5TraceDraw); if(t === "sci"){ k5WC(); k5Circ(); k5Plant(); } }
+// ---------- ✍️ tracing (it checks how much of the letter you covered) ----------
+function k5Letters(){ $("k5-letters").innerHTML = K5_ABC.map((a, i) => `<button type="button" data-l="${i}" style="--h:${i * 14}" aria-pressed="${i === k5.letter}" aria-label="Letter ${a[0]}">${k5.lower ? a[0].toLowerCase() : a[0]}</button>`).join("");
+  $("k5-letters").querySelectorAll("[data-l]").forEach(b => b.onclick = () => { k5.letter = +b.dataset.l; k5.ink = []; k5Letters(); k5TraceDraw(); k5SayLetter(); }); }
+function k5SayLetter(){ const a = K5_ABC[k5.letter]; k5Say(`${a[0]}. ${a[0]} says ${a[1]}, as in ${a[2]}.`); }
+function k5TCanvas(){ const c = $("k5-tcv"), r = c.getBoundingClientRect(), d = window.devicePixelRatio || 1, w = Math.max(240, r.width), h = r.height || 280; if(c.width !== Math.round(w * d)){ c.width = Math.round(w * d); c.height = Math.round(h * d); } const x = c.getContext("2d"); x.setTransform(d, 0, 0, d, 0, 0); return {c, x, w, h}; }
+function k5Glyph(){ const a = K5_ABC[k5.letter]; return k5.lower ? a[0].toLowerCase() : a[0]; }
+function k5GuideFont(h){ return `700 ${Math.round(h * 0.86)}px Andika, Fredoka, "Comic Sans MS", system-ui, sans-serif`; }
+function k5TraceDraw(){ if(k5.tab !== "trace" || !$("k5-tcv")) return; const {x, w, h} = k5TCanvas(), g = k5Glyph(), a = K5_ABC[k5.letter]; x.clearRect(0, 0, w, h);
+  x.strokeStyle = "rgba(146,64,14,.18)"; x.lineWidth = 1.5; [0.18, 0.5, 0.86].forEach((f, i) => { x.setLineDash(i === 1 ? [8, 8] : []); x.beginPath(); x.moveTo(10, h * f); x.lineTo(w - 10, h * f); x.stroke(); }); x.setLineDash([]);
+  x.font = k5GuideFont(h); x.textAlign = "center"; x.textBaseline = "alphabetic"; x.fillStyle = "rgba(251,191,36,.28)"; x.fillText(g, w / 2, h * 0.86); x.setLineDash([6, 7]); x.lineWidth = 3; x.strokeStyle = "rgba(180,83,9,.75)"; x.strokeText(g, w / 2, h * 0.86); x.setLineDash([]);
+  x.lineCap = "round"; x.lineJoin = "round"; x.lineWidth = 18; x.strokeStyle = "#f59e0b"; k5.ink.forEach(s => { x.beginPath(); s.forEach((p, i) => i ? x.lineTo(p[0], p[1]) : x.moveTo(p[0], p[1])); if(s.length === 1) x.lineTo(s[0][0] + 0.1, s[0][1]); x.stroke(); });
+  $("k5-tword").textContent = `${a[3]} ${a[2]}`; }
+function k5TraceCheck(){ const {w, h} = k5TCanvas(), g = k5Glyph(), m = document.createElement("canvas"); m.width = Math.round(w); m.height = Math.round(h); const mx = m.getContext("2d"); mx.font = k5GuideFont(h); mx.textAlign = "center"; mx.fillText(g, w / 2, h * 0.86);
+  const ink = document.createElement("canvas"); ink.width = m.width; ink.height = m.height; const ix = ink.getContext("2d"); ix.lineCap = "round"; ix.lineJoin = "round"; ix.lineWidth = 26; k5.ink.forEach(s => { ix.beginPath(); s.forEach((p, i) => i ? ix.lineTo(p[0], p[1]) : ix.moveTo(p[0], p[1])); if(s.length === 1) ix.lineTo(s[0][0] + 0.1, s[0][1]); ix.stroke(); });
+  const G = mx.getImageData(0, 0, m.width, m.height).data, I = ix.getImageData(0, 0, m.width, m.height).data; let gs = 0, hit = 0, is = 0, onG = 0;
+  // a fatter version of the letter so slightly-off strokes still count as "on" it
+  const fat = document.createElement("canvas"); fat.width = m.width; fat.height = m.height; const fx = fat.getContext("2d"); fx.font = mx.font; fx.textAlign = "center"; fx.lineWidth = 30; fx.lineJoin = "round"; fx.strokeText(g, w / 2, h * 0.86); fx.fillText(g, w / 2, h * 0.86); const Fd = fx.getImageData(0, 0, m.width, m.height).data;
+  for(let yy = 0; yy < m.height; yy += 4) for(let xx = 0; xx < m.width; xx += 4){ const k = (yy * m.width + xx) * 4 + 3; if(G[k] > 128){ gs++; if(I[k] > 128) hit++; } if(I[k] > 128){ is++; if(Fd[k] > 128) onG++; } }
+  return {cover: gs ? hit / gs : 0, neat: is ? onG / is : 0}; }
+function k5TraceSetup(){ const c = $("k5-tcv"); let cur = null; const pt = e => { const r = c.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+  c.addEventListener("pointerdown", e => { e.preventDefault(); c.setPointerCapture(e.pointerId); cur = [pt(e)]; k5.ink.push(cur); k5TraceDraw(); });
+  c.addEventListener("pointermove", e => { if(!cur) return; cur.push(pt(e)); k5TraceDraw(); }); const end = () => { cur = null; }; c.addEventListener("pointerup", end); c.addEventListener("pointercancel", end);
+  $("k5-tclear").onclick = () => { k5.ink = []; k5TraceDraw(); $("k5-tfb").textContent = "Trace over the dotted letter with your finger, then tap Done!"; };
+  $("k5-tsay").onclick = k5SayLetter;
+  $("k5-tdone").onclick = () => { if(!k5.ink.length){ $("k5-tfb").textContent = "✏️ Trace the letter first!"; return; } const r = k5TraceCheck(), pc = Math.round(r.cover * 100), fb = $("k5-tfb");
+    if(r.cover >= 0.55 && r.neat >= 0.55){ fb.textContent = `🌟 Amazing tracing! You covered ${pc}% of the letter.`; k5Say(`Amazing! You traced ${k5Glyph()}! You earned a star!`); k5Win(10, $("k5-tcv")); setTimeout(() => { k5.letter = (k5.letter + 1) % 26; k5.ink = []; k5Letters(); k5TraceDraw(); }, 1600); }
+    else if(r.neat < 0.55){ fb.textContent = "Nice try! Keep your lines on the dotted letter. 🧽 Clear and try again."; k5Say("Nice try! Try to stay on the dotted lines."); }
+    else { fb.textContent = `Good start — you covered ${pc}%. Trace the rest of the letter!`; k5Say("Good start! Keep going and trace all of the letter."); } };
+  document.querySelectorAll("[data-case]").forEach(b => b.onclick = () => { k5.lower = b.dataset.case === "low"; document.querySelectorAll("[data-case]").forEach(x => x.setAttribute("aria-pressed", String(x === b))); k5.ink = []; k5Letters(); k5TraceDraw(); });
+  window.addEventListener("resize", () => { if(!$("view-sounds").hidden) k5TraceDraw(); }); }
+// ---------- 🧩 blending + spell it ----------
+function k5Blend(){ const [w, e] = K5_CVC[k5.bw]; $("k5-bpic").textContent = e;
+  $("k5-btiles").innerHTML = [...w].map((l, i) => `<button type="button" data-t="${i}" aria-label="Sound ${l}">${l}<small>${K5_SND[l]}</small></button>`).join("");
+  $("k5-btiles").querySelectorAll("[data-t]").forEach(b => b.onclick = () => { const l = w[+b.dataset.t]; b.classList.add("lit"); setTimeout(() => b.classList.remove("lit"), 600); k5Say(K5_SND[l], 0.8); });
+  const tiles = k5Shuffle([...w].concat(k5Shuffle("ABCDEFGHIJKLMNOPRSTUVWZ".split("").filter(c => !w.includes(c))).slice(0, 2))); k5.spell = "";
+  $("k5-sslots").innerHTML = [...w].map(() => "<span></span>").join(""); $("k5-sfb").textContent = "";
+  $("k5-sletters").innerHTML = tiles.map((l, i) => `<button type="button" data-s="${i}">${l}</button>`).join("");
+  $("k5-sletters").querySelectorAll("[data-s]").forEach(b => b.onclick = () => { const l = tiles[+b.dataset.s], need = w[k5.spell.length];
+    if(l === need){ k5.spell += l; b.disabled = true; $("k5-sslots").children[k5.spell.length - 1].textContent = l; k5Say(K5_SND[l], 0.85);
+      if(k5.spell === w){ $("k5-sfb").textContent = `🎉 You spelled ${w}!`; setTimeout(() => k5Say(`${[...w].map(c => K5_SND[c]).join(", ")}. ${w}! You spelled it!`), 500); k5Win(15, $("k5-sslots")); } }
+    else { b.animate([{transform: "translateX(-5px)"}, {transform: "translateX(5px)"}, {transform: "none"}], 300); $("k5-sfb").textContent = `Listen: which letter says “${K5_SND[need]}”?`; k5Say(K5_SND[need], 0.8); } }); }
+async function k5BlendSay(fast){ const w = K5_CVC[k5.bw][0], tiles = [...$("k5-btiles").children];
+  if(fast){ tiles.forEach(t => t.classList.add("lit")); k5Say(`${w}!`); setTimeout(() => tiles.forEach(t => t.classList.remove("lit")), 900); return; }
+  try { stopAll(); } catch(e){} for(let i = 0; i < tiles.length; i++){ tiles.forEach(t => t.classList.remove("lit")); tiles[i].classList.add("lit"); k5Say(K5_SND[w[i]], 0.75); await new Promise(r => setTimeout(r, 900)); }
+  tiles.forEach(t => t.classList.add("lit")); k5Say(`${[...w].map(c => K5_SND[c]).join("... ")}... ${w}!`, 0.85); setTimeout(() => tiles.forEach(t => t.classList.remove("lit")), 1800); }
+// ---------- 🃏 sight words ----------
+function k5Grades(){ $("k5-grades").innerHTML = Object.keys(K5_SIGHT).map(g => `<button type="button" data-g="${g}" aria-pressed="${g === k5.sg}">${g}</button>`).join("");
+  $("k5-grades").querySelectorAll("[data-g]").forEach(b => b.onclick = () => { k5.sg = b.dataset.g; k5.si = 0; k5Grades(); k5Card(); k5Match(); }); }
+function k5Syl(w){ return (typeof srSyl === "function" && srSyl(w) > 1) ? w.replace(/([aeiouy]+)([^aeiouy]+)(?=[aeiouy])/gi, (m, v, c) => v + (c.length > 1 ? c[0] + "-" + c.slice(1) : "-" + c)) : w; }
+function k5Card(){ const L = K5_SIGHT[k5.sg], [w, s] = L[k5.si]; $("k5-flip").classList.remove("on"); $("k5-fw").textContent = w; $("k5-fs").textContent = `${k5.si + 1} of ${L.length} · ${k5Syl(w)}`; $("k5-fsent").textContent = s; }
+function k5Match(){ const L = K5_SIGHT[k5.sg], t = L[Math.floor(Math.random() * L.length)]; k5.mt = t[0]; const opts = k5Shuffle([t[0]].concat(k5Shuffle(L.map(x => x[0]).filter(x => x !== t[0])).slice(0, 3)));
+  $("k5-mopts").innerHTML = opts.map(o => `<button type="button" data-o="${o}">${o}</button>`).join(""); $("k5-mfb").textContent = "Tap 🔊 to hear the word, then find it!";
+  $("k5-mopts").querySelectorAll("[data-o]").forEach(b => b.onclick = () => { if(b.dataset.o === k5.mt){ b.classList.add("ok"); k5.ms++; $("k5-mscore").textContent = `Score: ${k5.ms}`; $("k5-mfb").textContent = "🌟 Yes! That's it!"; k5Say(`Yes! ${k5.mt}! You earned a star!`); k5Win(15, b); setTimeout(() => { k5Match(); k5Say(`Find: ${k5.mt}`); }, 1600); }
+    else { b.classList.add("no"); setTimeout(() => b.classList.remove("no"), 400); $("k5-mfb").textContent = `Not quite! Listen again: ${"🔊"}`; k5Say(`Not quite. Find: ${k5.mt}`); } }); }
+// ---------- 🔟 ten-frame + fractions ----------
+function k5Frame(){ const p = k5.prob, f = $("k5-frame"); f.innerHTML = "";
+  for(let i = 0; i < 10; i++){ const b = document.createElement("button"); b.type = "button"; let cls = "", t = "";
+    if(p && p.k === "add"){ if(i < p.a){ cls = "a"; t = "⭐"; } else if(i < p.a + p.b){ cls = "b"; t = "🔵"; } }
+    else if(p && p.k === "sub"){ if(i < p.a - p.b){ cls = "a"; t = "⭐"; } else if(i < p.a){ cls = "x"; t = "✖️"; } }
+    else if(p && p.k === "ten"){ if(i < p.a){ cls = "a"; t = "⭐"; } }
+    else if(i < k5.frame){ cls = "a"; t = "⭐"; }
+    b.className = cls; b.textContent = t; b.setAttribute("aria-label", `Box ${i + 1}${t ? ", filled" : ", empty"}`);
+    b.onclick = () => { if(k5.prob) return; k5.frame = i < k5.frame ? i : i + 1; k5Frame(); k5Say(String(k5.frame)); }; f.appendChild(b); }
+  $("k5-tfn").textContent = p ? (p.k === "ten" ? `${p.a} + ? = 10` : `${p.k === "add" ? p.a + p.b : p.a - p.b} / 10`) : `${k5.frame} / 10`; }
+function k5NewProb(){ const k = k5.mk; let a, b; if(k === "add"){ a = 1 + Math.floor(Math.random() * 6); b = 1 + Math.floor(Math.random() * (10 - a)); } else if(k === "sub"){ a = 3 + Math.floor(Math.random() * 8); b = 1 + Math.floor(Math.random() * (a - 1)); } else { a = 1 + Math.floor(Math.random() * 9); b = 10 - a; }
+  k5.prob = {k, a, b, ans: k === "add" ? a + b : k === "sub" ? a - b : b}; $("k5-mq").textContent = k === "add" ? `${a} + ${b} = ?` : k === "sub" ? `${a} − ${b} = ?` : `${a} + ? = 10`; $("k5-mans").value = ""; $("k5-mfb2").textContent = "";
+  k5Frame(); k5Say(k === "add" ? `What is ${a} plus ${b}?` : k === "sub" ? `What is ${a} take away ${b}?` : `${a} plus what makes ten?`); }
+function k5Check(){ const p = k5.prob, v = +$("k5-mans").value, fb = $("k5-mfb2"); if(!p){ k5NewProb(); return; } if($("k5-mans").value === ""){ fb.textContent = "Type your answer first!"; return; }
+  if(v === p.ans){ fb.textContent = `🎉 Correct! ${$("k5-mq").textContent.replace("?", p.ans)}`; k5Say(`Correct! ${p.k === "add" ? `${p.a} plus ${p.b} equals ${p.ans}` : p.k === "sub" ? `${p.a} take away ${p.b} equals ${p.ans}` : `${p.a} plus ${p.ans} makes ten`}!`); k5Win(20, $("k5-frame")); setTimeout(k5NewProb, 1800); }
+  else { fb.textContent = p.k === "ten" ? "Count the empty boxes!" : p.k === "sub" ? "Count the stars that are left (not the ✖️)." : "Count all the stars and dots together!"; k5Say(fb.textContent); } }
+const K5_FW = ["", "", "half", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth", "eleventh", "twelfth"], K5_NUMW = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"];
+function k5FracWord(n, d){ if(d === 2) return n === 1 ? "one half" : `${K5_NUMW[n]} halves`; return `${K5_NUMW[n]} ${K5_FW[d]}${n === 1 ? "" : "s"}`; }
+function k5Pizza(){ const n = k5.slices, s = Math.min(k5.shaded, n), svg = $("k5-psvg"); let h = "";
+  for(let i = 0; i < n; i++){ const a0 = i / n * 2 * Math.PI - Math.PI / 2, a1 = (i + 1) / n * 2 * Math.PI - Math.PI / 2, x0 = 50 + 44 * Math.cos(a0), y0 = 50 + 44 * Math.sin(a0), x1 = 50 + 44 * Math.cos(a1), y1 = 50 + 44 * Math.sin(a1);
+    h += `<path data-i="${i}" d="M50 50 L${x0.toFixed(2)} ${y0.toFixed(2)} A44 44 0 ${n === 1 ? 1 : 0} 1 ${x1.toFixed(2)} ${y1.toFixed(2)}Z" fill="${i < s ? "#f59e0b" : "#fef3c7"}" stroke="#92400e" stroke-width="1.5"/>`;
+    if(i < s){ const m = (a0 + a1) / 2; h += `<circle cx="${(50 + 26 * Math.cos(m)).toFixed(1)}" cy="${(50 + 26 * Math.sin(m)).toFixed(1)}" r="${Math.max(2, 9 - n * 0.5)}" fill="#dc2626" pointer-events="none"/>`; } }
+  svg.innerHTML = `<circle cx="50" cy="50" r="47" fill="#d97706"/>` + h; svg.querySelectorAll("[data-i]").forEach(p => p.onclick = () => { const i = +p.dataset.i; k5.shaded = i + 1 === k5.shaded ? i : i + 1; k5Pizza(); k5FracCheck(); k5Say(k5FracWord(k5.shaded, k5.slices)); });
+  const g = (typeof VTM !== "undefined" ? VTM.gcd : (a, b) => { while(b){ [a, b] = [b, a % b]; } return a; })(s, n) || 1;
+  $("k5-fr").textContent = `${s}/${n}`; $("k5-sln").textContent = n; $("k5-fword").innerHTML = `${k5FracWord(s, n)}${g > 1 && s ? `<br><small>same as ${s / g}/${n / g}</small>` : ""}<br><small>${Math.round(s / n * 100)}% of the pizza</small>`; }
+function k5FracCheck(){ const q = k5.fq; if(!q) return; if(k5.slices === q[1] && k5.shaded === q[0]){ $("k5-ffb").textContent = `🎉 Yes! That's ${q[0]}/${q[1]}!`; k5Say(`Yes! That is ${k5FracWord(q[0], q[1])}!`); k5Win(20, $("k5-psvg")); k5.fq = null; } }
+// ---------- 🧪 science ----------
+const K5_WC = [["☀️ Evaporation", "The sun warms the water. Tiny drops turn into invisible water vapour and rise into the sky."], ["☁️ Condensation", "High up it's cold, so the vapour cools down and turns back into tiny droplets. Lots of droplets make a cloud."], ["🌧️ Precipitation", "When the drops in the cloud get too big and heavy, they fall as rain, snow, sleet or hail."], ["🌊 Collection", "The water collects in oceans, lakes and rivers — or soaks into the ground. Then the cycle starts again!"]];
+function k5WC(){ const s = k5.wcs, svg = $("k5-wc");
+  const rays = s === 0 ? `<g stroke="#f59e0b" stroke-width="3" stroke-linecap="round">${[0, 1, 2, 3, 4, 5, 6, 7].map(i => { const a = i * Math.PI / 4; return `<line x1="${40 + 26 * Math.cos(a)}" y1="${36 + 26 * Math.sin(a)}" x2="${40 + 34 * Math.cos(a)}" y2="${36 + 34 * Math.sin(a)}"><animate attributeName="opacity" values="1;.3;1" dur="1.2s" repeatCount="indefinite" begin="${i * 0.1}s"/></line>`; }).join("")}</g>` : "";
+  const vapour = s === 0 ? [90, 140, 190, 240].map((x, i) => `<path d="M${x} 150 q6 -10 0 -20 q-6 -10 0 -20" stroke="#60a5fa" stroke-width="3" fill="none" opacity=".8"><animateTransform attributeName="transform" type="translate" values="0 0;0 -50" dur="2s" begin="${i * 0.4}s" repeatCount="indefinite"/><animate attributeName="opacity" values=".9;0" dur="2s" begin="${i * 0.4}s" repeatCount="indefinite"/></path>`).join("") : "";
+  const cloud = (cx, dark) => `<g fill="${dark ? "#94a3b8" : "#fff"}" stroke="#cbd5e1" stroke-width="1"><ellipse cx="${cx}" cy="40" rx="34" ry="18"/><ellipse cx="${cx + 26}" cy="34" rx="24" ry="16"/><ellipse cx="${cx - 24}" cy="36" rx="20" ry="14"/></g>`;
+  const drops = s === 1 ? [0, 1, 2, 3, 4, 5].map(i => `<circle r="2.5" fill="#60a5fa" cx="${190 + i * 12}" cy="${80 - (i % 3) * 8}"><animateTransform attributeName="transform" type="translate" values="0 20;0 -20" dur="1.6s" begin="${i * 0.2}s" repeatCount="indefinite"/></circle>`).join("") : "";
+  const rain = s === 2 ? Array.from({length: 14}, (_, i) => `<line x1="${180 + (i % 7) * 14}" y1="60" x2="${176 + (i % 7) * 14}" y2="70" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round"><animateTransform attributeName="transform" type="translate" values="0 0;-8 80" dur="0.9s" begin="${(i * 0.13).toFixed(2)}s" repeatCount="indefinite"/></line>`).join("") : "";
+  const river = s === 3 ? `<path d="M300 120 q-40 10 -70 30 t-60 12" stroke="#3b82f6" stroke-width="7" fill="none" stroke-linecap="round" stroke-dasharray="12 8"><animate attributeName="stroke-dashoffset" values="40;0" dur="1s" repeatCount="indefinite"/></path>` : "";
+  svg.innerHTML = `<rect width="320" height="180" fill="#bae6fd"/><circle cx="40" cy="36" r="20" fill="#fde047"/>${rays}<path d="M210 150 L260 80 L300 150Z" fill="#86efac"/><path d="M250 150 L285 95 L320 150Z" fill="#4ade80"/>${cloud(230, s === 2)}${drops}${rain}${river}<path d="M0 150 Q80 140 170 152 T320 150 V180 H0Z" fill="#2563eb"/><text x="12" y="172" font-size="11" fill="#fff" font-weight="700">🌊 ocean</text>${vapour}`;
+  $("k5-wcs").innerHTML = K5_WC.map((w, i) => `<button type="button" data-w="${i}" aria-pressed="${i === s}">${w[0]}</button>`).join(""); $("k5-wct").textContent = K5_WC[s][1];
+  $("k5-wcs").querySelectorAll("[data-w]").forEach(b => b.onclick = () => { k5.wcs = +b.dataset.w; k5WC(); k5Say(K5_WC[k5.wcs][0].replace(/^\S+\s/, "") + ". " + K5_WC[k5.wcs][1]); }); }
+function k5Circ(){ const on = k5.sw, svg = $("k5-circ"), wire = on ? "#f59e0b" : "#64748b", path = "M60 120 V40 H260 V120 H200 M150 120 H60";
+  svg.innerHTML = `<path d="${path}" stroke="${wire}" stroke-width="6" fill="none" stroke-linejoin="round"/>
+    ${on ? `<path d="M60 120 V40 H260 V120 H60" stroke="#fde047" stroke-width="2.5" fill="none" stroke-dasharray="3 14"><animate attributeName="stroke-dashoffset" values="34;0" dur=".6s" repeatCount="indefinite"/></path>` : ""}
+    <g transform="translate(160 40)">${on ? `<circle r="30" fill="#fde047" opacity=".45"><animate attributeName="r" values="26;32;26" dur="1.2s" repeatCount="indefinite"/></circle>` : ""}<circle r="16" fill="${on ? "#fde047" : "#e2e8f0"}" stroke="#475569" stroke-width="2"/><path d="M-5 4 q5 -10 10 0" stroke="#92400e" stroke-width="2" fill="none"/><rect x="-7" y="14" width="14" height="10" fill="#64748b"/></g>
+    <g transform="translate(60 120)"><rect x="-26" y="-14" width="52" height="28" rx="4" fill="#1e293b"/><rect x="26" y="-6" width="6" height="12" fill="#1e293b"/><text y="5" text-anchor="middle" font-size="12" fill="#fde047" font-weight="800">🔋 9V</text></g>
+    <g transform="translate(150 120)"><circle r="5" fill="#334155"/><circle cx="50" r="5" fill="#334155"/><line x1="0" y1="0" x2="${on ? 50 : 42}" y2="${on ? 0 : -26}" stroke="#334155" stroke-width="6" stroke-linecap="round"/></g>
+    <text x="175" y="160" text-anchor="middle" font-size="12" font-weight="700" fill="#334155">switch ${on ? "closed" : "open"}</text>`;
+  $("k5-sw").textContent = on ? "🔌 Open the switch" : "🔌 Close the switch"; $("k5-ct").textContent = on ? "💡 The loop is closed! Electricity flows from the battery, through the bulb and back — so the bulb lights up." : "The switch is open, so there's a gap in the loop. Electricity can't flow and the bulb stays dark."; }
+function k5Plant(){ const sun = +$("k5-sun").value, wat = +$("k5-water").value, health = Math.min(sun, wat), too = wat === 5 && sun < 2, ht = 18 + health * 16, svg = $("k5-plant"), leaf = health <= 1 ? "#a3a35a" : "#22c55e";
+  let leaves = ""; for(let i = 0; i < health; i++){ const y = 118 - 16 - i * 16; leaves += `<ellipse cx="${i % 2 ? 72 : 48}" cy="${y}" rx="13" ry="6" fill="${leaf}" transform="rotate(${i % 2 ? -25 : 25} ${i % 2 ? 72 : 48} ${y})"/>`; }
+  svg.innerHTML = `${sun ? `<circle cx="100" cy="18" r="${8 + sun * 1.5}" fill="#fde047"/>` : ""}${wat ? Array.from({length: wat}, (_, i) => `<path d="M${14 + i * 8} ${10 + (i % 2) * 6} q3 6 0 8 q-3 -2 0 -8" fill="#60a5fa"/>`).join("") : ""}<rect x="58" y="${118 - ht}" width="4" height="${ht}" fill="#16a34a"/>${leaves}${health >= 4 ? `<circle cx="60" cy="${114 - ht}" r="8" fill="#f472b6"/><circle cx="60" cy="${114 - ht}" r="3" fill="#fde047"/>` : ""}<path d="M30 118 h60 l-8 22 h-44Z" fill="#c2410c"/><rect x="26" y="114" width="68" height="8" rx="3" fill="#ea580c"/>`;
+  $("k5-pt").textContent = too ? "😟 Too much water and not enough sun — the roots get soggy!" : !sun ? "🌑 No sunlight — plants need light to make food (photosynthesis)." : !wat ? "🏜️ No water — the plant is drying out!" : health >= 4 ? "🌸 Perfect! Sunlight + water + air = food for the plant. It's flowering!" : "🌱 It's growing. More sunlight and water will help it grow bigger."; }
+// ---------- 🐻 Sparky the voice buddy ----------
+function k5Log(who, t){ k5.log.push({who, t}); if(k5.log.length > 40) k5.log.shift(); $("k5-log").innerHTML = k5.log.map(m => `<div class="k5-msg ${m.who}">${esc(m.t)}</div>`).join(""); $("k5-log").scrollTop = 1e6; }
+function k5Reply(t){ k5Log("bot", t); k5Say(t); const b = $("k5-bear"); b.classList.add("talk"); setTimeout(() => b.classList.remove("talk"), Math.min(8000, 900 + t.length * 55)); }
+async function k5Heard(t){ t = String(t || "").trim(); if(!t) return; k5Log("me", t); const s = t.toLowerCase();
+  const go = (tab, msg) => { k5Tab(tab); k5Reply(msg); $("k5").scrollIntoView({behavior: "smooth", block: "start"}); };
+  const m = s.match(/(\d+)\s*(\+|plus|-|minus|x|times|×)\s*(\d+)/); if(m){ const a = +m[1], b = +m[3], op = m[2], v = /\+|plus/.test(op) ? a + b : /-|minus/.test(op) ? a - b : a * b; return k5Reply(`${a} ${/\+|plus/.test(op) ? "plus" : /-|minus/.test(op) ? "minus" : "times"} ${b} is ${v}! Great question!`); }
+  if(/\b(trace|tracing|write|letter)\b/.test(s)) return go("trace", "Let's trace letters! Pick a letter and trace it with your finger.");
+  if(/\b(blend|sound it out|spell)\b/.test(s)) return go("blend", "Let's blend sounds into words!");
+  if(/\bsight words?\b|\bflash ?cards?\b/.test(s)) return go("sight", "Let's practise sight words!");
+  if(/\b(count|ten.?frame|add|plus|subtract|take away|fraction|pizza)\b/.test(s) && !/\?$/.test(s)) return go("math", "Let's do some math!");
+  if(/\b(water cycle|circuit|plant|science|rain|electricity)\b/.test(s) && !/\b(why|how|what)\b/.test(s)) return go("sci", "Let's explore science!");
+  if(typeof sampler === "undefined" || !sampler) return k5Reply("Ooh, good question! Ask a grown-up to turn on the AI so I can answer questions like that. Meanwhile, try tracing, blending or the math games!");
+  const bear = $("k5-bear"); bear.classList.add("listen"); $("k5-mst").textContent = "🤔 Sparky is thinking…";
+  try { const r = await sampler(`You are Sparky, a friendly bear who helps children aged 4 to 11 learn, inside the "My Word Book" app. Answer the child's question in 2 or 3 short, cheerful, accurate sentences using simple words a 6-year-old understands. No markdown, no lists. If the question is unsafe or not for children, kindly suggest asking a grown-up and offer a fun learning idea instead.\nRecent chat: ${k5.log.slice(-5, -1).map(x => (x.who === "me" ? "Child: " : "Sparky: ") + x.t).join(" | ")}\nChild: ${t}`, {modelTier: "quick"});
+    k5Reply(String(r && r.text || "Hmm, let me think about that another time!").trim()); }
+  catch(e){ k5Reply(e && e.code === "limit" ? "A grown-up needs to log in so I can answer that." : "Oops, my thinking cap slipped! Try asking again in a minute."); }
+  finally { bear.classList.remove("listen"); $("k5-mst").textContent = "Tap the mic and talk to Sparky — or type below."; } }
+function k5Mic(){ const R0 = window.SpeechRecognition || window.webkitSpeechRecognition, btn = $("k5-mic");
+  if(k5.rec){ try { k5.rec.abort(); } catch(e){} k5.rec = null; btn.classList.remove("on"); return; }
+  if(!R0){ $("k5-mst").textContent = "🎤 Talking doesn't work in this browser — type to Sparky instead!"; return; }
+  try { stopAll(); } catch(e){} const R = new R0(); R.lang = "en-US"; R.interimResults = false; k5.rec = R; btn.classList.add("on"); $("k5-bear").classList.add("listen"); $("k5-mst").textContent = "👂 Sparky is listening…";
+  R.onresult = e => { const t = e.results[0][0].transcript; k5Heard(t); };
+  R.onerror = e => { $("k5-mst").textContent = e.error === "not-allowed" || e.error === "service-not-allowed" ? "🎤 The microphone isn't allowed here — type to Sparky instead!" : "I didn't hear you. Tap the mic and try again!"; };
+  R.onend = () => { k5.rec = null; btn.classList.remove("on"); $("k5-bear").classList.remove("listen"); if(/listening/.test($("k5-mst").textContent)) $("k5-mst").textContent = "Tap the mic and talk to Sparky — or type below."; };
+  try { R.start(); } catch(e){ k5.rec = null; btn.classList.remove("on"); } }
+// ---------- set up ----------
+function k5Init(){ if(!$("k5")) return; if(k5.inited){ k5Score(); if(k5.tab === "trace") requestAnimationFrame(k5TraceDraw); return; } k5.inited = true; k5Load(); k5Score();
+  document.querySelectorAll("[data-k5]").forEach(b => b.onclick = () => k5Tab(b.dataset.k5));
+  k5Letters(); k5TraceSetup(); requestAnimationFrame(k5TraceDraw);
+  k5.bw = Math.floor(Math.random() * K5_CVC.length); k5Blend(); $("k5-bslow").onclick = () => k5BlendSay(false); $("k5-bfast").onclick = () => k5BlendSay(true); $("k5-bnext").onclick = () => { k5.bw = (k5.bw + 1 + Math.floor(Math.random() * (K5_CVC.length - 1))) % K5_CVC.length; k5Blend(); k5Say(K5_CVC[k5.bw][0]); };
+  k5Grades(); k5Card(); k5Match(); const flip = () => { $("k5-flip").classList.toggle("on"); k5Say($("k5-flip").classList.contains("on") ? $("k5-fsent").textContent : $("k5-fw").textContent); };
+  $("k5-flip").onclick = flip; $("k5-flip").onkeydown = e => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); flip(); } };
+  $("k5-fsay").onclick = () => k5Say($("k5-flip").classList.contains("on") ? $("k5-fsent").textContent : $("k5-fw").textContent);
+  $("k5-fnext").onclick = () => { const L = K5_SIGHT[k5.sg]; k5.si = (k5.si + 1) % L.length; k5Card(); k5Say(L[k5.si][0]); }; $("k5-fprev").onclick = () => { const L = K5_SIGHT[k5.sg]; k5.si = (k5.si + L.length - 1) % L.length; k5Card(); k5Say(L[k5.si][0]); };
+  $("k5-mplay").onclick = () => k5Say(`Find the word: ${k5.mt}`);
+  k5Frame(); document.querySelectorAll("[data-mk]").forEach(b => b.onclick = () => { k5.mk = b.dataset.mk; document.querySelectorAll("[data-mk]").forEach(x => x.setAttribute("aria-pressed", String(x === b))); k5NewProb(); });
+  $("k5-mnew").onclick = k5NewProb; $("k5-mchk").onclick = k5Check; $("k5-mans").onkeydown = e => { if(e.key === "Enter") k5Check(); };
+  k5Pizza(); $("k5-slices").oninput = e => { k5.slices = +e.target.value; if(k5.shaded > k5.slices) k5.shaded = k5.slices; k5Pizza(); k5FracCheck(); };
+  $("k5-fsayf").onclick = () => k5Say(`${k5FracWord(Math.min(k5.shaded, k5.slices), k5.slices)}. ${Math.min(k5.shaded, k5.slices)} out of ${k5.slices} slices.`);
+  $("k5-fq").onclick = () => { const d = 2 + Math.floor(Math.random() * 7), n = 1 + Math.floor(Math.random() * (d - 1)); k5.fq = [n, d]; $("k5-ffb").textContent = `Make the pizza show ${n}/${d}!`; k5Say(`Can you make the pizza show ${k5FracWord(n, d)}? Change the slices, then tap to colour them.`); };
+  $("k5-sw").onclick = () => { k5.sw = !k5.sw; k5Circ(); k5Say($("k5-ct").textContent.replace(/^\S+\s/, "")); };
+  ["k5-sun", "k5-water"].forEach(id => $(id).oninput = k5Plant);
+  $("k5-mic").onclick = k5Mic; $("k5-askgo").onclick = () => { const v = $("k5-ask").value; $("k5-ask").value = ""; k5Heard(v); }; $("k5-ask").onkeydown = e => { if(e.key === "Enter") $("k5-askgo").click(); };
+  $("k5-sug").innerHTML = ["Why is the sky blue?", "How do bees make honey?", "What is 7 plus 5?", "Let's trace letters!", "Why do leaves change colour?"].map(q => `<button type="button">${q}</button>`).join("");
+  $("k5-sug").querySelectorAll("button").forEach(b => b.onclick = () => k5Heard(b.textContent));
+  k5Log("bot", "Hi! I'm Sparky! 🐻 Ask me anything, or say “let's trace letters”, “sight words”, “math” or “science”!"); }
 </script>
 <div id="voice-ctl" class="voice-ctl" hidden role="group" aria-label="Voice controls"><span class="vc-dot" aria-hidden="true"></span><button type="button" id="vc-pause">⏸ Pause</button><button type="button" id="vc-stop">⏹ Stop</button></div>
 <style>
