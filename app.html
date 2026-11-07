@@ -3004,6 +3004,51 @@ window.MWB_TRIAL_DAYS = 14;
       <button class="mp-mode" data-mpmode="facts" aria-pressed="true">➕ ➖ ✖️ ➗<small>Add, subtract, multiply, divide</small></button>
       <button class="mp-mode" data-mpmode="alg" aria-pressed="false">🔤 Algebra<small>Find the missing <i>x</i></small></button>
       <button class="mp-mode" data-mpmode="trig" aria-pressed="false">📐 Trig Lab<small>Unit circle, graphs, equations</small></button>
+      <button class="mp-mode" data-mpmode="tutor" aria-pressed="false">🎙️ AI Tutor<small>Talk through hard problems</small></button>
+    </div>
+    <div class="vt" id="vt" hidden>
+      <div class="vt-hub">
+        <div class="vt-hubtop"><span id="vt-who"></span><span class="vt-status" id="vt-status">Mic ready</span></div>
+        <div class="vt-wave" id="vt-wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="vt-microw">
+          <button type="button" class="vt-mic" id="vt-mic" aria-label="Talk to the tutor">🎤</button>
+          <button type="button" class="vt-round" id="vt-mute" aria-pressed="false" aria-label="Mute the tutor's voice">🔊</button>
+        </div>
+        <p class="vt-live" id="vt-live" aria-live="polite">Tap the microphone and ask out loud — or type below.</p>
+        <label class="vt-check"><input type="checkbox" id="vt-hands"> Hands-free: the mic turns back on after the tutor speaks</label>
+        <details class="vt-cmds"><summary>🗣️ Things you can say</summary>
+          <div class="vt-chips"><span>“Next step”</span><span>“Explain step 2”</span><span>“Give me a hint”</span><span>“Repeat that”</span><span>“My answer is 13”</span><span>“Why is that true?”</span><span>“Read slower”</span><span>“Show the graph”</span><span>“Stop”</span><span>“New problem”</span></div>
+        </details>
+      </div>
+      <div class="vt-card">
+        <div class="vt-row2">
+          <label class="vt-lab">Subject <select id="vt-subj"></select></label>
+          <label class="vt-lab">Level <select id="vt-level"></select></label>
+        </div>
+        <p class="vt-mini">Tutor style</p>
+        <div class="vt-personas" id="vt-personas" role="group" aria-label="Tutor style"></div>
+        <textarea id="vt-in" rows="3" placeholder="Type a problem — e.g. Find the derivative of x^3·sin(x) at x = 2"></textarea>
+        <div class="vt-row"><button type="button" class="btn" id="vt-go">🚀 Ask the tutor</button></div>
+        <details class="vt-samples"><summary>📚 Try a sample problem</summary><div id="vt-samples"></div></details>
+      </div>
+      <div class="vt-card vt-sol" id="vt-sol" hidden></div>
+      <div class="vt-card vt-studio" id="vt-studio">
+        <h3 class="vt-h">📈 Graph studio</h3>
+        <div class="vt-row vt-fxrow"><label class="vt-fx">y = <input id="vt-fx" value="3x^2 - 5x + 2" autocomplete="off" spellcheck="false" aria-label="Function to graph (use commas for more than one)"></label><button type="button" class="btn alt vt-sm" id="vt-plot">Plot</button></div>
+        <div class="vt-row vt-opts">
+          <label>x from <input type="number" id="vt-xmin" value="-5" step="any"></label><label>to <input type="number" id="vt-xmax" value="5" step="any"></label>
+          <label class="vt-tog"><input type="checkbox" id="vt-o-d"> f′(x)</label>
+          <label class="vt-tog"><input type="checkbox" id="vt-o-t"> Tangent at x = <input type="number" id="vt-ta" value="1" step="any"></label>
+          <label class="vt-tog"><input type="checkbox" id="vt-o-a"> Area from <input type="number" id="vt-aa" value="0" step="any"> to <input type="number" id="vt-ab" value="2" step="any"></label>
+        </div>
+        <div class="vt-cw"><canvas id="vt-cv" aria-label="Graph"></canvas><div class="vt-trace" id="vt-trace" hidden></div></div>
+        <div class="vt-row"><button type="button" class="btn alt vt-sm" id="vt-launch" hidden>🚀 Launch</button><p class="vt-tip" id="vt-gtip">Drag across the graph to read values. With Tangent on, tap to move the tangent point.</p></div>
+        <div class="vt-analysis" id="vt-analysis"></div>
+      </div>
+      <div class="vt-card vt-log">
+        <div class="vt-loghead"><h3 class="vt-h">💬 Conversation</h3><span><button type="button" class="btn alt vt-sm" id="vt-copy">📋 Copy</button> <button type="button" class="btn alt vt-sm" id="vt-clear">🗑️ Clear</button></span></div>
+        <div class="vt-logbody" id="vt-log"><p class="vt-empty">No conversation yet. Ask a question to get started!</p></div>
+      </div>
     </div>
     <div class="mp-opts">
       <div class="cell-toggle" id="mp-ops" role="group" aria-label="Operation">
@@ -3187,7 +3232,7 @@ window.MWB_TRIAL_DAYS = 14;
         <button class="btn" id="mp-chat-send">Ask ›</button>
       </div>
     </div>
-  </section>
+    </section>
 
   <section id="view-books" hidden>
     <h2 class="bk-h">📚 My Books</h2>
@@ -32192,7 +32237,7 @@ function mpFit(){
     if(over > 0) window.scrollBy({ top: Math.min(over, r.top - 8), behavior: "smooth" });
   });
 }
-function mpRestart(){ if(mp.mode === "trig"){ tlInit(); return; } mp.n = 0; mp.right = 0; mp.results = []; $("mp-done").hidden = true; $("mp-play").hidden = false; mpNew(); mpFit(); }
+function mpRestart(){ if(mp.mode === "tutor"){ if(typeof vtInit === "function") vtInit(); return; } if(mp.mode === "trig"){ tlInit(); return; } mp.n = 0; mp.right = 0; mp.results = []; $("mp-done").hidden = true; $("mp-play").hidden = false; mpNew(); mpFit(); }
 function mpVertical(p){
   // Show vertical column layout for add, sub, mul (not div or algebra)
   if(mp.mode !== "facts") return false;
@@ -33152,8 +33197,9 @@ function syncMPControls(){
   $("mp-ops").hidden = mp.mode !== "facts";
   $("mp-algs").hidden = mp.mode !== "alg";
   // Trig Lab replaces the quiz card for trigonometry
-  const isTL = mp.mode === "trig";
-  $("mp-levels").hidden = isTL; $("mp-card").hidden = isTL; $("trig-lab").hidden = !isTL; if($("mp-tip")) $("mp-tip").hidden = isTL;
+  const isTL = mp.mode === "trig", isVT = mp.mode === "tutor";
+  $("mp-levels").hidden = isTL || isVT; $("mp-card").hidden = isTL || isVT; $("trig-lab").hidden = !isTL; if($("mp-tip")) $("mp-tip").hidden = isTL || isVT;
+  if($("vt")) $("vt").hidden = !isVT; if($("rmfc")) $("rmfc").hidden = isVT; if(!isVT && typeof vtMicStop === "function") try { vtMicStop(); } catch(e){}
   // Trig uses multiple-choice or graph, so hide the number pad
   $("mp-pad").style.display = mp.mode === "trig" ? "none" : "";
 }
@@ -36263,6 +36309,687 @@ document.addEventListener("DOMContentLoaded", function(){
 try { __diag("script-end"); } catch(e){}
 </script>
 
+<style>
+/* ===== 🎙️ AI Voice Tutor (Math) ===== */
+.vt{display:flex;flex-direction:column;gap:14px;margin-top:12px}
+.vt-hub,.vt-card{background:var(--paper);border:3px solid var(--line);border-radius:22px;padding:14px;box-shadow:0 5px 0 var(--line);min-width:0}
+.vt-hub{text-align:center;background:linear-gradient(180deg,#1e2a52,#2b2f6b);color:#fff}
+.vt-hubtop{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;font-weight:600;opacity:.92}
+.vt-status{display:inline-flex;align-items:center;gap:6px}.vt-status::before{content:"";width:9px;height:9px;border-radius:50%;background:#94a3b8}
+.vt.listening .vt-status::before{background:#f43f5e;animation:vcPulse 1s infinite}.vt.speaking .vt-status::before{background:#4ade80;animation:vcPulse 1s infinite}.vt.thinking .vt-status::before{background:#facc15;animation:vcPulse .7s infinite}
+.vt-wave{height:56px;display:flex;align-items:center;justify-content:center;gap:5px;margin:8px 0}
+.vt-wave i{width:6px;height:10px;border-radius:6px;background:rgba(255,255,255,.25);transition:height .15s}
+.vt.speaking .vt-wave i{background:linear-gradient(#f472b6,#818cf8);animation:vtWave .9s ease-in-out infinite}
+.vt.listening .vt-wave i{background:linear-gradient(#34d399,#22d3ee);animation:vtWave .6s ease-in-out infinite}
+.vt.thinking .vt-wave i{background:#facc15;animation:vtWave 1.4s ease-in-out infinite}
+.vt-wave i:nth-child(2n){animation-delay:.15s}.vt-wave i:nth-child(3n){animation-delay:.3s}.vt-wave i:nth-child(5n){animation-delay:.45s}
+@keyframes vtWave{0%,100%{height:10px}50%{height:46px}}
+@media (prefers-reduced-motion:reduce){.vt-wave i{animation:none!important}}
+.vt-microw{display:flex;align-items:center;justify-content:center;gap:14px}
+.vt-mic{width:84px;height:84px;border-radius:50%;border:4px solid #fff;background:linear-gradient(135deg,#6366f1,#a855f7);color:#fff;font-size:36px;box-shadow:0 8px 22px rgba(99,102,241,.55);cursor:pointer}
+.vt.listening .vt-mic{background:#e11d48;box-shadow:0 0 0 8px rgba(225,29,72,.3)}
+.vt-round{width:52px;height:52px;border-radius:16px;border:3px solid rgba(255,255,255,.6);background:rgba(255,255,255,.12);color:#fff;font-size:22px;cursor:pointer}
+.vt-round[aria-pressed="true"]{background:#be123c;border-color:#fda4af}
+.vt-live{min-height:1.4em;margin:10px auto 6px;max-width:60ch;font-size:16px;line-height:1.4}
+.vt-check{display:inline-flex;gap:8px;align-items:center;font-size:14px;cursor:pointer}
+.vt-cmds{margin-top:8px;text-align:left;background:rgba(0,0,0,.2);border-radius:14px;padding:8px 12px}.vt-cmds summary{cursor:pointer;font-weight:600;font-size:14px}
+.vt-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.vt-chips span{background:rgba(255,255,255,.14);border-radius:8px;padding:3px 8px;font-size:13px}
+.vt-row,.vt-row2{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.vt-row2{justify-content:space-between}
+.vt-lab{display:flex;align-items:center;gap:6px;font-weight:600;font-size:15px}.vt-lab select{font:inherit;font-size:15px;padding:6px 8px;border-radius:10px;border:2px solid var(--line);background:var(--paper);color:var(--ink)}
+.vt-mini{margin:10px 0 4px;font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.vt-personas{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.vt-persona{text-align:left;border:3px solid var(--line);border-radius:14px;padding:8px 10px;background:var(--paper);color:var(--ink);cursor:pointer;font:inherit}
+.vt-persona b{display:block;font-size:15px}.vt-persona small{display:block;font-size:12.5px;color:var(--muted);line-height:1.3}
+.vt-persona[aria-pressed="true"]{background:#eef2ff;border-color:#4f46e5;box-shadow:0 3px 0 #4f46e5}
+#vt-in{width:100%;box-sizing:border-box;margin:12px 0 8px;font:inherit;font-size:17px;padding:10px 12px;border-radius:14px;border:3px solid var(--line);background:var(--paper);color:var(--ink);resize:vertical}
+#vt-go{flex:1;min-width:200px;font-size:19px}
+.vt-samples{margin-top:10px}.vt-samples summary{cursor:pointer;font-weight:600}
+#vt-samples{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin-top:8px}
+.vt-sample{text-align:left;border:2px solid var(--line);border-radius:12px;padding:8px 10px;background:var(--paper);color:var(--ink);cursor:pointer;font:inherit}
+.vt-sample b{display:block;font-size:12px;color:#4f46e5;text-transform:uppercase;letter-spacing:.05em}.vt-sample span{font-size:14.5px}
+.vt-h{margin:0 0 8px;font-size:19px}
+.vt-solhead{display:flex;gap:10px;justify-content:space-between;align-items:flex-start}
+.vt-solhead h3{margin:4px 0 0;font-size:20px;text-wrap:balance;overflow-wrap:anywhere}
+.vt-badge{display:inline-block;font-size:12.5px;font-weight:700;border-radius:999px;padding:3px 10px;background:#dcfce7;color:#166534;border:2px solid #166534}
+.vt-badge.ai{background:#fef9c3;color:#854d0e;border-color:#854d0e}
+.vt-answer{margin:10px 0;padding:12px 14px;border-radius:14px;border:3px solid #16a34a;background:#f0fdf4;color:#14532d;font-size:19px;font-weight:600;overflow-wrap:anywhere}
+.vt-over{margin:6px 0 10px;line-height:1.5}
+.vt-solbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin:6px 0}
+.vt-steps{list-style:none;padding:0;margin:8px 0;display:flex;flex-direction:column;gap:8px}
+.vt-step{border:3px solid var(--line);border-radius:14px;padding:10px 12px;background:var(--paper);cursor:pointer}
+.vt-step.on{border-color:#4f46e5;box-shadow:0 0 0 3px rgba(79,70,229,.25)}
+.vt-stephead{display:flex;justify-content:space-between;gap:8px;align-items:center}.vt-stephead b{color:#4f46e5;font-size:15.5px}
+.vt-stepbtns{display:flex;gap:4px;flex:none}.vt-stepbtns button{border:2px solid var(--line);background:var(--paper);color:var(--ink);border-radius:10px;padding:4px 8px;font-size:15px;cursor:pointer}
+.vt-math{margin:6px 0;padding:8px 10px;border-radius:10px;background:#f1f5ff;color:#1e1b4b;font-family:"Cambria Math","STIX Two Math",Georgia,serif;font-size:17px;overflow-x:auto;white-space:pre-wrap;overflow-wrap:anywhere}
+.vt-why{margin:4px 0 0;line-height:1.5}
+.vt-hint{margin:6px 0 0;padding:6px 10px;border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;border-radius:6px}
+.vt-guide{margin:8px 0;padding:10px 12px;border-radius:14px;border:3px dashed #4f46e5;background:#eef2ff;color:#1e1b4b}
+.vt-guide p{margin:0 0 8px}
+.vt-mine{margin-top:12px;padding:12px;border-radius:14px;border:3px solid var(--line);background:#fff7ed;color:#7c2d12}
+.vt-mine .vt-row input{flex:1;min-width:140px;font:inherit;font-size:17px;padding:8px 10px;border-radius:10px;border:2px solid var(--line);background:#fff;color:#1b2a4a}
+.vt-mineres{margin:8px 0 0;font-weight:600}
+.vt-follow{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.vt-follow button{border:2px solid #4f46e5;color:#4f46e5;background:var(--paper);border-radius:999px;padding:5px 12px;font:inherit;font-size:14px;cursor:pointer}
+.vt .btn.vt-sm{font-size:15px;padding:6px 12px;width:auto;flex:none;margin:0}.vt-loghead > span{display:flex;gap:6px}.vt-solhead > div{min-width:0;flex:1}
+.vt-studio.special .vt-fxrow,.vt-studio.special .vt-opts{display:none}
+.vt-fxrow{flex-wrap:nowrap}.vt-fx{display:flex;align-items:center;gap:6px;flex:1;min-width:0;font-weight:700;font-family:Georgia,serif;font-size:18px}
+.vt-fx input{flex:1;min-width:0;font:inherit;font-size:17px;padding:7px 10px;border-radius:10px;border:2px solid var(--line);background:var(--paper);color:var(--ink)}
+.vt-opts{margin:8px 0;font-size:14.5px}.vt-opts input[type=number]{width:62px;font:inherit;padding:4px 6px;border-radius:8px;border:2px solid var(--line);background:var(--paper);color:var(--ink)}
+.vt-tog{display:inline-flex;align-items:center;gap:5px;padding:4px 8px;border:2px solid var(--line);border-radius:10px}
+.vt-cw{position:relative;border:3px solid var(--line);border-radius:14px;overflow:hidden;background:#fff;touch-action:pan-y}
+#vt-cv{display:block;width:100%;height:300px}
+.vt-trace{position:absolute;top:8px;left:8px;background:rgba(15,23,42,.88);color:#fff;font-size:13px;padding:5px 8px;border-radius:8px;pointer-events:none;font-variant-numeric:tabular-nums}
+.vt-tip{margin:6px 0;font-size:13px;color:var(--muted);flex:1}
+.vt-analysis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:6px;margin-top:6px}
+.vt-analysis div{border:2px solid var(--line);border-radius:10px;padding:6px 8px;font-size:14px}.vt-analysis b{display:block;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.vt-loghead{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.vt-logbody{display:flex;flex-direction:column;gap:8px;max-height:360px;overflow-y:auto;padding-right:4px}
+.vt-msg{padding:8px 12px;border-radius:14px;line-height:1.45;max-width:88%;overflow-wrap:anywhere}
+.vt-msg small{display:block;font-size:11.5px;font-weight:700;opacity:.7;margin-bottom:2px}
+.vt-msg.me{align-self:flex-end;background:#e0e7ff;color:#1e1b4b}.vt-msg.bot{align-self:flex-start;background:#f1f5f9;color:#0f172a;border:2px solid #cbd5e1}
+.vt-empty{color:var(--muted);text-align:center;margin:12px 0}
+:root[data-theme="dark"] .vt-persona[aria-pressed="true"],:root[data-theme="dark"] .vt-guide{background:#2a2f63;color:#e0e7ff}
+:root[data-theme="dark"] .vt-math{background:#24305a;color:#e0e7ff}:root[data-theme="dark"] .vt-cw{background:#0f172a}
+:root[data-theme="dark"] .vt-answer{background:#0f2e1c;color:#bbf7d0}:root[data-theme="dark"] .vt-hint{background:#3a2a0a;color:#fde68a}
+:root[data-theme="dark"] .vt-mine{background:#3a1f0d;color:#fed7aa}:root[data-theme="dark"] .vt-msg.me{background:#2a2f63;color:#e0e7ff}:root[data-theme="dark"] .vt-msg.bot{background:#1e293b;color:#e2e8f0;border-color:#334155}
+@media (max-width:520px){.vt-mic{width:76px;height:76px;font-size:32px}#vt-cv{height:260px}.vt-answer{font-size:17px}}
+</style>
+<script>
+// ===== 🎙️ AI Voice Tutor — exact maths engine (parse, simplify, differentiate, solve) =====
+const VT_FNS = ["asin", "acos", "atan", "sqrt", "sin", "cos", "tan", "sec", "csc", "cot", "exp", "abs", "ln", "log"];
+const VTM = (() => {
+  const N = v => ({t: "n", v}), X = (v = "x") => ({t: "v", v}), B = (t, a, b) => ({t, a, b}), F = (f, a) => ({t: "f", f, a}), NEG = a => ({t: "neg", a});
+  function tokens(src){
+    const s = String(src).toLowerCase().replace(/π/g, "pi").replace(/[×·∙]/g, "*").replace(/÷/g, "/").replace(/[−–—]/g, "-").replace(/²/g, "^2").replace(/³/g, "^3").replace(/√\s*\(/g, "sqrt(").replace(/√\s*([a-z0-9.]+)/g, "sqrt($1)").replace(/\*\*/g, "^").replace(/\bln\b/g, "ln").replace(/e\^/g, "e^");
+    const out = []; let i = 0;
+    while(i < s.length){ const c = s[i];
+      if(/\s/.test(c)){ i++; continue; }
+      const num = s.slice(i).match(/^(\d+\.?\d*|\.\d+)/); if(num){ out.push({k: "n", v: +num[1]}); i += num[1].length; continue; }
+      if(/[a-z]/.test(c)){ const w = s.slice(i).match(/^[a-z]+/)[0]; let r = w;
+        while(r){ const f = VT_FNS.find(n => r.startsWith(n)); if(f){ out.push({k: "f", v: f}); r = r.slice(f.length); continue; }
+          if(r.startsWith("pi")){ out.push({k: "c", v: "pi"}); r = r.slice(2); continue; }
+          if(r[0] === "e"){ out.push({k: "c", v: "e"}); r = r.slice(1); continue; }
+          if(/[a-z]/.test(r[0])){ out.push({k: "v", v: r[0]}); r = r.slice(1); continue; } }
+        i += w.length; continue; }
+      if("+-*/^()".includes(c)){ out.push({k: c}); i++; continue; }
+      if(c === "[" || c === "{"){ out.push({k: "("}); i++; continue; } if(c === "]" || c === "}"){ out.push({k: ")"}); i++; continue; }
+      throw new Error("I can't read “" + c + "”.");
+    }
+    return out;
+  }
+  function parse(src){
+    const T = tokens(src); let p = 0; if(!T.length) throw new Error("empty");
+    const peek = () => T[p], eat = k => { if(T[p] && T[p].k === k){ p++; return true; } return false; };
+    const startsAtom = t => t && (t.k === "n" || t.k === "v" || t.k === "c" || t.k === "f" || t.k === "(");
+    function expr(){ let a = term(); for(;;){ if(eat("+")) a = B("+", a, term()); else if(eat("-")) a = B("-", a, term()); else return a; } }
+    function term(){ let a = unary(); for(;;){ if(eat("*")) a = B("*", a, unary()); else if(eat("/")) a = B("/", a, unary()); else if(startsAtom(peek())) a = B("*", a, power()); else return a; } }
+    function unary(){ if(eat("-")) return NEG(unary()); if(eat("+")) return unary(); return power(); }
+    function power(){ const a = atom(); if(eat("^")) return B("^", a, unary()); return a; }
+    function atom(){ const t = T[p++]; if(!t) throw new Error("The expression ends too early.");
+      if(t.k === "n") return N(t.v); if(t.k === "v") return X(t.v); if(t.k === "c") return {t: "c", v: t.v};
+      if(t.k === "("){ const e = expr(); if(!eat(")")) throw new Error("A bracket is missing."); return e; }
+      if(t.k === "f"){ // sin x, sin(x), sin^2(x)
+        if(peek() && peek().k === "^"){ p++; const ex = unary(); return B("^", F(t.v, fnArg()), ex); }
+        return F(t.v, fnArg()); }
+      throw new Error("Something is out of place near “" + (t.v || t.k) + "”."); }
+    function fnArg(){ if(peek() && peek().k === "("){ p++; const e = expr(); if(!eat(")")) throw new Error("A bracket is missing."); return e; } return power(); }
+    const e = expr(); if(p < T.length) throw new Error("Something is out of place near “" + (T[p].v || T[p].k) + "”."); return e;
+  }
+  const has = (n, v = "x") => !n ? false : n.t === "v" ? n.v === v : n.t === "n" || n.t === "c" ? false : has(n.a, v) || has(n.b, v);
+  const vars = (n, s = new Set()) => { if(!n) return s; if(n.t === "v") s.add(n.v); vars(n.a, s); vars(n.b, s); return s; };
+  const FN = {sin: Math.sin, cos: Math.cos, tan: Math.tan, sec: v => 1 / Math.cos(v), csc: v => 1 / Math.sin(v), cot: v => Math.cos(v) / Math.sin(v), asin: Math.asin, acos: Math.acos, atan: Math.atan, sqrt: Math.sqrt, exp: Math.exp, abs: Math.abs, ln: Math.log, log: Math.log10};
+  function ev(n, env){ switch(n.t){ case "n": return n.v; case "c": return n.v === "pi" ? Math.PI : Math.E; case "v": { const v = typeof env === "number" ? (n.v === "x" ? env : NaN) : (env || {})[n.v]; return v === undefined ? NaN : v; }
+    case "neg": return -ev(n.a, env); case "+": return ev(n.a, env) + ev(n.b, env); case "-": return ev(n.a, env) - ev(n.b, env); case "*": return ev(n.a, env) * ev(n.b, env); case "/": return ev(n.a, env) / ev(n.b, env);
+    case "^": { const b = ev(n.a, env), e = ev(n.b, env); if(b < 0 && !Number.isInteger(e)){ const q = Math.round(1 / e); if(Math.abs(1 / e - q) < 1e-9 && q % 2) return -Math.pow(-b, e); } return Math.pow(b, e); }
+    case "f": return FN[n.f](ev(n.a, env)); } return NaN; }
+  const isN = (n, v) => n.t === "n" && (v === undefined || Math.abs(n.v - v) < 1e-12);
+  const eq = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+  function S(n){ // simplify
+    if(!n || n.t === "n" || n.t === "v" || n.t === "c") return n;
+    if(n.t === "f"){ const a = S(n.a); if(a.t === "n" && n.f !== "ln" && n.f !== "log" && n.f !== "exp" && n.f !== "sqrt") { const v = FN[n.f](a.v); if(Number.isInteger(v)) return N(v); }
+      if(n.f === "sqrt" && a.t === "n"){ const r = Math.sqrt(a.v); if(Number.isInteger(r)) return N(r); } if(n.f === "ln" && a.t === "c" && a.v === "e") return N(1); if(n.f === "ln" && isN(a, 1)) return N(0); if(n.f === "exp" && isN(a, 0)) return N(1); return F(n.f, a); }
+    if(n.t === "neg"){ const a = S(n.a); if(a.t === "n") return N(-a.v); if(a.t === "neg") return a.a; if(a.t === "*" && a.a.t === "n") return S(B("*", N(-a.a.v), a.b)); return NEG(a); }
+    let a = S(n.a), b = S(n.b);
+    switch(n.t){
+      case "+": if(isN(a, 0)) return b; if(isN(b, 0)) return a; if(a.t === "n" && b.t === "n") return N(a.v + b.v); if(b.t === "neg") return S(B("-", a, b.a)); if(b.t === "n" && b.v < 0) return B("-", a, N(-b.v)); if(eq(a, b)) return S(B("*", N(2), a));
+        if(b.t === "*" && b.a.t === "n" && b.a.v < 0) return S(B("-", a, B("*", N(-b.a.v), b.b))); return B("+", a, b);
+      case "-": if(isN(b, 0)) return a; if(isN(a, 0)) return S(NEG(b)); if(a.t === "n" && b.t === "n") return N(a.v - b.v); if(eq(a, b)) return N(0); if(b.t === "neg") return S(B("+", a, b.a)); if(b.t === "n" && b.v < 0) return B("+", a, N(-b.v)); return B("-", a, b);
+      case "*": if(isN(a, 0) || isN(b, 0)) return N(0); if(isN(a, 1)) return b; if(isN(b, 1)) return a; if(a.t === "n" && b.t === "n") return N(a.v * b.v);
+        if(isN(a, -1)) return S(NEG(b)); if(isN(b, -1)) return S(NEG(a));
+        if(b.t === "n") return S(B("*", b, a)); if(a.t === "n" && b.t === "*" && b.a.t === "n") return S(B("*", N(a.v * b.a.v), b.b));
+        if(a.t === "neg") return S(NEG(B("*", a.a, b))); if(b.t === "neg") return S(NEG(B("*", a, b.a)));
+        if(a.t === "n" && b.t === "/" && b.a.t === "n") return S(B("/", N(a.v * b.a.v), b.b));
+        if(a.t === "*" && a.a.t === "n") return S(B("*", a.a, S(B("*", a.b, b))));
+        if(b.t === "*" && b.a.t === "n") return S(B("*", b.a, S(B("*", a, b.b))));
+        if(a.t === "/" && eq(a.b, b)) return a.a; if(b.t === "/" && eq(b.b, a)) return b.a;
+        if(a.t === "f" && (b.t === "v" || (b.t === "^" && b.a.t === "v"))) return B("*", b, a);
+        if(eq(a, b)) return B("^", a, N(2));
+        if(a.t === "^" && eq(a.a, b) && a.b.t === "n") return B("^", b, N(a.b.v + 1)); if(b.t === "^" && eq(b.a, a) && b.b.t === "n") return B("^", a, N(b.b.v + 1));
+        if(a.t === "^" && b.t === "^" && eq(a.a, b.a) && a.b.t === "n" && b.b.t === "n") return S(B("^", a.a, N(a.b.v + b.b.v)));
+        return B("*", a, b);
+      case "/": if(isN(a, 0)) return N(0); if(isN(b, 1)) return a; if(eq(a, b)) return N(1);
+        if(a.t === "n" && b.t === "n"){ const q = a.v / b.v; if(Number.isInteger(q)) return N(q); const g = gcd(a.v, b.v); if(Number.isInteger(a.v) && Number.isInteger(b.v) && g > 1) return B("/", N(a.v / g), N(b.v / g)); if(b.v < 0) return B("/", N(-a.v), N(-b.v)); }
+        if(a.t === "neg") return S(NEG(B("/", a.a, b))); if(a.t === "n" && a.v < 0) return NEG(B("/", N(-a.v), b));
+        if(a.t === "*" && b.t === "*" && a.a.t === "n" && b.a.t === "n"){ const g = gcd(a.a.v, b.a.v); if(g > 1 && Number.isInteger(a.a.v) && Number.isInteger(b.a.v)) return S(B("/", B("*", N(a.a.v / g), a.b), B("*", N(b.a.v / g), b.b))); }
+        if(a.t === "*" && a.a.t === "n" && b.t === "n" && Number.isInteger(a.a.v) && Number.isInteger(b.v)){ const g = gcd(a.a.v, b.v); if(g > 1) return S(B("/", B("*", N(a.a.v / g), a.b), N(b.v / g))); }
+        if(a.t === "n" && b.t === "*" && b.a.t === "n" && Number.isInteger(a.v) && Number.isInteger(b.a.v)){ const g = gcd(a.v, b.a.v); if(g > 1) return S(B("/", N(a.v / g), B("*", N(b.a.v / g), b.b))); }
+        if(b.t === "n" && a.t === "*" && a.a.t === "n" && Number.isInteger(a.a.v / b.v)) return S(B("*", N(a.a.v / b.v), a.b));
+        return B("/", a, b);
+      case "^": if(isN(b, 0)) return N(1); if(isN(b, 1)) return a; if(isN(a, 0)) return N(0); if(isN(a, 1)) return N(1); if(a.t === "n" && b.t === "n"){ const v = Math.pow(a.v, b.v); if(Number.isInteger(v) && Math.abs(v) < 1e12) return N(v); }
+        if(a.t === "^" && a.b.t === "n" && b.t === "n") return S(B("^", a.a, N(a.b.v * b.v))); return B("^", a, b);
+    } return n;
+  }
+  function gcd(a, b){ a = Math.abs(a); b = Math.abs(b); while(b){ [a, b] = [b, a % b]; } return a; }
+  function D(n, v = "x"){ // derivative
+    if(!has(n, v)) return N(0);
+    switch(n.t){
+      case "v": return N(1);
+      case "neg": return NEG(D(n.a, v));
+      case "+": return B("+", D(n.a, v), D(n.b, v)); case "-": return B("-", D(n.a, v), D(n.b, v));
+      case "*": if(!has(n.a, v)) return B("*", n.a, D(n.b, v)); if(!has(n.b, v)) return B("*", D(n.a, v), n.b); return B("+", B("*", D(n.a, v), n.b), B("*", n.a, D(n.b, v)));
+      case "/": if(!has(n.b, v)) return B("/", D(n.a, v), n.b); return B("/", B("-", B("*", D(n.a, v), n.b), B("*", n.a, D(n.b, v))), B("^", n.b, N(2)));
+      case "^": if(!has(n.b, v)) return B("*", B("*", n.b, B("^", n.a, S(B("-", n.b, N(1))))), D(n.a, v));
+        if(!has(n.a, v)) return B("*", B("*", n, F("ln", n.a)), D(n.b, v));
+        return B("*", n, B("+", B("*", D(n.b, v), F("ln", n.a)), B("/", B("*", n.b, D(n.a, v)), n.a)));
+      case "f": { const a = n.a, da = D(a, v), ch = r => B("*", r, da);
+        switch(n.f){ case "sin": return ch(F("cos", a)); case "cos": return ch(NEG(F("sin", a))); case "tan": return ch(B("^", F("sec", a), N(2)));
+          case "sec": return ch(B("*", F("sec", a), F("tan", a))); case "csc": return ch(NEG(B("*", F("csc", a), F("cot", a)))); case "cot": return ch(NEG(B("^", F("csc", a), N(2))));
+          case "asin": return B("/", da, F("sqrt", B("-", N(1), B("^", a, N(2))))); case "acos": return NEG(B("/", da, F("sqrt", B("-", N(1), B("^", a, N(2))))));
+          case "atan": return B("/", da, B("+", N(1), B("^", a, N(2)))); case "sqrt": return B("/", da, B("*", N(2), F("sqrt", a)));
+          case "exp": return ch(F("exp", a)); case "ln": return B("/", da, a); case "log": return B("/", da, B("*", a, F("ln", N(10)))); case "abs": return ch(B("/", a, F("abs", a))); } }
+    } return N(0);
+  }
+  const SS = n => { let a = n, b; for(let k = 0; k < 6; k++){ b = S(a); if(eq(a, b)) break; a = b; } return a; };
+  // polynomial in v → {deg: coef} or null
+  function poly(n, v = "x"){
+    const add = (p, q, s = 1) => { const r = {...p}; for(const k in q) r[k] = (r[k] || 0) + s * q[k]; return r; };
+    const mul = (p, q) => { const r = {}; for(const i in p) for(const j in q){ const k = +i + +j; r[k] = (r[k] || 0) + p[i] * q[j]; } return r; };
+    switch(n.t){ case "n": return {0: n.v}; case "c": return {0: ev(n)}; case "v": return n.v === v ? {1: 1} : null;
+      case "neg": { const a = poly(n.a, v); return a && add({}, a, -1); }
+      case "+": case "-": { const a = poly(n.a, v), b = poly(n.b, v); return a && b && add(a, b, n.t === "+" ? 1 : -1); }
+      case "*": { const a = poly(n.a, v), b = poly(n.b, v); return a && b && mul(a, b); }
+      case "/": { const a = poly(n.a, v), b = poly(n.b, v); if(!a || !b) return null; const bk = Object.keys(b).filter(k => Math.abs(b[k]) > 1e-15); if(bk.length !== 1 || +bk[0] !== 0) return null; const r = {}; for(const k in a) r[k] = a[k] / b[0]; return r; }
+      case "^": { if(has(n.b, v)) return null; const e = ev(n.b); if(!Number.isInteger(e) || e < 0 || e > 12) return null; const a = poly(n.a, v); if(!a) return null; let r = {0: 1}; for(let i = 0; i < e; i++) r = mul(r, a); return r; }
+      case "f": return has(n, v) ? null : {0: ev(n)}; }
+    return null;
+  }
+  const clean = p => { const r = {}; for(const k in p) if(Math.abs(p[k]) > 1e-12) r[k] = p[k]; return r; };
+  const deg = p => Math.max(0, ...Object.keys(clean(p)).map(Number));
+  // ---------- pretty printing ----------
+  function frac(v, maxD = 64){ if(!isFinite(v)) return null; for(let d = 1; d <= maxD; d++){ const n = Math.round(v * d); if(Math.abs(n / d - v) < 1e-9 * Math.max(1, Math.abs(v))) return [n, d]; } return null; }
+  function num(v){ if(typeof v !== "number") return String(v); if(!isFinite(v)) return isNaN(v) ? "undefined" : v > 0 ? "∞" : "−∞"; if(Math.abs(v) < 1e-12) return "0";
+    const f = frac(v, 24); if(f && f[1] === 1) return String(f[0]).replace("-", "−"); if(f) return (f[0] < 0 ? "−" : "") + Math.abs(f[0]) + "/" + f[1];
+    const a = Math.abs(v); const s = a >= 1e7 || a < 1e-4 ? v.toExponential(4).replace(/\.?0+e/, "e") : String(+v.toPrecision(7)); return s.replace("-", "−"); }
+  function dec(v, d = 4){ if(!isFinite(v)) return num(v); const r = +v.toFixed(d); return String(Object.is(r, -0) ? 0 : r).replace("-", "−"); }
+  const PREC = {"+": 1, "-": 1, "neg": 2, "*": 3, "/": 3, "^": 5};
+  function str(n, parent, right){
+    let s, p = PREC[n.t] || 9;
+    switch(n.t){
+      case "n": s = num(n.v); if(n.v < 0) p = 2; break; case "c": s = n.v === "pi" ? "π" : "e"; break; case "v": s = n.v; break;
+      case "neg": s = "−" + str(n.a, "neg"); break;
+      case "+": s = str(n.a, "+") + " + " + str(n.b, "+", true); break;
+      case "-": s = str(n.a, "-") + " − " + str(n.b, "-", true); break;
+      case "*": { if(n.a.t === "n" && n.a.v < 0){ s = "−" + str(B("*", N(-n.a.v), n.b), "neg"); p = 2; break; } const A = str(n.a, "*"), Bs = str(n.b, "*", true); const implicit = (n.a.t === "n" || n.a.t === "c") && (n.b.t === "v" || n.b.t === "f" || n.b.t === "c" || (n.b.t === "^" && n.b.a.t !== "n") || (n.b.t === "*" && n.b.a.t !== "n")) && !/\//.test(A); s = implicit ? A + Bs : A + " · " + Bs; break; }
+      case "/": s = str(n.a, "/") + "/" + str(n.b, "/", true); break;
+      case "^": s = str(n.a, "^") + "^" + (n.b.t === "n" && n.b.v >= 0 && Number.isInteger(n.b.v) || n.b.t === "v" ? str(n.b, "^", true) : "(" + str(n.b) + ")"); break;
+      case "f": { const inner = str(n.a); s = n.f === "abs" ? "|" + inner + "|" : n.f + "(" + inner + ")"; break; }
+    }
+    if(parent){ const pp = PREC[parent] || 0; if(p < pp || (right && p === pp && (parent === "-" || parent === "/")) || (parent === "^" && (n.t !== "v" && n.t !== "c" && !(n.t === "n" && n.v >= 0) && n.t !== "f"))) s = "(" + s + ")"; }
+    return s;
+  }
+  function polyStr(p, v = "x"){ const ks = Object.keys(clean(p)).map(Number).sort((a, b) => b - a); if(!ks.length) return "0"; let out = "";
+    ks.forEach((k, i) => { const c = p[k], a = Math.abs(c), sign = c < 0 ? (i ? " − " : "−") : (i ? " + " : ""), cs = k && Math.abs(a - 1) < 1e-12 ? "" : num(a), vv = k ? v + (k > 1 ? "^" + k : "") : ""; out += sign + (k && /\//.test(cs) ? (cs.startsWith("1/") ? vv + cs.slice(1) : "(" + cs + ")" + vv) : cs + vv); }); return out; }
+  return {parse, has, vars, ev, S: SS, D, poly, clean, deg, num, dec, frac, str, polyStr, N, X, B, F, NEG, gcd};
+})();
+
+// ===== 🎙️ AI Voice Tutor — problem solvers (the numbers are worked out on the device, so they are always right) =====
+const VTS = (() => {
+  const M = VTM, num = M.num, dec = M.dec;
+  const W = {zero: 0, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10};
+  const fixWords = s => String(s).replace(/\b(squared)\b/gi, "^2").replace(/\bcubed\b/gi, "^3").replace(/\bto the power of\s*/gi, "^").replace(/\bsquare root of\s*/gi, "sqrt ").replace(/\bover\b/gi, "/").replace(/\btimes\b/gi, "*").replace(/\bplus\b/gi, "+").replace(/\bminus\b/gi, "-").replace(/\bdivided by\b/gi, "/").replace(/\bequals\b/gi, "=").replace(/\bis equal to\b/gi, "=").replace(/\b(zero|one|two|three|four|five|six|seven|eight|nine|ten)\b/gi, w => W[w.toLowerCase()]);
+  const tidyExpr = s => s.replace(/^\s*(?:the\s+)?(?:function\s+)?/i, "").replace(/^(?:f|g|h|y)\s*\(\s*x\s*\)\s*=\s*/i, "").replace(/^y\s*=\s*/i, "").replace(/\s*(?:with respect to x|w\.?r\.?t\.? x|dx)\s*$/i, "").replace(/[?.!,;:]+\s*$/, "").trim();
+  const numIn = s => { const v = M.ev(M.parse(s)); if(!isFinite(v)) throw new Error("bad number"); return v; };
+  function rules(n){ const r = new Set(); (function walk(n, top){ if(!n || !M.has(n)) return;
+      if(n.t === "*" && M.has(n.a) && M.has(n.b)) r.add("product rule");
+      if(n.t === "/" && M.has(n.b)) r.add("quotient rule");
+      if(n.t === "^" && !M.has(n.b)){ r.add("power rule"); if(n.a.t !== "v") r.add("chain rule"); }
+      if(n.t === "^" && M.has(n.b)) r.add(n.a.t === "c" ? "exponential rule" : "logarithmic differentiation");
+      if(n.t === "f"){ r.add(/sin|cos|tan|sec|csc|cot/.test(n.f) ? "trig derivatives" : n.f === "ln" || n.f === "log" ? "log rule" : n.f === "exp" ? "exponential rule" : n.f + " rule"); if(n.a.t !== "v") r.add("chain rule"); }
+      if(n.t === "v" && top) r.add("power rule");
+      if(n.t === "*" && !M.has(n.a)) r.add("constant multiple rule");
+      walk(n.a); walk(n.b); })(n, true); if(!r.size) r.add("power rule"); return [...r]; }
+  const terms = n => n.t === "+" ? terms(n.a).concat(terms(n.b)) : n.t === "-" ? terms(n.a).concat(terms(n.b).map(t => M.NEG(t))) : [n];
+
+  // ---------- derivative ----------
+  function derivative(q){
+    const m = q.match(/(?:derivative|differentiate|d\s*\/\s*dx|slope of the tangent(?: line)?|rate of change|gradient)\s*(?:of\s*)?(?:\[|\()?(.+?)(?:\]|\))?(?:\s+(?:at|when|where|for)\s+x\s*=\s*([-\d.\/π pie]+)|\s+at\s+\(?\s*([-\d.\/]+)\s*,)?\s*[?.!]*\s*$/i);
+    if(!m) return null; let src = tidyExpr(m[1]).replace(/\s+(?:at|when)\s*$/i, ""); const ord = /second derivative|f''|d\^?2/i.test(q) ? 2 : 1; if(!src) return null;
+    let f; try { f = M.parse(src); } catch(e){ return null; } if(!M.has(f)) return null;
+    let a = null; const at = m[2] || m[3]; if(at){ try { a = numIn(at); } catch(e){} }
+    let d = M.S(M.D(f)); const d1 = d; if(ord === 2) d = M.S(M.D(d));
+    const fs = M.str(M.S(f)), ds = M.str(d), steps = [], P = M.poly(f), used = rules(f);
+    steps.push({title: "Write down the function", math: `f(x) = ${fs}`, why: `We want ${ord === 2 ? "the second derivative" : "the derivative"} — ${ord === 2 ? "how fast the slope itself changes" : "the slope of the curve at every point"}. Rules we'll use: ${used.join(", ")}.`, hint: "Which rule fits each part of the function?"});
+    const T = terms(M.S(f));
+    if(T.length > 1 && T.length <= 6){ T.forEach((t, i) => { const tt = M.S(t), dt = M.S(M.D(tt)); const r = rules(tt);
+        steps.push({title: `Differentiate term ${i + 1}: ${M.str(tt)}`, math: `d/dx[${M.str(tt)}] = ${M.str(dt)}`, why: termWhy(tt, r), hint: hintFor(tt, r)}); });
+      steps.push({title: "Add the pieces together", math: `f′(x) = ${M.str(d1)}`, why: "The derivative of a sum is the sum of the derivatives.", hint: "Did you keep every plus and minus sign?"}); }
+    else steps.push({title: "Apply the rules", math: `f′(x) = ${M.str(d1)}`, why: termWhy(M.S(f), used), hint: hintFor(M.S(f), used)});
+    if(ord === 2) steps.push({title: "Differentiate again", math: `f″(x) = ${ds}`, why: "The second derivative is the derivative of f′(x).", hint: "Treat f′(x) as a brand-new function."});
+    let answer = `${ord === 2 ? "f″(x)" : "f′(x)"} = ${ds}`, check = null, graph = {fns: [fs], deriv: true};
+    if(a != null){ const v = M.ev(d, a), y = M.ev(f, a); if(!isFinite(v)) return {err: `The derivative isn't defined at x = ${num(a)}.`};
+      const vs = num(v);
+      steps.push({title: `Put in x = ${num(a)}`, math: `${ord === 2 ? "f″" : "f′"}(${num(a)}) = ${vs.length > 9 ? dec(v, 4) : vs}`, why: `Replace every x in ${ord === 2 ? "f″(x)" : "f′(x)"} with ${num(a)} and work it out.`, hint: `What do you get when x is ${num(a)}?`});
+      if(ord === 1) steps.push({title: "What it means", math: `tangent line: y = ${dec(v, 4)}(x − ${num(a)}) + ${dec(y, 4)}`, why: `At x = ${num(a)} the curve rises ${dec(v, 3)} for every 1 step to the right${v < 0 ? " (it is going down)" : ""}. That is the slope of the tangent line there.`, hint: "Is the curve going up or down at that point?"});
+      answer = `${ord === 2 ? "f″" : "f′"}(${num(a)}) = ${frac(v)}`; check = [v]; graph.tangent = a; }
+    return {kind: "derivative", subject: "Calculus", title: `${ord === 2 ? "Second derivative" : "Derivative"} of ${fs}`, answer, check, steps, graph,
+      overview: `${ord === 2 ? "The second derivative tells us how the slope changes (curving up or down)." : "The derivative gives the slope of the curve at any x."} Here we use the ${used.slice(0, 3).join(", ")}.`};
+  }
+  function frac(v){ const s = num(v); return /\//.test(s) || s.length < 9 ? s + (/\//.test(s) ? ` ≈ ${dec(v, 4)}` : "") : "≈ " + dec(v, 5); }
+  function termWhy(t, r){ const s = M.str(t);
+    if(!M.has(t)) return `${s} is a constant, so its derivative is 0 — a flat line has no slope.`;
+    const p = M.poly(t); if(p && Object.keys(M.clean(p)).length === 1){ const k = +Object.keys(M.clean(p))[0], c = p[k]; return k === 1 ? `The derivative of ${num(c)}x is just ${num(c)} (the power rule with n = 1).` : `Power rule: bring the power ${k} down and multiply by ${num(c)} to get ${num(c * k)}, then lower the power by 1 to ${k - 1}.`; }
+    const bits = []; if(r.includes("chain rule")) bits.push("the chain rule — differentiate the outside, keep the inside, then multiply by the derivative of the inside");
+    if(r.includes("product rule")) bits.push("the product rule: (uv)′ = u′v + uv′"); if(r.includes("quotient rule")) bits.push("the quotient rule: (u/v)′ = (u′v − uv′)/v²");
+    if(r.includes("trig derivatives")) bits.push("sin → cos, cos → −sin, tan → sec²"); if(r.includes("exponential rule")) bits.push("e^u differentiates to e^u times u′"); if(r.includes("log rule")) bits.push("ln(u) differentiates to u′/u");
+    if(!bits.length) bits.push("the power rule"); return "Use " + bits.join("; ") + "."; }
+  function hintFor(t, r){ if(!M.has(t)) return "What is the slope of a flat line?"; if(r.includes("chain rule")) return "What is the 'inside' function here, and what is its derivative?"; if(r.includes("product rule")) return "Which two functions are being multiplied?"; if(r.includes("quotient rule")) return "Which part is on top (u) and which is on the bottom (v)?"; return "What happens to the power when you differentiate xⁿ?"; }
+
+  // ---------- integral ----------
+  function simpson(f, a, b, n = 2000){ const h = (b - a) / n; let s = f(a) + f(b); for(let i = 1; i < n; i++) s += f(a + i * h) * (i % 2 ? 4 : 2); return s * h / 3; }
+  function integral(q){
+    const m = q.match(/(?:integrate|integral of|antiderivative of|area under(?: the curve)?(?: of)?(?: y\s*=)?)\s*(.+?)(?:\s+(?:from|between)\s+(?:x\s*=\s*)?([-\d.\/πpi ]+?)\s+(?:to|and)\s+(?:x\s*=\s*)?([-\d.\/πpi ]+?))?\s*[?.!]*\s*$/i); if(!m) return null;
+    let src = tidyExpr(m[1]).replace(/\s*d\s*x\s*$/i, ""); let f; try { f = M.parse(src); } catch(e){ return null; }
+    const fs = M.str(M.S(f)), P = M.poly(f), steps = []; let a = null, b = null; if(m[2] && m[3]){ try { a = numIn(m[2]); b = numIn(m[3]); } catch(e){ return null; } }
+    let Fs = null, Fn = null;
+    if(P){ const C = M.clean(P), Fp = {}; for(const k in C) Fp[+k + 1] = C[k] / (+k + 1); Fs = M.polyStr(Fp); Fn = x => Object.keys(Fp).reduce((s, k) => s + Fp[k] * Math.pow(x, +k), 0);
+      steps.push({title: "Write down what to integrate", math: a != null ? `∫ from ${num(a)} to ${num(b)} of (${fs}) dx` : `∫ (${fs}) dx`, why: a != null ? "A definite integral adds up the area between the curve and the x-axis (area below the axis counts as negative)." : "An antiderivative is a function whose derivative gives back the original.", hint: "What is the reverse of differentiating?"});
+      steps.push({title: "Use the power rule for integrals", math: `∫ xⁿ dx = xⁿ⁺¹/(n + 1)  →  F(x) = ${Fs}${a == null ? " + C" : ""}`, why: "Raise each power by 1, then divide by the new power. Constants just pick up an x.", hint: "What do you get when you integrate x²?"});
+      if(a != null){ const Fa = Fn(a), Fb = Fn(b), v = Fb - Fa;
+        steps.push({title: "Plug in the limits", math: `F(${num(b)}) − F(${num(a)}) = ${num(Fb)} − ${Fa < 0 ? "(" + num(Fa) + ")" : num(Fa)} = ${num(v)}`, why: "The Fundamental Theorem of Calculus: area = F(top) − F(bottom).", hint: `What is F(${num(b)})?`});
+        return {kind: "integral", subject: "Calculus", title: `Definite integral of ${fs}`, answer: `∫ = ${frac(v)}`, check: [v], steps, graph: {fns: [fs], area: [a, b], xmin: Math.min(a, b) - Math.abs(b - a) * 0.4 - 1, xmax: Math.max(a, b) + Math.abs(b - a) * 0.4 + 1}, overview: "We find an antiderivative, then subtract its values at the two ends."}; }
+      return {kind: "integral", subject: "Calculus", title: `Antiderivative of ${fs}`, answer: `∫ (${fs}) dx = ${Fs} + C`, check: null, steps, graph: {fns: [fs, Fs]}, overview: "Integrating undoes differentiating. Don't forget + C, because constants vanish when you differentiate."}; }
+    if(a == null) return null; // non-polynomial indefinite: leave to the AI
+    const fn = x => M.ev(f, x), v = simpson(fn, a, b); if(!isFinite(v)) return {err: "This integral doesn't have a finite value over that range."};
+    steps.push({title: "Set up the integral", math: `∫ from ${num(a)} to ${num(b)} of ${fs} dx`, why: "We are adding up thin slices of area under the curve.", hint: "Is the curve above or below the x-axis here?"});
+    steps.push({title: "Add up 2,000 thin slices (Simpson's rule)", math: `area ≈ ${dec(v, 6)}`, why: "Simpson's rule fits little parabolas to the curve, which gives a very accurate area — the calculator checked it.", hint: "Why do thinner slices give a better answer?"});
+    return {kind: "integral", subject: "Calculus", title: `Definite integral of ${fs}`, answer: `∫ ≈ ${dec(v, 5)}`, check: [v], steps, graph: {fns: [fs], area: [a, b]}, overview: "This function has no simple power-rule antiderivative, so the area was added up very precisely, slice by slice."};
+  }
+
+  // ---------- limit ----------
+  function limit(q){
+    const m = q.match(/(?:limit|lim)\s*(?:of\s*)?(.+?)\s+(?:as|when)\s+x\s*(?:approaches|goes to|tends to|→|->)\s*([-+]?\s*(?:infinity|inf|∞|[-\d.\/πpie ]+))\s*(\+|-|from the (?:left|right))?\s*[?.!]*\s*$/i); if(!m) return null;
+    let f; try { f = M.parse(tidyExpr(m[1])); } catch(e){ return null; } const fs = M.str(M.S(f)), fn = x => M.ev(f, x), steps = [];
+    const inf = /inf|∞/i.test(m[2]), neg = inf && /-/.test(m[2]); let a = inf ? (neg ? -Infinity : Infinity) : (() => { try { return numIn(m[2]); } catch(e){ return null; } })(); if(a === null) return null;
+    const side = /\+|right/.test(m[3] || "") ? 1 : /-|left/.test(m[3] || "") ? -1 : 0;
+    let L, Rv, ans;
+    if(inf){ const xs = [10, 100, 1e3, 1e4, 1e5, 1e6].map(x => neg ? -x : x), ys = xs.map(fn);
+      steps.push({title: "Look at very big x", math: xs.slice(1, 5).map((x, i) => `f(${num(x)}) ≈ ${dec(ys[i + 1], 5)}`).join(",  "), why: `As x gets ${neg ? "more and more negative" : "bigger and bigger"}, watch where f(x) settles.`, hint: "Which terms matter most when x is huge?"});
+      const last = ys[5], prev = ys[4]; ans = Math.abs(last) > 1e8 ? (last > 0 ? Infinity : -Infinity) : Math.abs(last - prev) < 1e-4 * Math.max(1, Math.abs(last)) ? last : NaN;
+      const P = (f.t === "/") && M.poly(f.a) && M.poly(f.b); if(P){ const da = M.deg(M.poly(f.a)), db = M.deg(M.poly(f.b)); steps.push({title: "Compare the highest powers", math: `top degree ${da}, bottom degree ${db}`, why: da < db ? "The bottom grows faster, so the fraction shrinks to 0." : da === db ? "Same degree: the limit is the ratio of the leading coefficients." : "The top grows faster, so the fraction grows without bound.", hint: "Divide top and bottom by the highest power of x."}); }
+    } else {
+      const direct = fn(a);
+      steps.push({title: `Try putting in x = ${num(a)}`, math: isFinite(direct) ? `f(${num(a)}) = ${dec(direct, 6)}` : `f(${num(a)}) is ${f.t === "/" && Math.abs(M.ev(f.a, a)) < 1e-12 && Math.abs(M.ev(f.b, a)) < 1e-12 ? "0/0 — undefined (an indeterminate form)" : "undefined"}`, why: isFinite(direct) ? "The function is continuous here, so the limit is just its value." : "We can't just substitute, so we look at values very close to it from both sides.", hint: "What happens if you plug the number straight in?"});
+      const hs = [1e-2, 1e-3, 1e-4, 1e-5, 1e-6]; L = hs.map(h => fn(a - h)); Rv = hs.map(h => fn(a + h));
+      if(!isFinite(direct)){
+        steps.push({title: "Get really close from both sides", math: `left: ${dec(L[1], 6)}, ${dec(L[3], 6)}   right: ${dec(Rv[1], 6)}, ${dec(Rv[3], 6)}`, why: `We use x = ${num(a)} ± 0.001 and ± 0.00001.`, hint: "Do the two sides head to the same number?"});
+        if(f.t === "/" && Math.abs(M.ev(f.a, a)) < 1e-9 && Math.abs(M.ev(f.b, a)) < 1e-9){ const nt = M.S(M.D(f.a)), dt = M.S(M.D(f.b)), lv = M.ev(nt, a) / M.ev(dt, a);
+          if(isFinite(lv)) steps.push({title: "L'Hôpital's rule (0/0)", math: `lim (${M.str(nt)}) / (${M.str(dt)}) at x = ${num(a)} = ${frac(lv)}`, why: "For 0/0, the limit equals the limit of (derivative of top)/(derivative of bottom).", hint: "Differentiate the top and the bottom separately."}); }
+      }
+      const l = L[4], r = Rv[4], ok = (u, w) => Math.abs(u - w) < 1e-3 * Math.max(1, Math.abs(u));
+      if(isFinite(direct) && side === 0) ans = direct;
+      else if(side === 1) ans = Math.abs(r) > 1e6 ? (r > 0 ? Infinity : -Infinity) : r; else if(side === -1) ans = Math.abs(l) > 1e6 ? (l > 0 ? Infinity : -Infinity) : l;
+      else if(Math.abs(l) > 1e6 && Math.abs(r) > 1e6 && Math.sign(l) === Math.sign(r)) ans = l > 0 ? Infinity : -Infinity;
+      else ans = ok(l, r) ? (l + r) / 2 : NaN;
+      if(isNaN(ans)) steps.push({title: "The two sides disagree", math: `from the left → ${dec(l, 4)},  from the right → ${dec(r, 4)}`, why: "A limit only exists if both sides head to the same value.", hint: "Sketch the graph near that point."});
+    }
+    const pretty = v => !isFinite(v) ? num(v) : frac(Math.abs(v - Math.round(v)) < 1e-6 ? Math.round(v) : +v.toPrecision(10));
+    return {kind: "limit", subject: "Calculus", title: `Limit of ${fs}`, answer: isNaN(ans) ? "The limit does not exist" : `limit = ${pretty(ans)}`, check: isNaN(ans) || !isFinite(ans) ? null : [ans], steps,
+      graph: {fns: [fs], hole: !inf ? a : null, xmin: inf ? (neg ? -50 : -2) : a - 5, xmax: inf ? (neg ? 2 : 50) : a + 5}, overview: "A limit asks what value f(x) heads towards as x gets closer and closer to a number, even if f can't be worked out at that exact number."};
+  }
+
+  // ---------- equations ----------
+  function roots(fn, lo = -60, hi = 60){ const out = [], step = 0.01; let px = lo, py = fn(lo);
+    for(let x = lo + step; x <= hi; x += step){ const y = fn(x); if(isFinite(py) && isFinite(y)){
+        if(py === 0) out.push(px); else if(py * y < 0 && Math.abs(py - y) < 1e3){ let a = px, b = x, fa = py; for(let k = 0; k < 80; k++){ const c = (a + b) / 2, fc = fn(c); if(fa * fc <= 0) b = c; else { a = c; fa = fc; } } out.push((a + b) / 2); } }
+      px = x; py = y; }
+    // touching roots (double roots): local minima of |f| close to 0
+    for(let x = lo; x <= hi; x += step){ const y0 = Math.abs(fn(x - step)), y1 = Math.abs(fn(x)), y2 = Math.abs(fn(x + step)); if(y1 < 1e-6 && y1 <= y0 && y1 <= y2) out.push(x); }
+    const clean = []; out.sort((a, b) => a - b).forEach(r => { const rr = Math.abs(r - Math.round(r)) < 1e-7 ? Math.round(r) : r; if(!clean.some(c => Math.abs(c - rr) < 1e-5)) clean.push(rr); }); return clean; }
+  function surd(n){ let o = 1, i = n; for(let k = 2; k * k <= i; k++) while(i % (k * k) === 0){ i /= k * k; o *= k; } return [o, i]; }
+  function equation(q){
+    let s = q.replace(/^\s*(?:please\s+)?(?:solve|find x|find the value of x|what is x|for x)\s*(?:for x)?\s*[:,]?\s*/i, "").replace(/\s*(?:for x|find x)\s*[?.!]*$/i, "").replace(/[?.!]+\s*$/, "").trim();
+    if((s.match(/=/g) || []).length !== 1 || /\band\b|,|;/.test(s) && /y/.test(s)) return null; const [L, R] = s.split("=");
+    let l, r; try { l = M.parse(L); r = M.parse(R); } catch(e){ return null; }
+    const g = M.S(M.B("-", l, r)), vs = M.vars(g); if(vs.size !== 1 || !vs.has("x")) return null;
+    const P = M.poly(g), steps = []; const eqs = `${M.str(M.S(l))} = ${M.str(M.S(r))}`;
+    if(P){ const C = M.clean(P), d = M.deg(C), c = k => C[k] || 0;
+      if(d === 0) return {kind: "equation", subject: "Algebra", title: `Solve ${eqs}`, answer: Math.abs(c(0)) < 1e-12 ? "Every x works (it's always true)" : "No solution (it's never true)", check: null, steps: [{title: "Collect everything on one side", math: `${num(c(0))} = 0`, why: "The x's cancel out completely.", hint: "What happened to the x terms?"}], graph: null, overview: "When x disappears, the equation is either always true or never true."};
+      steps.push({title: "Move everything to one side", math: `${M.polyStr(C)} = 0`, why: "Subtract the right side from both sides so the equation equals zero.", hint: "What do you get when you subtract the right side from both sides?"});
+      if(d === 1){ const x = -c(0) / c(1);
+        steps.push({title: "Get the x term by itself", math: `${num(c(1))}x = ${num(-c(0))}`, why: `Move the constant to the other side by ${c(0) > 0 ? "subtracting" : "adding"} ${num(Math.abs(c(0)))}.`, hint: "What number is stuck to the x term?"});
+        steps.push({title: "Divide by the coefficient", math: `x = ${num(-c(0))} ÷ ${num(c(1))} = ${num(x)}`, why: `Divide both sides by ${num(c(1))} to leave x alone.`, hint: `What is ${num(-c(0))} divided by ${num(c(1))}?`});
+        steps.push({title: "Check it", math: `${M.str(M.S(l))} at x = ${num(x)} → ${dec(M.ev(l, x), 6)} = ${dec(M.ev(r, x), 6)} ✓`, why: "Putting the answer back in should make both sides equal.", hint: "Plug it back in!"});
+        return {kind: "equation", subject: "Algebra", title: `Solve ${eqs}`, answer: `x = ${frac(x)}`, check: [x], steps, graph: {fns: [M.str(g)], marks: [x]}, overview: "A linear equation: undo the operations on x one at a time, doing the same thing to both sides."}; }
+      if(d === 2){ const A = c(2), Bc = c(1), Cc = c(0), D = Bc * Bc - 4 * A * Cc;
+        steps.push({title: "Read off a, b and c", math: `a = ${num(A)},  b = ${num(Bc)},  c = ${num(Cc)}`, why: "Compare with the standard form ax² + bx + c = 0.", hint: "Which number goes with x², which with x, and which is alone?"});
+        steps.push({title: "Work out the discriminant", math: `b² − 4ac = (${num(Bc)})² − 4(${num(A)})(${num(Cc)}) = ${num(D)}`, why: D > 0 ? "It's positive, so there are two different real answers." : D === 0 ? "It's zero, so there is exactly one answer (a double root)." : "It's negative, so there are no real answers — the answers are complex numbers.", hint: "Is b² − 4ac positive, zero or negative?"});
+        let ans, check = null, marks = [];
+        if(Math.abs(D) < 1e-12){ const x = -Bc / (2 * A); ans = `x = ${frac(x)}`; check = [x]; marks = [x]; steps.push({title: "Use x = −b / 2a", math: `x = ${num(-Bc)} / ${num(2 * A)} = ${num(x)}`, why: "With a zero discriminant the ± part disappears.", hint: "What is −b divided by 2a?"}); }
+        else if(D > 0){ const x1 = (-Bc - Math.sqrt(D)) / (2 * A), x2 = (-Bc + Math.sqrt(D)) / (2 * A), lo = Math.min(x1, x2), hi = Math.max(x1, x2); let rad = `√${num(D)}`;
+          if(Number.isInteger(D)){ const [o, i] = surd(D); rad = i === 1 ? String(o) : (o > 1 ? o : "") + "√" + i; }
+          steps.push({title: "Quadratic formula", math: `x = (−b ± √(b² − 4ac)) / 2a = (${num(-Bc)} ± ${rad}) / ${num(2 * A)}`, why: "This formula works for every quadratic.", hint: "Work out the + version and the − version separately."});
+          steps.push({title: "The two answers", math: `x = ${frac(lo)}   or   x = ${frac(hi)}`, why: "One answer uses +, the other uses −. They're where the parabola crosses the x-axis.", hint: "Check one answer by plugging it back in."});
+          const f1 = M.frac(lo, 12), f2 = M.frac(hi, 12); if(f1 && f2 && Math.abs(A - Math.round(A)) < 1e-12){ const fac = (fr) => { const [n, dd] = fr; return `(${dd === 1 ? "" : dd}x ${n >= 0 ? "−" : "+"} ${Math.abs(n)})`; }; steps.push({title: "Bonus: it factors!", math: `${M.polyStr(C)} = ${Math.abs(A / (f1[1] * f2[1]) - 1) < 1e-12 ? "" : num(A / (f1[1] * f2[1]))}${fac(f1)}${fac(f2)}`, why: "Because the answers are nice fractions, the quadratic can be written as two brackets.", hint: "Expand the brackets to check."}); }
+          ans = `x = ${frac(lo)} or x = ${frac(hi)}`; check = [lo, hi]; marks = [lo, hi]; }
+        else { const re = -Bc / (2 * A), im = Math.sqrt(-D) / Math.abs(2 * A); steps.push({title: "Complex answers", math: `x = ${num(re)} ± ${dec(im, 4)}i`, why: "√(negative) = i·√(positive), where i² = −1. The parabola never touches the x-axis.", hint: "What is √(−1)?"}); ans = `x = ${num(re)} ± ${dec(im, 4)}i (no real solutions)`; }
+        const vx = -Bc / (2 * A); return {kind: "equation", subject: "Algebra", title: `Solve ${eqs}`, answer: ans, check, steps, graph: {fns: [M.polyStr(C)], marks, xmin: vx - 8, xmax: vx + 8}, overview: "A quadratic equation. The discriminant tells us how many answers there are, and the quadratic formula finds them."}; }
+    }
+    const fn = x => M.ev(g, x), rs = roots(fn); const gs = M.str(g);
+    if(!steps.length) steps.push({title: "Move everything to one side", math: `${gs} = 0`, why: "Now we look for where the graph of the left side crosses zero.", hint: "Where does the graph cross the x-axis?"});
+    steps.push({title: "Find the crossings", math: rs.length ? rs.slice(0, 8).map(r => "x ≈ " + dec(r, 5)).join(",  ") + (rs.length > 8 ? " …" : "") : "no crossings between −60 and 60", why: P ? `This is a degree-${M.deg(M.clean(P))} polynomial, so there is no simple formula; the calculator searched for every sign change and zoomed in on each one.` : "There's no algebra trick for this one, so the calculator searched for every place the sign changes and zoomed in (bisection).", hint: "Between which two whole numbers is the first answer?"});
+    if(rs.length) steps.push({title: "Check one answer", math: `${gs} at x = ${dec(rs[0], 5)} ≈ ${dec(fn(rs[0]), 8)}`, why: "The left side is (almost exactly) zero, so it's a solution.", hint: "Plug it back in."});
+    return {kind: "equation", subject: "Algebra", title: `Solve ${eqs}`, answer: rs.length ? rs.slice(0, 8).map(r => "x ≈ " + dec(r, 5)).join(", ") : "No real solutions between −60 and 60", check: rs.length ? rs : null, steps, graph: {fns: [gs], marks: rs.slice(0, 8)}, overview: "We solved it by finding where the graph crosses the x-axis."};
+  }
+  // ---------- 2×2 linear system ----------
+  function system(q){ let s = q.replace(/^\s*(?:please\s+)?(?:solve|find x and y)\s*(?:the system|the equations)?\s*[:,]?\s*/i, "").replace(/[?.!]+\s*$/, "");
+    const parts = s.split(/\s*(?:\band\b|,|;|&)\s*/i).filter(p => p.includes("=")); if(parts.length !== 2) return null;
+    const lin = []; for(const p of parts){ const [L, R] = p.split("="); let g; try { g = M.S(M.B("-", M.parse(L), M.parse(R))); } catch(e){ return null; } const vs = M.vars(g); if([...vs].some(v => v !== "x" && v !== "y")) return null;
+      const e = (x, y) => M.ev(g, {x, y}), c = e(0, 0), a = e(1, 0) - c, b = e(0, 1) - c; if(Math.abs(e(2, 3) - (2 * a + 3 * b + c)) > 1e-9 || Math.abs(e(-1.5, 4) - (-1.5 * a + 4 * b + c)) > 1e-9) return null; lin.push([a, b, -c]); }
+    const [[a1, b1, c1], [a2, b2, c2]] = lin, D = a1 * b2 - a2 * b1, eqn = (a, b, c) => `${M.polyStr({1: a}).replace(/^0$/, "")}${b ? (b < 0 ? " − " : (a ? " + " : "")) + (Math.abs(b) === 1 ? "" : num(Math.abs(b))) + "y" : ""} = ${num(c)}`;
+    const steps = [{title: "Write both in standard form", math: `${eqn(a1, b1, c1)}   and   ${eqn(a2, b2, c2)}`, why: "Line up the x terms, the y terms and the numbers.", hint: "Can you see two lines here?"}];
+    if(Math.abs(D) < 1e-12) return {kind: "system", subject: "Algebra", title: "Solve the system", answer: Math.abs(a1 * c2 - a2 * c1) < 1e-12 && Math.abs(b1 * c2 - b2 * c1) < 1e-12 ? "Infinitely many solutions (the same line twice)" : "No solution (the lines are parallel)", check: null, steps: steps.concat([{title: "Check the determinant", math: `a₁b₂ − a₂b₁ = 0`, why: "The lines have the same slope.", hint: "What does it mean when two lines are parallel?"}]), graph: null, overview: "Two lines either cross once, never, or are the same line."};
+    const x = (c1 * b2 - c2 * b1) / D, y = (a1 * c2 - a2 * c1) / D;
+    steps.push({title: "Eliminate one variable", math: `multiply to match the y's, then subtract  →  ${num(D)}x = ${num(c1 * b2 - c2 * b1)}`, why: "Make the y coefficients equal, then subtract one equation from the other so y disappears.", hint: "What can you multiply each equation by so the y terms match?"});
+    steps.push({title: "Solve for x", math: `x = ${num(x)}`, why: `Divide both sides by ${num(D)}.`, hint: "Now divide."});
+    steps.push({title: "Put x back in to find y", math: `y = ${num(y)}`, why: "Substitute x into either original equation.", hint: "Which equation is easier to use?"});
+    steps.push({title: "Check in both equations", math: `${num(a1 * x + b1 * y)} = ${num(c1)} ✓   ${num(a2 * x + b2 * y)} = ${num(c2)} ✓`, why: "The point is on both lines.", hint: "Does it work in the second equation too?"});
+    const ly = (a, b, c) => b ? `(${num(c)} - ${num(a)}*x)/${num(b)}`.replace(/−/g, "-") : null;
+    return {kind: "system", subject: "Algebra", title: "Solve the system of equations", answer: `x = ${frac(x)}, y = ${frac(y)}`, check: [x, y], steps, graph: {fns: [ly(a1, b1, c1), ly(a2, b2, c2)].filter(Boolean), point: [x, y], xmin: x - 8, xmax: x + 8}, overview: "The answer is the point where the two lines cross."};
+  }
+  // ---------- projectile ----------
+  function projectile(q){ if(!/projectile|launch|thrown|throw|kick|fired|shot|hit|cannon|ball/i.test(q) || !/m\s*\/\s*s|metres? per second|meters? per second/i.test(q)) return null;
+    const v = q.match(/([\d.]+)\s*(?:m\s*\/\s*s|metres? per second|meters? per second)/i), an = q.match(/([\d.]+)\s*(?:°|degrees?|deg)\b/i); if(!v) return null;
+    const v0 = +v[1], th = an ? +an[1] : 45, hm = q.match(/(?:height|cliff|tall|above the ground|building|from)\D{0,25}?([\d.]+)\s*(?:m|metres?|meters?)\b(?!\s*\/)/i), h0 = hm ? +hm[1] : 0, g = 9.81, r = th * Math.PI / 180;
+    const vx = v0 * Math.cos(r), vy = v0 * Math.sin(r), tu = vy / g, H = h0 + vy * vy / (2 * g), T = (vy + Math.sqrt(vy * vy + 2 * g * h0)) / g, R = vx * T;
+    const wH = /max(imum)? height|how high|peak/i.test(q), wR = /range|how far|distance/i.test(q), wT = /time|how long/i.test(q), want = wH + wR + wT !== 1 ? "all" : wH ? "H" : wR ? "R" : "T";
+    const steps = [
+      {title: "Split the speed into parts", math: `vₓ = ${num(v0)}·cos ${num(th)}° = ${dec(vx, 2)} m/s,   v_y = ${num(v0)}·sin ${num(th)}° = ${dec(vy, 2)} m/s`, why: "Sideways speed stays the same the whole flight; gravity only changes the up-and-down speed.", hint: `What is sin ${num(th)}°?`},
+      {title: "Time to reach the top", math: `t_top = v_y / g = ${dec(vy, 2)} / 9.81 = ${dec(tu, 2)} s`, why: "At the very top the vertical speed is 0.", hint: "How fast is it moving up at the highest point?"},
+      {title: "Maximum height", math: `H = ${h0 ? num(h0) + " + " : ""}v_y² / 2g = ${h0 ? num(h0) + " + " : ""}${dec(vy, 2)}² / 19.62 = ${dec(H, 2)} m`, why: "From v² = u² − 2gh with the final vertical speed v = 0.", hint: "Which kinematics equation has no time in it?"},
+      {title: "Time of flight", math: h0 ? `solve ${num(h0)} + ${dec(vy, 2)}t − 4.905t² = 0  →  T = ${dec(T, 2)} s` : `T = 2v_y / g = ${dec(T, 2)} s`, why: h0 ? "It lands when the height is 0 again — that's a quadratic in t." : "The way down takes as long as the way up when it lands at the same height.", hint: "When is the height back to zero?"},
+      {title: "Range", math: `R = vₓ · T = ${dec(vx, 2)} × ${dec(T, 2)} = ${dec(R, 2)} m`, why: "Sideways distance = sideways speed × time in the air.", hint: "Which speed do we use for distance along the ground?"}];
+    const all = `max height ${dec(H, 2)} m, time of flight ${dec(T, 2)} s, range ${dec(R, 2)} m`;
+    return {kind: "projectile", subject: "Physics", title: `Projectile at ${num(v0)} m/s, ${num(th)}°`, answer: want === "H" ? `Max height = ${dec(H, 2)} m` : want === "R" ? `Range = ${dec(R, 2)} m` : want === "T" ? `Time of flight = ${dec(T, 2)} s` : all, check: want === "H" ? [H] : want === "R" ? [R] : want === "T" ? [T] : [H, T, R], steps,
+      graph: {proj: {v0, th, h0, vx, vy, H, T, R, g}}, overview: `We ignore air resistance and use g = 9.81 m/s². ${an ? "" : "No angle was given, so we used 45°. "}The path is a parabola.`};
+  }
+  // ---------- statistics ----------
+  function stats(q){ if(!/\b(mean|average|median|mode|standard deviation|std|variance|range)\b/i.test(q)) return null; const nums = (q.match(/-?\d+(?:\.\d+)?/g) || []).map(Number); if(nums.length < 2) return null;
+    const n = nums.length, s = [...nums].sort((a, b) => a - b), sum = s.reduce((a, b) => a + b, 0), mean = sum / n, med = n % 2 ? s[(n - 1) / 2] : (s[n / 2 - 1] + s[n / 2]) / 2;
+    const cnt = {}; s.forEach(v => cnt[v] = (cnt[v] || 0) + 1); const top = Math.max(...Object.values(cnt)), modes = top > 1 ? Object.keys(cnt).filter(k => cnt[k] === top).map(Number) : [];
+    const ss = s.reduce((a, v) => a + (v - mean) ** 2, 0), varP = ss / n, varS = n > 1 ? ss / (n - 1) : 0, sdP = Math.sqrt(varP), sdS = Math.sqrt(varS);
+    const steps = [{title: "Sort the data", math: s.map(num).join(", "), why: `There are ${n} values. Sorting makes the median and range easy to see.`, hint: "Which value is the smallest?"},
+      {title: "Mean (average)", math: `${num(sum)} ÷ ${n} = ${dec(mean, 4)}`, why: "Add them all up and divide by how many there are.", hint: "What is the total?"},
+      {title: "Median (middle)", math: `${n % 2 ? "the middle value" : "average of the two middle values"} = ${dec(med, 4)}`, why: n % 2 ? `With ${n} values, the middle one is number ${(n + 1) / 2}.` : `With ${n} values, we average numbers ${n / 2} and ${n / 2 + 1}.`, hint: "Which value is in the middle?"},
+      {title: "Mode and range", math: `mode: ${modes.length ? modes.map(num).join(", ") : "none (no value repeats)"};  range: ${num(s[n - 1])} − ${num(s[0])} = ${num(s[n - 1] - s[0])}`, why: "The mode is the most common value; the range is biggest minus smallest.", hint: "Does any value appear more than once?"},
+      {title: "Standard deviation", math: `σ (population) = √(${dec(ss, 3)} ÷ ${n}) = ${dec(sdP, 4)};   s (sample) = √(${dec(ss, 3)} ÷ ${n - 1}) = ${dec(sdS, 4)}`, why: "Find how far each value is from the mean, square those distances, average them (divide by n, or n − 1 for a sample), then take the square root.", hint: "Why do we square the distances first?"}];
+    const w = q.toLowerCase(), bits = []; if(/mean|average/.test(w)) bits.push(`mean = ${dec(mean, 4)}`); if(/median/.test(w)) bits.push(`median = ${dec(med, 4)}`); if(/mode/.test(w)) bits.push(`mode = ${modes.length ? modes.map(num).join(", ") : "none"}`); if(/range/.test(w)) bits.push(`range = ${num(s[n - 1] - s[0])}`); if(/standard|std|deviation/.test(w)) bits.push(`standard deviation = ${dec(sdP, 4)} (population) or ${dec(sdS, 4)} (sample)`); if(/variance/.test(w)) bits.push(`variance = ${dec(varP, 4)} (population) or ${dec(varS, 4)} (sample)`);
+    return {kind: "stats", subject: "Statistics", title: `Statistics for ${n} numbers`, answer: bits.join("; ") || `mean = ${dec(mean, 4)}`, check: [mean, med, sdP], steps, graph: {bars: s}, overview: "Mean, median and mode describe the centre of the data; range and standard deviation describe how spread out it is."};
+  }
+  // ---------- plain arithmetic ----------
+  function arith(q){ let s = q.replace(/^\s*(?:please\s+)?(?:calculate|compute|work out|evaluate|simplify|what('?s| is)|how much is|find)\s*/i, "").replace(/[?=!]+\s*$/, "").replace(/(\d+(?:\.\d+)?)\s*%\s*of\s*/gi, "($1/100)*").replace(/(\d+(?:\.\d+)?)\s*%/g, "($1/100)").trim();
+    if(!/\d/.test(s) || /=/.test(s)) return null; let n; try { n = M.parse(s); } catch(e){ return null; } if(M.vars(n).size) return null; const v = M.ev(n); if(!isFinite(v)) return null;
+    return {kind: "arith", subject: "Arithmetic", title: `Work out ${M.str(n)}`, answer: `${M.str(n)} = ${frac(v)}`, check: [v], steps: [{title: "Brackets and powers first", math: M.str(n), why: "Order of operations: Brackets, Exponents (powers and roots), then Multiply/Divide, then Add/Subtract — left to right.", hint: "Which part do you work out first?"}, {title: "Result", math: `= ${frac(v)}`, why: "Checked by the calculator.", hint: "Estimate it first — is it about the right size?"}], graph: null, overview: "Follow the order of operations (BEDMAS / PEMDAS)."}; }
+  // ---------- graph request ----------
+  function graphAsk(q){ const m = q.match(/^\s*(?:please\s+)?(?:graph|plot|sketch|draw)\s+(?:the\s+graph\s+of\s+)?(.+?)\s*[?.!]*$/i); if(!m) return null; const fns = m[1].split(/\s*(?:,|;|\band\b)\s*/i).map(tidyExpr).filter(f => { try { const n = M.parse(f); return M.vars(n).size <= 1; } catch(e){ return false; } }); if(!fns.length) return null;
+    const f = M.parse(fns[0]), P = M.poly(f), rs = roots(x => M.ev(f, x), -30, 30);
+    return {kind: "graph", subject: "Algebra", title: "Graph of " + fns.map(f => "y = " + M.str(M.S(M.parse(f)))).join(" and "), answer: rs.length ? `x-intercepts: ${rs.slice(0, 6).map(r => dec(r, 4)).join(", ")}` : "No x-intercepts between −30 and 30", check: null,
+      steps: [{title: "Plot points", math: [-2, -1, 0, 1, 2].map(x => `(${x}, ${dec(M.ev(f, x), 3)})`).join("  "), why: "Pick some x values, work out y, and join the dots.", hint: "What is y when x = 0?"}, {title: "Key features", math: `y-intercept: ${dec(M.ev(f, 0), 4)}${rs.length ? ";  x-intercepts: " + rs.slice(0, 6).map(r => dec(r, 4)).join(", ") : ""}${P ? ";  degree " + M.deg(M.clean(P)) : ""}`, why: "Intercepts are where the curve crosses the axes. The Graph studio below also marks turning points.", hint: "Where does it cross the y-axis?"}],
+      graph: {fns, marks: rs.slice(0, 6), deriv: false}, overview: "Use the Graph studio to explore: turn on the derivative, a tangent line or the area under the curve."}; }
+  function solve(raw){ const q = fixWords(raw).replace(/\s+/g, " ").trim(); if(!q) return null;
+    for(const fn of [graphAsk, derivative, integral, limit, projectile, stats, system, equation, arith]){ try { const r = fn(q); if(r) return r; } catch(e){} } return null; }
+  return {solve, roots, simpson, fixWords};
+})();
+
+// ===== 🎙️ AI Voice Tutor — the screen in the Math section =====
+const VT_PERSONAS = [
+  {id: "socratic", name: "🦉 Socratic Professor", desc: "Asks guiding questions so you work it out yourself.", pace: 0.95, style: "Socratic: explain briefly, then ask ONE short guiding question that helps the student think.", open: "Let's think this through together."},
+  {id: "coach", name: "⚡ Energetic Coach", desc: "Upbeat, quick and full of encouragement.", pace: 1.1, style: "an upbeat, energetic coach: short punchy sentences and lots of encouragement.", open: "Awesome problem — let's crush it!"},
+  {id: "patient", name: "🌿 Patient Mentor", desc: "Calm and slow, in tiny steps.", pace: 0.85, style: "a calm, patient mentor: very small steps, define every term, never rush.", open: "Let's take this slowly, one small step at a time."}];
+const VT_SUBJECTS = ["Arithmetic", "Algebra", "Geometry", "Trigonometry", "Calculus", "Statistics", "Physics", "Chemistry", "Biology"];
+const VT_LEVELS = [["elem", "Elementary"], ["middle", "Middle school"], ["high", "High school"], ["uni", "University"]];
+const VT_SAMPLES = [
+  ["Calculus", "Chain rule derivative", "Find the derivative of f(x) = sin(x^2) + 3x^3 at x = 1"],
+  ["Calculus", "Definite integral", "Integrate x^2 + 2x from 0 to 3"],
+  ["Calculus", "A famous limit", "Find the limit of sin(x)/x as x approaches 0"],
+  ["Algebra", "Quadratic equation", "Solve 2x^2 - 3x - 5 = 0"],
+  ["Algebra", "System of equations", "Solve 2x + 3y = 12 and x - y = 1"],
+  ["Algebra", "Cubic equation", "Solve x^3 - 6x^2 + 11x - 6 = 0"],
+  ["Physics", "Projectile motion", "A ball is launched at 30 m/s at 45 degrees. Find the max height, time of flight and range."],
+  ["Statistics", "Mean and spread", "Find the mean, median and standard deviation of 4, 8, 15, 16, 23, 42"],
+  ["Trigonometry", "Trig equation", "Solve 2sin(x) = 1"],
+  ["Chemistry", "SN2 reaction", "Explain the mechanism and transition state of the SN2 reaction of CH3Br with OH-"],
+  ["Biology", "Cellular respiration", "Trace the ATP made from one glucose through glycolysis, the Krebs cycle and the electron transport chain"],
+  ["Geometry", "Pythagoras", "A ladder 13 m long leans against a wall with its foot 5 m from the wall. How high up the wall does it reach?"]];
+const vt = {persona: VT_PERSONAS[0], subject: "Calculus", level: "high", pace: 1, muted: false, hands: false, guided: false, sol: null, step: 0, shown: 99, log: [], busy: false, rec: null, listening: false, lastSaid: "", inited: false, g: null, wasSpeaking: false};
+function vtLoad(){ try { const s = JSON.parse(localStorage.getItem("wordbook-vt") || "{}"); vt.persona = VT_PERSONAS.find(p => p.id === s.persona) || vt.persona; if(VT_SUBJECTS.includes(s.subject)) vt.subject = s.subject; if(VT_LEVELS.some(l => l[0] === s.level)) vt.level = s.level; vt.pace = +s.pace || 1; vt.muted = !!s.muted; vt.hands = !!s.hands; vt.guided = !!s.guided; } catch(e){} }
+function vtSaveSet(){ try { localStorage.setItem("wordbook-vt", JSON.stringify({persona: vt.persona.id, subject: vt.subject, level: vt.level, pace: vt.pace, muted: vt.muted, hands: vt.hands, guided: vt.guided})); } catch(e){} }
+// ---------- maths as nice text ----------
+function vtMath(s){ let h = esc(String(s || ""));
+  h = h.replace(/\\frac\{([^{}]+)\}\{([^{}]+)\}/g, "($1)/($2)").replace(/\\sqrt\{([^{}]+)\}/g, "√($1)").replace(/\\(cdot|times)/g, "·").replace(/\\(left|right)/g, "").replace(/\\(alpha|beta|gamma|delta|theta|lambda|mu|pi|sigma|omega|Delta)/g, (m, g) => ({alpha: "α", beta: "β", gamma: "γ", delta: "δ", theta: "θ", lambda: "λ", mu: "μ", pi: "π", sigma: "σ", omega: "ω", Delta: "Δ"})[g]).replace(/\\/g, "").replace(/\$/g, "");
+  h = h.replace(/\bsqrt\s*\(/g, "√(").replace(/\bsqrt\s+/g, "√").replace(/\*/g, "·").replace(/-&gt;/g, "→").replace(/&lt;=/g, "≤").replace(/&gt;=/g, "≥").replace(/\btheta\b/g, "θ").replace(/\bpi\b/g, "π");
+  h = h.replace(/\^\(([^()]{1,40})\)/g, "<sup>$1</sup>").replace(/\^\{([^{}]{1,40})\}/g, "<sup>$1</sup>").replace(/\^(−?-?[\w.′]+)/g, "<sup>$1</sup>").replace(/_\{([^{}]{1,20})\}/g, "<sub>$1</sub>").replace(/_([A-Za-z0-9]{1,3})\b/g, "<sub>$1</sub>");
+  return h; }
+function vtSpoken(s){ return String(s || "").replace(/<[^>]+>/g, " ").replace(/\\frac\{([^{}]+)\}\{([^{}]+)\}/g, "$1 over $2").replace(/[\\$]/g, "")
+  .replace(/f″\s*\(/g, "f double prime of (").replace(/f′\s*\(/g, "f prime of (").replace(/f'\s*\(/g, "f prime of (").replace(/\bd\/dx\b/g, "the derivative of").replace(/∫/g, "the integral of ")
+  .replace(/\^2\b/g, " squared").replace(/\^3\b/g, " cubed").replace(/\^\(([^)]+)\)/g, " to the power $1").replace(/\^(-?[\w.]+)/g, " to the power $1").replace(/²/g, " squared").replace(/³/g, " cubed")
+  .replace(/√\(?/g, "the square root of ").replace(/\bsqrt\(/g, "the square root of (").replace(/(\d)\s*\/\s*(\d)/g, "$1 over $2").replace(/\s[·×*]\s|·/g, " times ").replace(/\s[−-]\s/g, " minus ").replace(/(^|[\s(])[−-](?=\d|x)/g, "$1negative ").replace(/\s\+\s/g, " plus ").replace(/=/g, " equals ").replace(/≈/g, " about ").replace(/±/g, " plus or minus ").replace(/→/g, " gives ")
+  .replace(/π/g, " pi ").replace(/θ/g, " theta ").replace(/Δ/g, " delta ").replace(/\bm\/s\b/g, "metres per second").replace(/\bm\/s²/g, "metres per second squared").replace(/✓/g, "").replace(/\bsin\(/g, "sine of (").replace(/\bcos\(/g, "cosine of (").replace(/\btan\(/g, "tangent of (").replace(/\bln\(/g, "natural log of (").replace(/[()]/g, " ").replace(/\s+/g, " ").trim(); }
+// ---------- speaking & listening ----------
+const vtIsSpeaking = () => { try { return !!((typeof AI_AUDIO !== "undefined" && AI_AUDIO && AI_AUDIO.__speaking && !AI_AUDIO.paused) || ("speechSynthesis" in window && speechSynthesis.speaking && !speechSynthesis.paused)); } catch(e){ return false; } };
+function vtSay(text){ vt.lastSaid = text; if(vt.muted || !text) return; vtMicStop(); const pace = vt.persona.pace * vt.pace, parts = (typeof chunks === "function" ? chunks(vtSpoken(text)) : [vtSpoken(text)]).filter(Boolean);
+  if(parts.length) speak(parts[0], pace, parts.slice(1).map(t => [t, pace])); vt.wasSpeaking = true; }
+function vtState(){ const el = $("vt"); if(!el) return; const sp = vtIsSpeaking(); el.classList.toggle("speaking", sp && !vt.listening); el.classList.toggle("listening", vt.listening); el.classList.toggle("thinking", vt.busy);
+  $("vt-status").textContent = vt.listening ? "Listening…" : vt.busy ? "Thinking…" : sp ? "Speaking…" : "Mic ready";
+  // hands-free: when the tutor finishes talking, listen again
+  if(vt.hands && vt.wasSpeaking && !sp && !vt.listening && !vt.busy && !$("vt").hidden){ vt.wasSpeaking = false; setTimeout(() => { if(vt.hands && !vtIsSpeaking() && !vt.listening) vtMicStart(); }, 500); }
+  if(!sp && !vt.hands) vt.wasSpeaking = false; }
+function vtMicOK(){ return !!(window.SpeechRecognition || window.webkitSpeechRecognition); }
+function vtMicStart(){ if(vt.listening) return; if(!vtMicOK()){ $("vt-live").textContent = "🎤 Voice input doesn't work in this browser — type your question instead (Chrome, Edge and Safari support it)."; return; }
+  try { stopAll(); } catch(e){}
+  const R = new (window.SpeechRecognition || window.webkitSpeechRecognition)(); R.lang = "en-US"; R.interimResults = true; R.maxAlternatives = 1; R.continuous = false; vt.rec = R; let final = "";
+  R.onresult = e => { let t = ""; for(let i = e.resultIndex; i < e.results.length; i++){ t += e.results[i][0].transcript; if(e.results[i].isFinal) final += e.results[i][0].transcript; } $("vt-live").textContent = "🗣️ " + (final || t); };
+  R.onerror = e => { vt.listening = false; $("vt-live").textContent = e.error === "not-allowed" || e.error === "service-not-allowed" ? "🎤 The microphone isn't allowed here. Allow it in your browser settings, or type your question instead." : e.error === "no-speech" ? "I didn't hear anything — tap the mic and try again." : "The microphone stopped. Tap it to try again."; if(e.error === "not-allowed") { vt.hands = false; $("vt-hands").checked = false; } vtState(); };
+  R.onend = () => { vt.listening = false; vtState(); const t = final.trim(); if(t) vtHeard(t, true); else if(vt.hands && !vtIsSpeaking() && !vt.busy) setTimeout(() => { if(vt.hands && !vt.listening && !vtIsSpeaking()) vtMicStart(); }, 900); };
+  try { R.start(); vt.listening = true; $("vt-live").textContent = "🎙️ Listening… ask your question."; } catch(e){ vt.listening = false; }
+  vtState(); }
+function vtMicStop(){ if(vt.rec){ try { vt.rec.abort(); } catch(e){} } vt.listening = false; }
+// ---------- conversation log ----------
+function vtLog(who, text){ vt.log.push({who, text, t: new Date().toLocaleTimeString([], {hour: "numeric", minute: "2-digit"})}); if(vt.log.length > 80) vt.log.shift(); vtLogRender(); }
+function vtLogRender(){ const b = $("vt-log"); if(!b) return; if(!vt.log.length){ b.innerHTML = `<p class="vt-empty">No conversation yet. Ask a question to get started!</p>`; return; }
+  b.innerHTML = vt.log.map(m => `<div class="vt-msg ${m.who === "me" ? "me" : "bot"}"><small>${m.who === "me" ? "You" : "Tutor"} · ${m.t}</small>${vtMath(m.text)}</div>`).join(""); b.scrollTop = b.scrollHeight; }
+// ---------- AI ----------
+const vtAI = () => typeof sampler !== "undefined" && sampler && sampler.json;
+const vtLevelName = () => (VT_LEVELS.find(l => l[0] === vt.level) || VT_LEVELS[2])[1];
+function vtBasePrompt(){ return `You are a ${vt.subject} tutor inside "My Word Book", a learning app for students. Speak as ${vt.persona.style} Pitch everything at a ${vtLevelName()} level. Write maths as plain text a screen can show: x^2, sqrt(x), a/b, π, ≤ — never LaTeX, never markdown, no emojis. Be accurate; if a question is unsafe or not about learning, gently steer back to schoolwork.`; }
+async function vtAIExplainLocal(q, S){ // the calculator has the maths; the AI adds the friendly talk
+  const prompt = `${vtBasePrompt()}
+The student asked: "${q}"
+A calculator has ALREADY solved it exactly. Do NOT change any maths or numbers. Verified answer: ${S.answer}
+The worked steps are:
+${S.steps.map((s, i) => `${i + 1}. ${s.title}: ${s.math}`).join("\n")}
+Reply with ONLY JSON: {"opening": "1-2 spoken sentences introducing the solution and stating the verified answer", "overview": "2 sentences on the big idea", "hints": ["one short guiding question for each step, ${S.steps.length} in total"], "followups": ["3 short follow-up questions the student might ask next"]}`;
+  return sampler.json(prompt); }
+async function vtAISolve(q){
+  const prompt = `${vtBasePrompt()}
+Solve or explain this for the student: "${q}"
+Reply with ONLY JSON in exactly this shape:
+{"title": "short title", "answer": "the final answer in one line (or the key takeaway for an explain question)", "overview": "2 sentences on the big idea", "opening": "1-2 friendly spoken sentences to start", "steps": [{"title": "step title", "math": "the working for this step as plain text (empty string if none)", "why": "1-3 sentence explanation", "hint": "one short guiding question"}], "followups": ["3 short follow-up questions"]}
+Use 3 to 7 steps. Double-check all arithmetic.`;
+  const j = await sampler.json(prompt); if(!j || !Array.isArray(j.steps) || !j.steps.length) throw {code: "failed"};
+  return {kind: "ai", subject: vt.subject, title: String(j.title || q).slice(0, 120), answer: String(j.answer || ""), overview: String(j.overview || ""), opening: String(j.opening || ""), check: null, ai: true, followups: (j.followups || []).slice(0, 3).map(String),
+    steps: j.steps.slice(0, 8).map(s => ({title: String(s.title || ""), math: String(s.math || ""), why: String(s.why || s.explanation || ""), hint: String(s.hint || "")})), graph: null}; }
+function vtAIErr(e){ const c = e && e.code; return c === "limit" ? (e.message || "Please log in to use the AI.") : c === "rate_limited" ? "Lots of questions right now — wait a minute and try again." : c === "not_granted" ? "The AI isn't allowed here yet." : c === "unavailable" ? (e.message || "The AI isn't available right now.") : "The AI couldn't answer right now. Please try again."; }
+// ---------- solving ----------
+async function vtSolve(q){
+  q = String(q || "").trim(); if(!q || vt.busy) return; vt.busy = true; $("vt-go").disabled = true; vtState(); try { stopAll(); } catch(e){}
+  try {
+    const S = VTS.solve(q);
+    if(S && S.err){ vtLog("bot", S.err); vtSay(S.err); return; }
+    if(S){ S.q = q; S.opening = `${vt.persona.open} Here's the answer: ${S.answer}.`; S.followups = vtDefaultFollow(S);
+      vtShow(S); vtGraphFrom(S);
+      if(vtAI()){ try { const j = await vtAIExplainLocal(q, S); if(vt.sol === S && j){ if(j.opening) S.opening = String(j.opening); if(j.overview) S.overview = String(j.overview); if(Array.isArray(j.hints)) j.hints.forEach((h, i) => { if(S.steps[i] && h) S.steps[i].hint = String(h); }); if(Array.isArray(j.followups) && j.followups.length) S.followups = j.followups.slice(0, 3).map(String); vtShow(S, true); } } catch(e){} }
+      vtLog("bot", S.opening); vtSay(S.opening); return; }
+    if(!vtAI()){ const m = "I can work out derivatives, integrals, limits, equations, systems of equations, projectiles, statistics and sums on my own. For explain-style questions the AI needs to be turned on (on the website, log in first)."; vtLog("bot", m); vtSay(m); return; }
+    const A = await vtAISolve(q); A.q = q; vtShow(A); vtGraphFrom(A); const open = A.opening || `Here's how to think about it. ${A.answer}`; vtLog("bot", open); vtSay(open);
+  } catch(e){ const m = vtAIErr(e); vtLog("bot", m); vtSay(m); }
+  finally { vt.busy = false; $("vt-go").disabled = false; vtState(); }
+}
+function vtDefaultFollow(S){ return ({derivative: ["Why does the chain rule work?", "What does the derivative tell us about the graph?", "Where is the slope zero?"], integral: ["Why do we add + C?", "What does the area mean in real life?", "How is integrating related to differentiating?"], limit: ["What does 0/0 mean?", "Why does L'Hôpital's rule work?", "Is the function continuous there?"], equation: ["How can I check my answers?", "What does the graph look like?", "When should I factor instead?"], system: ["What does the answer mean on the graph?", "Could there be no solution?", "Is substitution easier here?"], projectile: ["What angle gives the longest range?", "What if there were air resistance?", "Why doesn't the sideways speed change?"], stats: ["When should I use the median instead of the mean?", "What does a big standard deviation mean?", "Why divide by n − 1 for a sample?"], graph: ["What is a turning point?", "How do I find the x-intercepts?", "What does the derivative graph show?"]})[S.kind] || ["Can you explain that another way?", "Why is that true?", "Can you give me a similar problem?"]; }
+// ---------- solution card ----------
+function vtShow(S, keep){ vt.sol = S; if(!keep){ vt.step = 0; vt.shown = vt.guided ? 1 : 99; }
+  const box = $("vt-sol"); box.hidden = false;
+  const steps = S.steps.map((s, i) => i >= vt.shown ? "" : `<li class="vt-step${i === vt.step ? " on" : ""}" data-i="${i}"><div class="vt-stephead"><b>Step ${i + 1}: ${vtMath(s.title)}</b><span class="vt-stepbtns"><button type="button" data-say="${i}" aria-label="Read step ${i + 1}">🔊</button>${s.hint ? `<button type="button" data-hint="${i}" aria-label="Hint for step ${i + 1}">💡</button>` : ""}</span></div>${s.math ? `<div class="vt-math">${vtMath(s.math)}</div>` : ""}${s.why ? `<p class="vt-why">${vtMath(s.why)}</p>` : ""}<p class="vt-hint" data-h="${i}" hidden>🤔 ${vtMath(s.hint)}</p></li>`).join("");
+  const nxt = S.steps[vt.shown];
+  box.innerHTML = `<div class="vt-solhead"><div><span class="vt-badge${S.ai ? " ai" : ""}">${S.ai ? "🤖 AI answer — double-check important numbers" : "✅ Checked by the calculator"}</span><h3>${vtMath(S.title)}</h3></div><button type="button" class="btn alt vt-sm" id="vt-sayans">🔊</button></div>
+    <div class="vt-answer">${S.kind === "ai" && !/\d/.test(S.answer) ? "Key idea" : "Answer"}: ${vtMath(S.answer)}</div>${S.overview ? `<p class="vt-over">${vtMath(S.overview)}</p>` : ""}
+    <div class="vt-solbar"><label class="vt-tog"><input type="checkbox" id="vt-guided"${vt.guided ? " checked" : ""}> 👣 One step at a time</label><button type="button" class="btn alt vt-sm" id="vt-readall">▶ Read all steps</button></div>
+    <ol class="vt-steps">${steps}</ol>
+    ${nxt ? `<div class="vt-guide"><p>🤔 <b>Your turn first:</b> ${vtMath(nxt.hint || "What do you think comes next?")}</p><button type="button" class="btn vt-sm" id="vt-next">Show step ${vt.shown + 1} of ${S.steps.length} ▶</button></div>` : ""}
+    <div class="vt-mine"><b>✍️ Check my answer</b><div class="vt-row" style="margin-top:6px"><input id="vt-mine" placeholder="${S.check ? "e.g. " + (S.check.length > 1 ? "x = 2 and x = −1" : "13") : "Type your answer"}" autocomplete="off"><button type="button" class="btn vt-sm" id="vt-chk">Check</button></div><p class="vt-mineres" id="vt-mineres" aria-live="polite"></p></div>
+    ${(S.followups || []).length ? `<div class="vt-follow">${S.followups.map(f => `<button type="button" data-f="${esc(f)}">${esc(f)}</button>`).join("")}</div>` : ""}`;
+  $("vt-sayans").onclick = () => vtSay(`${S.title}. The answer is ${S.answer}`);
+  $("vt-guided").onchange = e => { vt.guided = e.target.checked; vtSaveSet(); vt.shown = vt.guided ? Math.max(1, vt.step + 1) : 99; vtShow(S, true); };
+  $("vt-readall").onclick = () => vtSay(S.steps.map((s, i) => `Step ${i + 1}. ${s.title}. ${s.math}. ${s.why}`).join(" "));
+  if($("vt-next")) $("vt-next").onclick = () => vtGoStep(vt.shown);
+  box.querySelectorAll(".vt-step").forEach(li => li.onclick = e => { if(e.target.closest("button")) return; vtGoStep(+li.dataset.i); });
+  box.querySelectorAll("[data-say]").forEach(b => b.onclick = () => vtGoStep(+b.dataset.say));
+  box.querySelectorAll("[data-hint]").forEach(b => b.onclick = () => vtHint(+b.dataset.hint));
+  box.querySelectorAll("[data-f]").forEach(b => b.onclick = () => { vtLog("me", b.dataset.f); vtFollow(b.dataset.f); });
+  $("vt-chk").onclick = () => vtCheck($("vt-mine").value); $("vt-mine").onkeydown = e => { if(e.key === "Enter") vtCheck($("vt-mine").value); };
+}
+function vtGoStep(i){ const S = vt.sol; if(!S || i < 0 || i >= S.steps.length) return; vt.step = i; if(i >= vt.shown) vt.shown = i + 1; vtShow(S, true); const s = S.steps[i];
+  const li = $("vt-sol").querySelector(`.vt-step[data-i="${i}"]`); if(li) li.scrollIntoView({block: "nearest", behavior: "smooth"});
+  const t = `Step ${i + 1}. ${s.title}. ${s.math ? s.math + ". " : ""}${s.why}`; vtLog("bot", t); vtSay(t); }
+function vtHint(i){ const S = vt.sol; if(!S) return; i = i == null ? Math.min(vt.step, S.steps.length - 1) : i; const s = S.steps[i]; if(!s) return; const p = $("vt-sol").querySelector(`[data-h="${i}"]`); if(p) p.hidden = false; const t = s.hint ? `Hint for step ${i + 1}: ${s.hint}` : "Look carefully at what changes from one line to the next."; vtLog("bot", t); vtSay(t); }
+// ---------- checking the student's answer ----------
+function vtNumsFrom(s){ const out = []; String(s).replace(/[a-z]\s*=\s*/gi, " ").split(/\s*(?:,|;|\band\b|\bor\b|&)\s*/i).forEach(p => { p = p.trim().replace(/\s*(m|s|metres?|meters?|seconds?|units?)\s*$/i, ""); if(!p) return; try { const n = VTM.parse(VTS.fixWords(p)); if(!VTM.vars(n).size){ const v = VTM.ev(n); if(isFinite(v)) out.push(v); } } catch(e){} }); return out; }
+async function vtCheck(ans){ const S = vt.sol, res = $("vt-mineres"); ans = String(ans || "").trim(); if(!S || !ans) return; vtLog("me", "My answer: " + ans);
+  if(S.check && S.check.length){ const mine = vtNumsFrom(ans); if(!mine.length){ res.textContent = "Type a number (or numbers), like 13 or 2, −1."; return; }
+    const close = (a, b) => Math.abs(a - b) <= Math.max(1e-6, 0.006 * Math.abs(b)) || Math.abs(a - b) < 0.0051;
+    const hit = mine.filter(m => S.check.some(c => close(m, c))).length, need = S.kind === "stats" ? 1 : S.check.length, wrong = mine.length - hit;
+    let msg; if(hit >= need && !wrong) msg = ["✅ Yes! That's exactly right.", "✅ Correct — great work!", "✅ Spot on!"][Math.floor(Math.random() * 3)];
+    else if(hit && hit < need) msg = `🟡 Good start — that's ${hit} of the ${need} answers. Is there another one?`;
+    else if(hit && wrong) msg = "🟡 One of those is right, but another isn't. Check each one.";
+    else { const off = S.check[0] && Math.abs(mine[0] / S.check[0]); msg = "❌ Not quite. " + (off && Math.abs(off - 1) < 0.15 ? "You're very close — check your rounding." : mine[0] && S.check[0] && Math.abs(mine[0] + S.check[0]) < 1e-6 ? "Check your signs — you're off by a minus." : "Try the hint for the step you're stuck on, or tap Show step."); }
+    res.textContent = msg; vtLog("bot", msg); vtSay(msg); if(/✅/.test(msg)){ try { if(typeof playChime === "function") playChime(true); } catch(e){} } return; }
+  if(!vtAI()){ res.textContent = "This answer needs the AI to check it. Compare it with the answer above."; return; }
+  res.textContent = "Checking…"; try { const j = await sampler.json(`${vtBasePrompt()}\nProblem: "${S.q}". Correct answer: ${S.answer}.\nThe student answered: "${ans}".\nReply with ONLY JSON: {"correct": true or false, "feedback": "1-2 encouraging sentences; if wrong, a hint without giving the answer away"}`);
+    const msg = (j && j.correct ? "✅ " : "❌ ") + (j && j.feedback || ""); res.textContent = msg; vtLog("bot", msg); vtSay(msg); } catch(e){ res.textContent = vtAIErr(e); } }
+// ---------- follow-up questions ----------
+async function vtFollow(q){ const S = vt.sol; if(!vtAI()){ const m = "Follow-up questions need the AI. Tap 💡 on a step for a hint, or 🔊 to hear it again."; vtLog("bot", m); vtSay(m); return; }
+  vt.busy = true; vtState(); try { const r = await sampler(`${vtBasePrompt()}
+${S ? `We are working on: "${S.q}". Verified answer: ${S.answer}. Steps: ${S.steps.map((s, i) => `${i + 1}) ${s.title}: ${s.math}`).join("; ")}.` : ""}
+Recent chat: ${vt.log.slice(-6).map(m => (m.who === "me" ? "Student: " : "Tutor: ") + m.text).join(" | ")}
+The student now asks: "${q}"
+Answer in 2-5 short sentences, as the tutor would say it out loud. Plain text only.`, {modelTier: "quick"}); const t = String(r && r.text || "").trim() || "Hmm, I'm not sure — try asking another way."; vtLog("bot", t); vtSay(t); }
+  catch(e){ const m = vtAIErr(e); vtLog("bot", m); vtSay(m); } finally { vt.busy = false; vtState(); } }
+// ---------- what the student said ----------
+const VT_NUMW = {one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, first: 1, second: 2, third: 3, fourth: 4, fifth: 5, last: 99};
+function vtHeard(text, voice){ text = String(text).trim(); if(!text) return; const t = text.toLowerCase().replace(/[.!?]+$/, ""); vtLog("me", text); $("vt-live").textContent = "🗣️ " + text;
+  const S = vt.sol;
+  if(/^(stop|be quiet|quiet|shush|pause|stop talking)\b/.test(t)){ try { stopAll(); } catch(e){} return; }
+  if(/^(repeat|say (that|it) again|again|what did you say|pardon)\b/.test(t)){ vtSay(vt.lastSaid || "I haven't said anything yet."); return; }
+  if(/\b(read|talk|speak) (faster|quicker)\b|^faster$/.test(t)){ vt.pace = Math.min(1.6, +(vt.pace + 0.15).toFixed(2)); vtSaveSet(); vtSay("Okay, I'll speak faster."); return; }
+  if(/\b(read|talk|speak) slower\b|^slower$|slow down/.test(t)){ vt.pace = Math.max(0.6, +(vt.pace - 0.15).toFixed(2)); vtSaveSet(); vtSay("Okay, I'll slow down."); return; }
+  if(/^(new problem|start over|clear( it)?|reset)$/.test(t)){ vt.sol = null; $("vt-sol").hidden = true; $("vt-in").value = ""; vtSay("Okay! What's the next problem?"); return; }
+  if(/\b(show|open|see) (me )?(the )?graph\b/.test(t)){ $("vt-studio").scrollIntoView({behavior: "smooth", block: "start"}); vtSay("Here's the graph."); return; }
+  if(S){ const sm = t.match(/\b(?:explain|read|go to|show|what is|what's) (?:me )?step (\d+|one|two|three|four|five|six|seven|eight)\b/) || t.match(/\b(first|second|third|fourth|fifth|last) step\b/);
+    if(sm){ const k = VT_NUMW[sm[1]] || +sm[1]; vtGoStep(Math.min(S.steps.length, k) - 1); return; }
+    if(/^(next( step)?|go on|continue|keep going|what'?s next)\b/.test(t)){ if(vt.step + 1 < S.steps.length || vt.shown <= vt.step) vtGoStep(Math.min(S.steps.length - 1, vt.shown < S.steps.length ? vt.shown : vt.step + 1)); else vtSay("That was the last step! Try checking your own answer."); return; }
+    if(/^(previous|back|go back|last one)( step)?\b/.test(t)){ vtGoStep(Math.max(0, vt.step - 1)); return; }
+    if(/\b(hint|clue|help me|i'?m stuck|give me a hint)\b/.test(t)){ vtHint(); return; }
+    const am = text.match(/\b(?:my answer is|i think (?:it'?s|it is|the answer is)|i got|the answer is|is it)\s+(.+)$/i); if(am){ $("vt-mine") && ($("vt-mine").value = am[1]); vtCheck(am[1]); return; }
+    if(/^(why|how come|how does|how do|what does|what do|what if|what is the point|can you explain|explain (it|that|this)|i don'?t (get|understand)|could you|is that|does that|what about)\b/.test(t) && !VTS.solve(text)){ vtFollow(text); return; } }
+  $("vt-in").value = text; vtSolve(text); }
+// ---------- graph studio ----------
+const VT_COL = ["#2563eb", "#e11d48", "#16a34a"];
+function vtGraphFrom(S){ const g = S.graph; vt.anim = null; $("vt-launch").hidden = true;
+  if(!g){ return; }
+  if(g.proj){ vt.g = {proj: g.proj}; $("vt-fx").value = `projectile ${VTM.num(g.proj.v0)} m/s at ${VTM.num(g.proj.th)}°`; $("vt-launch").hidden = false; vtPlot(); return; }
+  if(g.bars){ vt.g = {bars: g.bars}; $("vt-fx").value = "data: " + g.bars.map(VTM.num).join(", "); vtPlot(); return; }
+  const fns = (g.fns || []).slice(0, 3); if(!fns.length) return; $("vt-fx").value = fns.join(", ");
+  let xmin = g.xmin, xmax = g.xmax; if(xmin == null || xmax == null || !(xmax > xmin)){ const c = g.tangent != null ? g.tangent : g.marks && g.marks.length ? (Math.min(...g.marks) + Math.max(...g.marks)) / 2 : 0, w = g.marks && g.marks.length > 1 ? Math.max(5, (Math.max(...g.marks) - Math.min(...g.marks)) * 0.8) : 5; xmin = c - w; xmax = c + w; }
+  $("vt-xmin").value = +(+xmin).toFixed(3); $("vt-xmax").value = +(+xmax).toFixed(3);
+  $("vt-o-d").checked = !!g.deriv && g.tangent == null; $("vt-o-t").checked = g.tangent != null; if(g.tangent != null) $("vt-ta").value = +g.tangent.toFixed(4);
+  $("vt-o-a").checked = !!g.area; if(g.area){ $("vt-aa").value = g.area[0]; $("vt-ab").value = g.area[1]; }
+  vt.g = {marks: g.marks || [], hole: g.hole, point: g.point}; vtPlot(); }
+function vtNice(r){ const raw = r / 8, p = Math.pow(10, Math.floor(Math.log10(raw))), m = raw / p; return (m < 1.5 ? 1 : m < 3 ? 2 : m < 7 ? 5 : 10) * p; }
+function vtCanvas(){ const c = $("vt-cv"), r = c.getBoundingClientRect(), d = window.devicePixelRatio || 1, w = Math.max(260, r.width), h = r.height || 300; c.width = Math.round(w * d); c.height = Math.round(h * d); const x = c.getContext("2d"); x.setTransform(d, 0, 0, d, 0, 0); return {c, x, w, h}; }
+function vtPlot(){ const st = $("vt-studio"); if(!st || $("vt").hidden) return; const G = vt.g || {}; const {x, w, h} = vtCanvas(); const dark = document.documentElement.getAttribute("data-theme") === "dark";
+  const ink = dark ? "#e2e8f0" : "#1b2a4a", grid = dark ? "rgba(148,163,184,.18)" : "rgba(27,42,74,.09)", axis = dark ? "#94a3b8" : "#475569"; x.clearRect(0, 0, w, h); x.font = "600 11px system-ui, sans-serif";
+  const an = []; vt.view = null; $("vt-gtip").hidden = false;
+  const frame = (xmin, xmax, ymin, ymax) => { const X = v => (v - xmin) / (xmax - xmin) * w, Y = v => h - (v - ymin) / (ymax - ymin) * h; const sx = vtNice(xmax - xmin), sy = vtNice(ymax - ymin);
+    x.lineWidth = 1; x.strokeStyle = grid; x.fillStyle = axis; x.textAlign = "center"; x.textBaseline = "top";
+    for(let v = Math.ceil(xmin / sx) * sx; v <= xmax; v += sx){ x.beginPath(); x.moveTo(X(v), 0); x.lineTo(X(v), h); x.stroke(); if(Math.abs(v) > sx / 1e6) x.fillText(VTM.dec(v, 3), X(v), Math.min(h - 13, Math.max(2, Y(0) + 3))); }
+    x.textAlign = "left"; x.textBaseline = "middle"; for(let v = Math.ceil(ymin / sy) * sy; v <= ymax; v += sy){ x.beginPath(); x.moveTo(0, Y(v)); x.lineTo(w, Y(v)); x.stroke(); if(Math.abs(v) > sy / 1e6) x.fillText(VTM.dec(v, 3), Math.min(w - 34, Math.max(3, X(0) + 4)), Y(v)); }
+    x.strokeStyle = axis; x.lineWidth = 1.6; x.beginPath(); if(ymin < 0 && ymax > 0){ x.moveTo(0, Y(0)); x.lineTo(w, Y(0)); } if(xmin < 0 && xmax > 0){ x.moveTo(X(0), 0); x.lineTo(X(0), h); } x.stroke(); return {X, Y}; };
+  const dot = (px, py, col, open) => { x.beginPath(); x.arc(px, py, 6, 0, 7); if(open){ x.fillStyle = dark ? "#0f172a" : "#fff"; x.fill(); x.lineWidth = 2.5; x.strokeStyle = col; x.stroke(); } else { x.fillStyle = col; x.fill(); x.lineWidth = 2; x.strokeStyle = "#fff"; x.stroke(); } };
+  st.classList.toggle("special", !!(G.proj || G.bars));
+  if(G.proj){ const P = G.proj, xmax = P.R * 1.08 || 10, ymax = P.H * 1.25 || 10, {X, Y} = frame(-xmax * 0.04, xmax, -ymax * 0.06, ymax), yAt = d => P.h0 + Math.tan(P.th * Math.PI / 180) * d - P.g * d * d / (2 * P.vx * P.vx);
+    x.strokeStyle = VT_COL[0]; x.lineWidth = 3; x.setLineDash([]); x.beginPath(); for(let i = 0; i <= 200; i++){ const d = P.R * i / 200; i ? x.lineTo(X(d), Y(yAt(d))) : x.moveTo(X(d), Y(yAt(d))); } x.stroke();
+    const ax = P.vx * P.vy / P.g; dot(X(ax), Y(P.H), "#e11d48"); x.fillStyle = ink; x.textAlign = "center"; x.textBaseline = "bottom"; x.fillText(`top: ${VTM.dec(P.H, 2)} m`, X(ax), Y(P.H) - 9); dot(X(P.R), Y(0), "#16a34a"); x.textBaseline = "bottom"; x.fillText(`lands: ${VTM.dec(P.R, 2)} m`, Math.min(w - 50, X(P.R)), Y(0) - 9);
+    if(vt.anim){ const tt = vt.anim.t, d = P.vx * tt, yy = P.h0 + P.vy * tt - P.g * tt * tt / 2; dot(X(d), Y(Math.max(0, yy)), "#f59e0b"); x.fillStyle = ink; x.textAlign = "left"; x.textBaseline = "top"; x.fillText(`t = ${tt.toFixed(2)} s   height = ${Math.max(0, yy).toFixed(2)} m   distance = ${d.toFixed(2)} m`, 8, 8); }
+    an.push(["Max height", VTM.dec(P.H, 2) + " m"], ["Time of flight", VTM.dec(P.T, 2) + " s"], ["Range", VTM.dec(P.R, 2) + " m"], ["Launch", `${VTM.num(P.v0)} m/s at ${VTM.num(P.th)}°`]); $("vt-gtip").hidden = true; }
+  else if(G.bars){ const s = G.bars, n = s.length, lo = Math.min(0, ...s), hi = Math.max(...s), {X, Y} = frame(-0.6, n - 0.4, lo - (hi - lo) * 0.05, hi * 1.12 + 0.01), bw = Math.max(4, w / n * 0.6); const mean = s.reduce((a, b) => a + b, 0) / n, med = n % 2 ? s[(n - 1) / 2] : (s[n / 2 - 1] + s[n / 2]) / 2;
+    s.forEach((v, i) => { x.fillStyle = "rgba(37,99,235,.75)"; x.fillRect(X(i) - bw / 2, Y(v), bw, Y(0) - Y(v)); x.fillStyle = ink; x.textAlign = "center"; x.textBaseline = "bottom"; x.fillText(VTM.num(v), X(i), Y(v) - 2); });
+    [[mean, "#e11d48", "mean"], [med, "#16a34a", "median"]].forEach(([v, c, l]) => { x.strokeStyle = c; x.lineWidth = 2.5; x.setLineDash([6, 4]); x.beginPath(); x.moveTo(0, Y(v)); x.lineTo(w, Y(v)); x.stroke(); x.setLineDash([]); x.fillStyle = c; x.textAlign = "right"; x.textBaseline = "bottom"; x.fillText(`${l} ${VTM.dec(v, 2)}`, w - 6, Y(v) - 3); });
+    an.push(["Mean", VTM.dec(mean, 4)], ["Median", VTM.dec(med, 4)], ["Count", n]); $("vt-gtip").hidden = true; }
+  else { const srcs = $("vt-fx").value.split(/\s*[,;]\s*/).map(s => s.replace(/^\s*(?:y|f\s*\(\s*x\s*\))\s*=\s*/i, "")).filter(Boolean).slice(0, 3); let xmin = +$("vt-xmin").value, xmax = +$("vt-xmax").value; if(!(xmax > xmin)){ xmin = -5; xmax = 5; }
+    const F = []; let err = ""; srcs.forEach(s => { try { const n = VTM.parse(VTS.fixWords(s)); if([...VTM.vars(n)].some(v => v !== "x")) throw new Error("Use x as the only letter."); F.push({n, f: v => VTM.ev(n, v), s: VTM.str(VTM.S(n))}); } catch(e){ err = `“${s}”: ${e.message === "empty" ? "type a function" : e.message}`; } });
+    if(!F.length){ frame(xmin, xmax, -5, 5); $("vt-analysis").innerHTML = `<div><b>Oops</b>${esc(err || "Type a function such as x^2 - 4")}</div>`; return; }
+    const d0 = VTM.S(VTM.D(F[0].n)), fd = v => VTM.ev(d0, v);
+    const N = 500, ys = []; F.forEach(o => { for(let i = 0; i <= N; i++){ const v = o.f(xmin + (xmax - xmin) * i / N); if(isFinite(v)) ys.push(v); } }); if($("vt-o-d").checked) for(let i = 0; i <= N; i++){ const v = fd(xmin + (xmax - xmin) * i / N); if(isFinite(v)) ys.push(v); }
+    ys.sort((a, b) => a - b); let ymin = ys.length ? ys[Math.floor(ys.length * 0.02)] : -5, ymax = ys.length ? ys[Math.max(0, Math.ceil(ys.length * 0.98) - 1)] : 5; ymin = Math.min(ymin, 0); ymax = Math.max(ymax, 0); if(ymax - ymin < 1e-9){ ymin -= 1; ymax += 1; } const pad = (ymax - ymin) * 0.1; ymin -= pad; ymax += pad;
+    const {X, Y} = frame(xmin, xmax, ymin, ymax); vt.view = {xmin, xmax, ymin, ymax, X, Y, F, fd, w, h};
+    const curve = (f, col, dash) => { x.strokeStyle = col; x.lineWidth = 3; x.setLineDash(dash || []); x.beginPath(); let pen = false, py = null; for(let px = 0; px <= w; px++){ const xv = xmin + (xmax - xmin) * px / w, yv = f(xv), sy = Y(yv); if(!isFinite(yv) || (py != null && Math.abs(sy - py) > h * 1.5)){ pen = false; py = isFinite(yv) ? sy : null; continue; } pen ? x.lineTo(px, sy) : x.moveTo(px, sy); pen = true; py = sy; } x.stroke(); x.setLineDash([]); };
+    if($("vt-o-a").checked){ const a = +$("vt-aa").value, b = +$("vt-ab").value; if(isFinite(a) && isFinite(b) && a !== b){ const lo = Math.min(a, b), hi = Math.max(a, b); x.fillStyle = "rgba(37,99,235,.2)"; x.beginPath(); x.moveTo(X(lo), Y(0)); for(let i = 0; i <= 200; i++){ const xv = lo + (hi - lo) * i / 200, yv = F[0].f(xv); x.lineTo(X(xv), Y(isFinite(yv) ? Math.max(ymin, Math.min(ymax, yv)) : 0)); } x.lineTo(X(hi), Y(0)); x.closePath(); x.fill();
+      const ar = VTS.simpson(F[0].f, a, b); an.push([`Area ${VTM.num(a)} → ${VTM.num(b)}`, isFinite(ar) ? VTM.num(Math.abs(ar - Math.round(ar)) < 1e-8 ? Math.round(ar) : +ar.toPrecision(8)) : "not finite"]); } }
+    F.forEach((o, i) => curve(o.f, VT_COL[i])); if($("vt-o-d").checked) curve(fd, "#ea580c", [7, 5]);
+    if($("vt-o-t").checked){ const a = +$("vt-ta").value, y0 = F[0].f(a), m = fd(a); if(isFinite(y0) && isFinite(m)){ x.strokeStyle = "#9333ea"; x.lineWidth = 2.5; x.beginPath(); x.moveTo(X(xmin), Y(y0 + m * (xmin - a))); x.lineTo(X(xmax), Y(y0 + m * (xmax - a))); x.stroke(); dot(X(a), Y(y0), "#9333ea"); an.push([`Tangent at x = ${VTM.num(a)}`, `slope ${VTM.dec(m, 4)}; y = ${VTM.dec(m, 4)}x ${y0 - m * a < 0 ? "−" : "+"} ${VTM.dec(Math.abs(y0 - m * a), 4)}`]); } }
+    const f0 = F[0].f, rs = VTS.roots(f0, xmin, xmax).filter(r => Math.abs(f0(r)) < 1e-4).slice(0, 8); rs.forEach(r => dot(X(r), Y(0), "#16a34a"));
+    const ext = VTS.roots(fd, xmin, xmax).slice(0, 8).map(r => { const yv = f0(r), l = f0(r - 1e-3), rr = f0(r + 1e-3); return {x: r, y: yv, k: yv > l && yv > rr ? "max" : yv < l && yv < rr ? "min" : null}; }).filter(e => e.k && isFinite(e.y)); ext.forEach(e => dot(X(e.x), Y(e.y), "#f59e0b"));
+    (G.marks || []).forEach(m => { const yv = f0(m); if(isFinite(yv)) dot(X(m), Y(yv), "#16a34a"); }); if(G.hole != null){ const L = (f0(G.hole - 1e-6) + f0(G.hole + 1e-6)) / 2; if(isFinite(L)) dot(X(G.hole), Y(L), "#e11d48", true); } if(G.point) dot(X(G.point[0]), Y(G.point[1]), "#9333ea");
+    const y0 = f0(0); an.unshift(["Function", "y = " + F[0].s]); if(isFinite(y0)) an.push(["y-intercept", VTM.dec(y0, 4)]); an.push(["x-intercepts", rs.length ? rs.map(r => VTM.dec(r, 4)).join(", ") : "none in view"]); if(ext.length) an.push(["Turning points", ext.map(e => `${e.k} (${VTM.dec(e.x, 3)}, ${VTM.dec(e.y, 3)})`).join("; ")]); if($("vt-o-d").checked) an.push(["f′(x)", VTM.str(d0)]);
+    if(err) an.push(["Note", err]); }
+  $("vt-analysis").innerHTML = an.map(([k, v]) => `<div><b>${esc(k)}</b>${vtMath(String(v))}</div>`).join(""); }
+function vtTrace(e, tap){ const V = vt.view, tr = $("vt-trace"); if(!V){ tr.hidden = true; return; } const r = $("vt-cv").getBoundingClientRect(), px = e.clientX - r.left, xv = V.xmin + (V.xmax - V.xmin) * px / r.width;
+  if(tap && $("vt-o-t").checked){ $("vt-ta").value = +xv.toFixed(3); vtPlot(); return; } const yv = V.F[0].f(xv), m = V.fd(xv); if(!isFinite(yv)){ tr.hidden = true; return; }
+  vtPlot(); const x = $("vt-cv").getContext("2d"); x.strokeStyle = "rgba(100,116,139,.6)"; x.lineWidth = 1; x.setLineDash([4, 4]); x.beginPath(); x.moveTo(px, 0); x.lineTo(px, V.h); x.stroke(); x.setLineDash([]); x.beginPath(); x.arc(px, V.Y(yv), 5, 0, 7); x.fillStyle = VT_COL[0]; x.fill();
+  tr.hidden = false; tr.textContent = `x = ${VTM.dec(xv, 3)}   y = ${VTM.dec(yv, 3)}   slope = ${isFinite(m) ? VTM.dec(m, 3) : "—"}`; }
+function vtLaunch(){ const P = vt.g && vt.g.proj; if(!P) return; const t0 = performance.now(), dur = Math.min(4000, Math.max(1500, P.T * 500));
+  const tick = now => { if(!vt.g || vt.g.proj !== P) return; const k = Math.min(1, (now - t0) / dur); vt.anim = {t: P.T * k}; vtPlot(); if(k < 1) requestAnimationFrame(tick); else setTimeout(() => { vt.anim = null; vtPlot(); }, 1200); }; requestAnimationFrame(tick); }
+// ---------- set up ----------
+function vtInit(){ if(!$("vt")) return; requestAnimationFrame(() => vtPlot()); if(vt.inited) return; vt.inited = true; vtLoad();
+  $("vt-subj").innerHTML = VT_SUBJECTS.map(s => `<option${s === vt.subject ? " selected" : ""}>${s}</option>`).join(""); $("vt-level").innerHTML = VT_LEVELS.map(([k, n]) => `<option value="${k}"${k === vt.level ? " selected" : ""}>${n}</option>`).join("");
+  $("vt-subj").onchange = e => { vt.subject = e.target.value; vtSaveSet(); }; $("vt-level").onchange = e => { vt.level = e.target.value; vtSaveSet(); };
+  const pers = () => { $("vt-personas").innerHTML = VT_PERSONAS.map(p => `<button type="button" class="vt-persona" data-p="${p.id}" aria-pressed="${p === vt.persona}"><b>${p.name}</b><small>${p.desc}</small></button>`).join(""); $("vt-who").textContent = "Tutor: " + vt.persona.name;
+    $("vt-personas").querySelectorAll("[data-p]").forEach(b => b.onclick = () => { vt.persona = VT_PERSONAS.find(p => p.id === b.dataset.p); vtSaveSet(); pers(); vtSay(vt.persona.open); }); }; pers();
+  $("vt-samples").innerHTML = VT_SAMPLES.map(([s, t, q], i) => `<button type="button" class="vt-sample" data-i="${i}"><b>${s}</b><span>${esc(t)}</span></button>`).join("");
+  $("vt-samples").querySelectorAll("[data-i]").forEach(b => b.onclick = () => { const [s, , q] = VT_SAMPLES[+b.dataset.i]; vt.subject = s; $("vt-subj").value = s; vtSaveSet(); $("vt-in").value = q; vtLog("me", q); vtSolve(q); });
+  $("vt-go").onclick = () => { const q = $("vt-in").value.trim(); if(q) vtHeard(q); };
+  $("vt-in").onkeydown = e => { if(e.key === "Enter" && !e.shiftKey){ e.preventDefault(); $("vt-go").click(); } };
+  $("vt-mic").onclick = () => { if(vt.listening){ vtMicStop(); vtState(); } else vtMicStart(); };
+  const mute = () => { $("vt-mute").textContent = vt.muted ? "🔇" : "🔊"; $("vt-mute").setAttribute("aria-pressed", String(vt.muted)); }; mute();
+  $("vt-mute").onclick = () => { vt.muted = !vt.muted; if(vt.muted) try { stopAll(); } catch(e){} vtSaveSet(); mute(); };
+  $("vt-hands").checked = vt.hands; $("vt-hands").onchange = e => { vt.hands = e.target.checked; vtSaveSet(); if(vt.hands && !vt.listening && !vtIsSpeaking()) vtMicStart(); if(!vt.hands) vtMicStop(); vtState(); };
+  $("vt-copy").onclick = async () => { const t = vt.log.map(m => `[${m.t}] ${m.who === "me" ? "You" : "Tutor"}: ${m.text}`).join("\n"); try { await navigator.clipboard.writeText(t); $("vt-copy").textContent = "✅ Copied"; setTimeout(() => { $("vt-copy").textContent = "📋 Copy"; }, 1500); } catch(e){ const ta = document.createElement("textarea"); ta.value = t; document.body.appendChild(ta); ta.select(); try { document.execCommand("copy"); } catch(_){} ta.remove(); } };
+  $("vt-clear").onclick = () => { vt.log = []; vtLogRender(); };
+  ["vt-plot"].forEach(id => $(id).onclick = () => { vt.g = {marks: []}; $("vt-launch").hidden = true; vtPlot(); });
+  $("vt-fx").onkeydown = e => { if(e.key === "Enter"){ vt.g = {marks: []}; $("vt-launch").hidden = true; vtPlot(); } };
+  ["vt-xmin", "vt-xmax", "vt-ta", "vt-aa", "vt-ab", "vt-o-d", "vt-o-t", "vt-o-a"].forEach(id => $(id).addEventListener("change", () => vtPlot()));
+  const cv = $("vt-cv"); cv.addEventListener("pointermove", e => vtTrace(e)); cv.addEventListener("pointerdown", e => vtTrace(e, true)); cv.addEventListener("pointerleave", () => { $("vt-trace").hidden = true; vtPlot(); });
+  $("vt-launch").onclick = vtLaunch; window.addEventListener("resize", () => { if(!$("vt").hidden) vtPlot(); });
+  setInterval(vtState, 300); vtLogRender(); vt.g = {marks: []}; vtPlot(); }
+</script>
 <div id="voice-ctl" class="voice-ctl" hidden role="group" aria-label="Voice controls"><span class="vc-dot" aria-hidden="true"></span><button type="button" id="vc-pause">⏸ Pause</button><button type="button" id="vc-stop">⏹ Stop</button></div>
 <style>
 .voice-ctl{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(92px + env(safe-area-inset-bottom,0px));white-space:nowrap;z-index:9000;display:flex;align-items:center;gap:6px;padding:6px 6px 6px 12px;border-radius:999px;background:#1e293b;color:#fff;box-shadow:0 8px 24px rgba(15,23,42,.35);font:inherit}
