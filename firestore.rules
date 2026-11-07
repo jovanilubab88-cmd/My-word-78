@@ -1,0 +1,32 @@
+rules_version = '2';
+// My Word Book — Firestore security rules.
+// Copy everything in this file into Firebase console → Firestore Database → Rules, then press Publish.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Each person can only see and change their own profile.
+    match /users/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+
+      // A new profile always starts as a free trial of at most 15 days.
+      allow create: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.plan == 'trial'
+        && request.resource.data.trialEnds is timestamp
+        && request.resource.data.trialEnds <= request.time + duration.value(15, 'd');
+
+      // People can edit their name etc., but never their own plan, trial or payment details
+      // (only the payment system, using admin access, can change those).
+      allow update: if request.auth != null && request.auth.uid == uid
+        && !request.resource.data.diff(resource.data).affectedKeys()
+              .hasAny(['plan', 'trialEnds', 'createdAt', 'stripeCustomer', 'stripeSubscription',
+                       'stripeStatus', 'paidUntil', 'paidSince']);
+
+      allow delete: if false;
+
+      // Saved progress, words, notes … private to the owner.
+      match /{rest=**} {
+        allow read, write: if request.auth != null && request.auth.uid == uid;
+      }
+    }
+  }
+}

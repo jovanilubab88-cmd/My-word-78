@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Voice pre-fill · My Word Book admin</title>
+<style>
+:root{--ink:#1b2a4a;--muted:#51607d;--line:#1b2a4a;--bg:#f4f8ff;--card:#fff;--ok:#16a34a;--warn:#b45309;--bad:#b91c1c;--accent:#7c3aed}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg);line-height:1.5;padding:calc(18px + env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) 40px max(16px,env(safe-area-inset-left))}
+main{max-width:760px;margin:0 auto;display:grid;gap:16px}
+h1{margin:0;font-size:28px}
+.card{background:var(--card);border:3px solid var(--line);border-radius:20px;padding:18px}
+.card h2{margin:0 0 10px;font-size:19px}
+p{margin:0 0 10px}.muted{color:var(--muted);font-size:14px}
+label.f{display:block;font-weight:700;margin:8px 0 6px}
+input[type=password]{width:100%;min-height:48px;padding:10px 12px;border:2.5px solid var(--line);border-radius:12px;font:600 16px system-ui}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.ck{display:flex;align-items:flex-start;gap:8px;padding:8px 10px;border:2px solid #cbd5e1;border-radius:12px;cursor:pointer;font-weight:600}
+.ck input{width:20px;height:20px;margin:2px 0 0;accent-color:var(--accent);flex:none}
+.ck small{display:block;color:var(--muted);font-weight:500}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button{min-height:48px;padding:10px 20px;border-radius:999px;border:3px solid var(--line);background:#fff;font:800 16px system-ui;color:var(--ink);cursor:pointer}
+button.go{background:var(--accent);color:#fff;border-color:#4c1d95}
+button:disabled{opacity:.55;cursor:not-allowed}
+.bar{height:16px;border-radius:99px;background:#e2e8f0;overflow:hidden;border:2px solid var(--line)}.bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-top:12px}
+.stat{background:var(--bg);border-radius:12px;padding:10px}.stat b{display:block;font-size:22px}.stat span{font-size:13px;color:var(--muted)}
+.est{font-size:18px;font-weight:800}
+#log{max-height:180px;overflow:auto;font:13px ui-monospace,monospace;background:#0f172a;color:#e2e8f0;border-radius:12px;padding:10px;white-space:pre-wrap;margin-top:10px}
+.msg{font-weight:700}.msg.bad{color:var(--bad)}.msg.ok{color:var(--ok)}
+</style>
+</head>
+<body>
+<main>
+  <h1>🎙️ Voice pre-fill</h1>
+  <p class="muted">Private page for the owner of My Word Book. It makes the AI voice audio for every word in the dictionary <b>once</b> and saves it on your Netlify site. After that, every child hears the saved clips and you aren't charged again. You can stop at any time and continue later; words already saved are skipped for free.</p>
+
+  <div class="card">
+    <h2>1. Admin password</h2>
+    <p class="muted">The <b>PREFILL_TOKEN</b> you added in Netlify → Site configuration → Environment variables (make up any long password). This is not your OpenAI key.</p>
+    <label class="f" for="tok">Password</label>
+    <input type="password" id="tok" autocomplete="off">
+  </div>
+
+  <div class="card">
+    <h2>2. Which voices?</h2>
+    <p class="muted">Each voice is a separate set of clips. Start with the voice the app uses most (Nova is the default).</p>
+    <div class="grid" id="voices"></div>
+  </div>
+
+  <div class="card">
+    <h2>3. What to make</h2>
+    <div class="grid">
+      <label class="ck"><input type="checkbox" data-kind="card" checked><span>Word cards<small>word, syllables, word</small></span></label>
+      <label class="ck"><input type="checkbox" data-kind="word" checked><span>Word alone<small>spelling, games, labs</small></span></label>
+      <label class="ck"><input type="checkbox" data-kind="def"><span>Meanings<small>“What it means”</small></span></label>
+      <label class="ck"><input type="checkbox" data-kind="ex"><span>Example sentences<small>“Use it in a sentence”</small></span></label>
+    </div>
+    <p style="margin:14px 0 0" class="est" id="est">Loading the word list…</p>
+    <p class="muted" id="estn">Estimate at OpenAI's standard voice price of about $15 per million characters. Clips that are already saved cost nothing.</p>
+  </div>
+
+  <div class="card">
+    <h2>4. Make the audio</h2>
+    <div class="row"><button class="go" id="go" disabled>▶ Start</button><button id="stop" disabled>⏸ Pause</button><span class="msg" id="msg"></span></div>
+    <div class="bar" style="margin-top:14px"><i id="bari"></i></div>
+    <div class="stats">
+      <div class="stat"><b id="s-done">0</b><span>clips checked</span></div>
+      <div class="stat"><b id="s-new">0</b><span>newly made (charged)</span></div>
+      <div class="stat"><b id="s-hit">0</b><span>already saved (free)</span></div>
+      <div class="stat"><b id="s-err">0</b><span>problems</span></div>
+    </div>
+    <div id="log" aria-live="polite"></div>
+  </div>
+</main>
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const VOICES = [["nova","bright & friendly"],["shimmer","soft & clear"],["coral","warm & cheerful"],["sage","calm & gentle"],["alloy","balanced"],["ash","clear & steady"],["fable","British storyteller"],["echo","smooth"],["onyx","deep narrator"]];
+  $("voices").innerHTML = VOICES.map(([v, d]) => `<label class="ck"><input type="checkbox" data-voice="${v}" ${v === "nova" ? "checked" : ""}><span>${v[0].toUpperCase() + v.slice(1)}<small>${d}</small></span></label>`).join("");
+  let WORDS = [], running = false, stats = {done: 0, made: 0, hit: 0, err: 0, chars: 0};
+  const log = t => { const l = $("log"); l.textContent += t + "\n"; l.scrollTop = l.scrollHeight; };
+  const msg = (t, cls) => { $("msg").textContent = t; $("msg").className = "msg " + (cls || ""); };
+  try { $("tok").value = sessionStorage.getItem("wb-prefill-tok") || ""; } catch(e){}
+
+  // the exact text the app sends for each kind of clip (so the saved clip is found when a child taps)
+  function textsFor(w, kinds){
+    const out = [];
+    if(kinds.includes("card")) out.push(w.s && w.s.length > 1 ? `${w.w}. ${w.s.join(" - ")}. ${w.w}.` : `${w.w}. ${w.w}.`);
+    if(kinds.includes("word")) out.push(w.w);
+    if(kinds.includes("def") && w.d) out.push(w.d);
+    if(kinds.includes("ex") && w.e) out.push(w.e);
+    return out.map(t => t.replace(/\s+/g, " ").trim()).filter(Boolean);
+  }
+  const chosen = () => ({voices: [...document.querySelectorAll("[data-voice]:checked")].map(x => x.dataset.voice), kinds: [...document.querySelectorAll("[data-kind]:checked")].map(x => x.dataset.kind)});
+  function jobs(){ const {voices, kinds} = chosen(), list = []; voices.forEach(v => WORDS.forEach(w => textsFor(w, kinds).forEach(t => list.push({voice: v, text: t})))); return list; }
+  function estimate(){ const L = jobs(), chars = L.reduce((n, j) => n + j.text.length, 0);
+    $("est").textContent = WORDS.length ? `${WORDS.length.toLocaleString()} words · ${L.length.toLocaleString()} clips · about $${(chars * 15 / 1e6).toFixed(2)} if nothing is saved yet` : "No words found.";
+    $("go").disabled = !L.length; }
+  document.addEventListener("change", e => { if(e.target.matches("[data-voice],[data-kind]")) estimate(); });
+
+  // read the word list straight from the app, so it always matches
+  fetch("app.html").then(r => r.text()).then(html => {
+    const re = /\{"g": \d+, "w": "((?:[^"\\]|\\.)*)", "s": (\[[^\]]*\])(.*?)\}/g, seen = new Set(); let m;
+    while((m = re.exec(html))){ try { const w = JSON.parse('"' + m[1] + '"'), s = JSON.parse(m[2]), rest = m[3];
+        const d = (rest.match(/"d": "((?:[^"\\]|\\.)*)"/) || [])[1], e = (rest.match(/"e": "((?:[^"\\]|\\.)*)"/) || [])[1];
+        if(seen.has(w.toLowerCase())) continue; seen.add(w.toLowerCase());
+        WORDS.push({w, s, d: d ? JSON.parse('"' + d + '"') : "", e: e ? JSON.parse('"' + e + '"') : ""}); } catch(err){} }
+    estimate(); log(`Found ${WORDS.length.toLocaleString()} words in the app.`);
+  }).catch(() => { $("est").textContent = "Couldn't load the word list (app.html)."; });
+
+  async function send(token, items){
+    for(let attempt = 0; attempt < 3; attempt++){
+      try { const r = await fetch("/.netlify/functions/tts-prefill", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({token, items})}), d = await r.json().catch(() => ({}));
+        if(r.status === 403 || r.status === 503) throw {stop: true, message: d.error || "Not allowed."};
+        if(!r.ok) throw {message: d.error || ("Error " + r.status)};
+        return d.results || [];
+      } catch(e){ if(e.stop) throw e; await new Promise(r => setTimeout(r, 1500 * (attempt + 1))); }
+    }
+    return items.map(() => ({ok: false, error: "network"}));
+  }
+  $("go").onclick = async () => {
+    const token = $("tok").value.trim(); if(token.length < 8){ msg("Type the admin password (PREFILL_TOKEN) first.", "bad"); return; }
+    try { sessionStorage.setItem("wb-prefill-tok", token); } catch(e){}
+    const L = jobs(); if(!L.length) return;
+    const sig = chosen().voices.join(",") + "|" + chosen().kinds.join(","), saveKey = "wb-prefill-pos:" + sig;
+    let pos = 0; try { pos = +localStorage.getItem(saveKey) || 0; } catch(e){} if(pos >= L.length) pos = 0;
+    if(pos) log(`Continuing from clip ${pos.toLocaleString()} of ${L.length.toLocaleString()}.`);
+    running = true; $("go").disabled = true; $("stop").disabled = false; msg("Working… you can leave this page open.");
+    const BATCH = 10, PAR = 2;
+    try {
+      while(running && pos < L.length){
+        const chunks = []; for(let k = 0; k < PAR && pos + k * BATCH < L.length; k++) chunks.push(L.slice(pos + k * BATCH, pos + (k + 1) * BATCH));
+        const results = await Promise.all(chunks.map(c => send(token, c)));
+        results.flat().forEach((r, i) => { stats.done++; if(r.ok && r.hit) stats.hit++; else if(r.ok){ stats.made++; stats.chars += r.chars || 0; } else { stats.err++; if(stats.err <= 20) log("Problem: " + (r.error || "failed").slice(0, 120)); } });
+        pos += chunks.reduce((n, c) => n + c.length, 0);
+        try { localStorage.setItem(saveKey, String(pos)); } catch(e){}
+        $("bari").style.width = (pos / L.length * 100).toFixed(1) + "%";
+        $("s-done").textContent = stats.done.toLocaleString(); $("s-new").textContent = stats.made.toLocaleString(); $("s-hit").textContent = stats.hit.toLocaleString(); $("s-err").textContent = stats.err.toLocaleString();
+        msg(`Working… ${pos.toLocaleString()} of ${L.length.toLocaleString()} · spent about $${(stats.chars * 15 / 1e6).toFixed(2)} this run`);
+      }
+      if(pos >= L.length){ msg(`✅ Done! ${stats.made.toLocaleString()} new clips made, ${stats.hit.toLocaleString()} were already saved.`, "ok"); log("All clips are saved. Children will hear these without new charges."); try { localStorage.removeItem(saveKey); } catch(e){} }
+      else msg("Paused. Tap Start to continue where you stopped.");
+    } catch(e){ msg(e.message || "Stopped.", "bad"); log("Stopped: " + (e.message || "")); }
+    running = false; $("go").disabled = false; $("stop").disabled = true;
+  };
+  $("stop").onclick = () => { running = false; $("stop").disabled = true; msg("Pausing after this batch…"); };
+})();
+</script>
+</body>
+</html>

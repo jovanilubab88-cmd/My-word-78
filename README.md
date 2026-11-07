@@ -1,7 +1,3 @@
-# My-word-78
+# My Word Book
 
-## Description
-This repository contains the project files for My-word-78.
-
-## Usage
-Add instructions on how to use your project here.
+Picture dictionary and learning app (K–12). Deployed on Netlify.

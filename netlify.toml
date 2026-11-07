@@ -1,0 +1,15 @@
+# Tells Netlify where the site and the functions are
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
+  # firebase-admin works best installed as-is rather than bundled
+  external_node_modules = ["firebase-admin"]
+
+# short address for the app: yoursite.netlify.app/app
+[[redirects]]
+  from = "/app"
+  to = "/app.html"
+  status = 200
