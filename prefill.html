@@ -42,6 +42,7 @@ button:disabled{opacity:.55;cursor:not-allowed}
     <p class="muted">The <b>PREFILL_TOKEN</b> you added in Netlify → Site configuration → Environment variables (make up any long password). This is not your OpenAI key.</p>
     <label class="f" for="tok">Password</label>
     <input type="password" id="tok" autocomplete="off">
+    <div class="row" style="margin-top:10px"><button type="button" id="chk">🔑 Check password</button><span class="msg" id="chkmsg"></span></div>
   </div>
 
   <div class="card">
@@ -148,6 +149,21 @@ button:disabled{opacity:.55;cursor:not-allowed}
   };
   $("stop").onclick = () => { running = false; $("stop").disabled = true; msg("Pausing after this batch…"); };
 })();
+// 🔑 Check password: asks the server with no words, so nothing is made and nothing is charged
+document.getElementById("chk").onclick = async () => {
+  const out = document.getElementById("chkmsg"), say = (t, ok) => { out.textContent = t; out.className = "msg " + (ok ? "ok" : "bad"); };
+  const token = document.getElementById("tok").value.trim();
+  if(!token){ say("Type the password first."); return; }
+  say("Checking…", true);
+  let r, d = {};
+  try { r = await fetch("/.netlify/functions/tts-prefill", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({token, items: []})}); d = await r.json().catch(() => ({})); }
+  catch(e){ say("❌ Couldn't reach the website. Check the internet and try again."); return; }
+  if(r.ok) say("✅ PREFILL_TOKEN is working — the password is right.", true);
+  else if(r.status === 403) say("❌ The password is set in Netlify, but what you typed doesn't match it. Check for spaces or capital letters.");
+  else if(r.status === 503) say("❌ PREFILL_TOKEN isn't set on this site yet (or it's shorter than 8 characters). Add it in Netlify → Site configuration → Environment variables, then Deploys → Trigger deploy.");
+  else if(r.status === 404) say("❌ The pre-fill program isn't on this website yet. Wait for the Netlify deploy to finish, then try again.");
+  else say("❌ Error " + r.status + ": " + (d.error || d.errorMessage || "something went wrong"));
+};
 </script>
 </body>
 </html>
