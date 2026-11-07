@@ -159,7 +159,9 @@ document.getElementById("chk").onclick = async () => {
   try { r = await fetch("/.netlify/functions/tts-prefill", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({token, items: []})}); d = await r.json().catch(() => ({})); }
   catch(e){ say("❌ Couldn't reach the website. Check the internet and try again."); return; }
   if(r.ok) say("✅ PREFILL_TOKEN is working — the password is right.", true);
-  else if(r.status === 403) say("❌ The password is set in Netlify, but what you typed doesn't match it. Check for spaces or capital letters.");
+  else if(r.status === 403){ const a = d.savedLength, b = d.typedLength;
+    say(a && a !== b ? "❌ Doesn't match: the password saved in Netlify is " + a + " characters long, but you typed " + b + ". You may be using an old or different password — set a new one in Netlify, then Deploys → Trigger deploy."
+      : "❌ Doesn't match. The length is right (" + b + " characters), so check capital letters and look-alike characters (O and 0, l and 1)."); }
   else if(r.status === 503) say("❌ PREFILL_TOKEN isn't set on this site yet (or it's shorter than 8 characters). Add it in Netlify → Site configuration → Environment variables, then Deploys → Trigger deploy.");
   else if(r.status === 404) say("❌ The pre-fill program isn't on this website yet. Wait for the Netlify deploy to finish, then try again.");
   else say("❌ Error " + r.status + ": " + (d.error || d.errorMessage || "something went wrong"));

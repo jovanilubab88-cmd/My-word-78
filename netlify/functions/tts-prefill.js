@@ -13,7 +13,7 @@ exports.handler = async function (event) {
   let body; try { body = JSON.parse(event.body || "{}"); } catch (e) { return reply(400, { error: "Invalid JSON" }); }
   const given = tidy(body.token);
   if (!secret || secret.length < 8) return reply(503, { error: "Add PREFILL_TOKEN (at least 8 characters) in Netlify's environment variables first." });
-  if (given.length !== secret.length || !crypto.timingSafeEqual(Buffer.from(given), Buffer.from(secret))) return reply(403, { error: "Wrong admin password." });
+  if (given.length !== secret.length || !crypto.timingSafeEqual(Buffer.from(given), Buffer.from(secret))) return reply(403, { error: "Wrong admin password.", savedLength: secret.length, typedLength: given.length });
   const items = (Array.isArray(body.items) ? body.items : []).slice(0, 12);
   const out = await Promise.all(items.map(async it => {
     const req = cleanRequest(it || {});
