@@ -3028,6 +3028,12 @@ window.MWB_TRIAL_DAYS = 14;
         <p class="vt-mini">Tutor style</p>
         <div class="vt-personas" id="vt-personas" role="group" aria-label="Tutor style"></div>
         <textarea id="vt-in" rows="3" placeholder="Type a problem — e.g. Find the derivative of x^3·sin(x) at x = 2"></textarea>
+        <div class="vt-addrow">
+          <label class="vt-file" id="vt-camlab"><input type="file" id="vt-cam" accept="image/*" capture="environment">📷 Take a photo</label>
+          <label class="vt-file"><input type="file" id="vt-file" accept="image/*,.pdf,.txt,.md,.docx,.rtf,.html,.htm">🖼️ Add a picture or file</label>
+        </div>
+        <p class="vt-tip vt-droptip">A photo of a worksheet, a screenshot, a PDF or a Word file — or paste or drop a picture here.</p>
+        <div class="vt-shot" id="vt-shot" hidden><div class="vt-shotpic" id="vt-shotpic"></div><div class="vt-shotbody"><b id="vt-shotmsg">Reading your question…</b><div class="vt-qpick" id="vt-qpick"></div></div><button type="button" class="vt-shotx" id="vt-shotx" aria-label="Remove the picture">✕</button></div>
         <div class="vt-row"><button type="button" class="btn" id="vt-go">🚀 Ask the tutor</button></div>
         <details class="vt-samples"><summary>📚 Try a sample problem</summary><div id="vt-samples"></div></details>
       </div>
@@ -36369,6 +36375,21 @@ try { __diag("script-end"); } catch(e){}
 .vt-mine .vt-row input{flex:1;min-width:140px;font:inherit;font-size:17px;padding:8px 10px;border-radius:10px;border:2px solid var(--line);background:#fff;color:#1b2a4a}
 .vt-mineres{margin:8px 0 0;font-weight:600}
 .vt-follow{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.vt-follow button{border:2px solid #4f46e5;color:#4f46e5;background:var(--paper);border-radius:999px;padding:5px 12px;font:inherit;font-size:14px;cursor:pointer}
+.vt-addrow{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.vt-file{position:relative;display:flex;align-items:center;justify-content:center;gap:6px;text-align:center;padding:10px 8px;border:3px solid var(--line);border-radius:14px;background:#eef2ff;color:#1e1b4b;font-weight:700;font-size:16px;cursor:pointer;box-shadow:0 3px 0 var(--line);min-height:48px}
+.vt-file input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer}
+.vt-file:focus-within{outline:3px solid #6366f1;outline-offset:2px}
+.vt-droptip{margin:6px 0 4px;text-align:center}
+.vt-card.drop{outline:4px dashed #6366f1;outline-offset:4px}
+.vt-shot{display:flex;gap:10px;align-items:flex-start;margin:8px 0;padding:10px;border:3px solid var(--line);border-radius:14px;background:var(--paper)}
+.vt-shotpic{flex:none;width:96px;height:96px;border-radius:10px;overflow:hidden;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:40px;background:#f1f5f9}
+.vt-shotpic img{width:100%;height:100%;object-fit:cover}
+@media (max-width:520px){.vt-shotpic{width:60px;height:60px;font-size:28px}}
+.vt-shotbody{flex:1;min-width:0}.vt-shotbody b{display:block;margin-bottom:6px}
+.vt-qpick{display:flex;flex-direction:column;gap:6px}
+.vt-qpick button{text-align:left;border:2px solid #4f46e5;border-radius:10px;background:var(--paper);color:var(--ink);padding:6px 10px;font:inherit;font-size:14.5px;cursor:pointer;overflow-wrap:anywhere}
+.vt-shotx{flex:none;border:2px solid var(--line);background:var(--paper);color:var(--ink);border-radius:50%;width:34px;height:34px;font-size:16px;cursor:pointer}
+:root[data-theme="dark"] .vt-file{background:#2a2f63;color:#e0e7ff}:root[data-theme="dark"] .vt-shotpic{background:#1e293b}
 .vt .btn.vt-sm{font-size:15px;padding:6px 12px;width:auto;flex:none;margin:0}.vt-loghead > span{display:flex;gap:6px}.vt-solhead > div{min-width:0;flex:1}
 .vt-studio.special .vt-fxrow,.vt-studio.special .vt-opts{display:none}
 .vt-fxrow{flex-wrap:nowrap}.vt-fx{display:flex;align-items:center;gap:6px;flex:1;min-width:0;font-weight:700;font-family:Georgia,serif;font-size:18px}
@@ -36744,7 +36765,7 @@ const VTS = (() => {
     return {kind: "graph", subject: "Algebra", title: "Graph of " + fns.map(f => "y = " + M.str(M.S(M.parse(f)))).join(" and "), answer: rs.length ? `x-intercepts: ${rs.slice(0, 6).map(r => dec(r, 4)).join(", ")}` : "No x-intercepts between −30 and 30", check: null,
       steps: [{title: "Plot points", math: [-2, -1, 0, 1, 2].map(x => `(${x}, ${dec(M.ev(f, x), 3)})`).join("  "), why: "Pick some x values, work out y, and join the dots.", hint: "What is y when x = 0?"}, {title: "Key features", math: `y-intercept: ${dec(M.ev(f, 0), 4)}${rs.length ? ";  x-intercepts: " + rs.slice(0, 6).map(r => dec(r, 4)).join(", ") : ""}${P ? ";  degree " + M.deg(M.clean(P)) : ""}`, why: "Intercepts are where the curve crosses the axes. The Graph studio below also marks turning points.", hint: "Where does it cross the y-axis?"}],
       graph: {fns, marks: rs.slice(0, 6), deriv: false}, overview: "Use the Graph studio to explore: turn on the derivative, a tangent line or the area under the curve."}; }
-  function solve(raw){ const q = fixWords(raw).replace(/\s+/g, " ").trim(); if(!q) return null;
+  function solve(raw){ const q = fixWords(String(raw).replace(/^\s*(?:Q(?:uestion)?\s*)?\(?\d{1,2}\s*[.):]\s+|^\s*\(?[a-h]\)\s+/i, "")).replace(/\s+/g, " ").trim(); if(!q) return null;
     for(const fn of [graphAsk, derivative, integral, limit, projectile, stats, system, equation, arith]){ try { const r = fn(q); if(r) return r; } catch(e){} } return null; }
   return {solve, roots, simpson, fixWords};
 })();
@@ -36967,6 +36988,62 @@ function vtTrace(e, tap){ const V = vt.view, tr = $("vt-trace"); if(!V){ tr.hidd
   tr.hidden = false; tr.textContent = `x = ${VTM.dec(xv, 3)}   y = ${VTM.dec(yv, 3)}   slope = ${isFinite(m) ? VTM.dec(m, 3) : "—"}`; }
 function vtLaunch(){ const P = vt.g && vt.g.proj; if(!P) return; const t0 = performance.now(), dur = Math.min(4000, Math.max(1500, P.T * 500));
   const tick = now => { if(!vt.g || vt.g.proj !== P) return; const k = Math.min(1, (now - t0) / dur); vt.anim = {t: P.T * k}; vtPlot(); if(k < 1) requestAnimationFrame(tick); else setTimeout(() => { vt.anim = null; vtPlot(); }, 1200); }; requestAnimationFrame(tick); }
+
+// ---------- questions from a photo, picture or file ----------
+function vtDataURL(blob){ return new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = no; r.readAsDataURL(blob); }); }
+async function vtShrink(file){ // phone photos are huge: make a sharp JPEG no wider than 1600px
+  const url = URL.createObjectURL(file); try { const img = await new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = url; });
+    const k = Math.min(1, 1600 / Math.max(img.naturalWidth, img.naturalHeight)), c = document.createElement("canvas"); c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
+    const x = c.getContext("2d"); x.fillStyle = "#fff"; x.fillRect(0, 0, c.width, c.height); x.drawImage(img, 0, 0, c.width, c.height);
+    const blob = await new Promise(ok => c.toBlob(ok, "image/jpeg", 0.88)); return {blob, url: URL.createObjectURL(blob)}; } finally { URL.revokeObjectURL(url); } }
+const VT_READ_PROMPT = `You are reading a student's homework picture for a tutoring app. Copy out every question you can see, exactly as written, including all numbers, units and answer choices. Write maths as plain text: x^2, sqrt(x), a/b, π, ≤, ∫ from a to b of f(x) dx, lim as x approaches a. If handwriting is unclear, choose the most sensible reading. If a diagram gives measurements, include them in the question in words. Do NOT solve anything. If there are several separate questions, list each one separately. Reply with ONLY JSON: {"questions": ["question 1", "question 2"]}. If you can't see any question, reply {"questions": []}.`;
+function vtParseQs(t){ const m = String(t || "").match(/\{[\s\S]*\}/); if(!m) return null; try { const j = JSON.parse(m[0]); return Array.isArray(j.questions) ? j.questions.map(q => String(q).trim()).filter(Boolean).slice(0, 15) : null; } catch(e){ return null; } }
+async function vtOCR(blob){ // backup reader that runs in the browser (printed text works best)
+  if(!window.Tesseract) await new Promise((ok, no) => { const s = document.createElement("script"); s.src = "https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"; s.onload = ok; s.onerror = () => no({code: "ocr"}); document.head.appendChild(s); });
+  const r = await window.Tesseract.recognize(blob, "eng"); return vtSplitQs(r && r.data && r.data.text || ""); }
+async function vtReadImage(blob){
+  const msg = $("vt-shotmsg");
+  if(typeof sampler !== "undefined" && sampler && !sampler.netlify){ let lim = {}; try { lim = sampler.limits ? await sampler.limits() : {}; } catch(e){}
+    if(lim && lim.images){ const r = await sampler(VT_READ_PROMPT, {images: [blob], modelTier: "default"}); const qs = vtParseQs(r && r.text); if(qs) return qs; }
+    else throw {code: "noimg", message: "Reading pictures isn't switched on here yet — type the question instead."}; }
+  if(typeof IS_NETLIFY !== "undefined" && IS_NETLIFY){
+    try { const res = await fetch("/.netlify/functions/reader", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({mode: "general", json: true, prompt: VT_READ_PROMPT, image: await vtDataURL(blob)})});
+      if(res.ok){ const d = await res.json().catch(() => null); if(d && d.vision){ const qs = vtParseQs(d.answer); if(qs) return qs; } } } catch(e){}
+    msg.textContent = "🔍 Reading the text in your picture…"; return vtOCR(blob); }
+  return vtOCR(blob); }
+function vtSplitQs(text){ const t = String(text || "").replace(/\r/g, "").replace(/[ \t]+/g, " ").trim(); if(!t) return [];
+  const parts = t.split(/\n(?=\s*(?:Q(?:uestion)?\s*)?\(?\d{1,2}\s*[.):]\s+|\s*\(?[a-h]\)\s+)/i).map(s => s.replace(/\s*\n\s*/g, " ").trim()).filter(s => s.length > 3);
+  let out = parts.length > 1 ? parts : [t.replace(/\s*\n\s*/g, " ")];
+  if(out.length === 1){ const inl = out[0].split(/\s+(?=(?:Q(?:uestion)?\s*)?\(?\d{1,2}\s*[.)]\s+\S)/i).map(s => s.trim()).filter(s => s.length > 3); if(inl.length > 1 && inl.filter(s => /^(?:Q(?:uestion)?\s*)?\(?\d{1,2}\s*[.)]/i.test(s)).length >= inl.length - 1) out = inl; }
+  return out.map(s => s.slice(0, 600)).slice(0, 15); }
+async function vtFileText(file){ const r = await bkExtract(file, () => {}); return (r.pages || []).map(p => p.t).join("\n\n"); }
+async function vtPdfPageImage(file){ const lib = await bkPDF(), pdf = await lib.getDocument({data: new Uint8Array(await file.arrayBuffer())}).promise, page = await pdf.getPage(1), v = page.getViewport({scale: 1}), k = Math.min(2.5, 1600 / Math.max(v.width, v.height)), vp = page.getViewport({scale: k}), c = document.createElement("canvas"); c.width = vp.width; c.height = vp.height;
+  await page.render({canvasContext: c.getContext("2d"), viewport: vp}).promise; return new Promise(ok => c.toBlob(ok, "image/jpeg", 0.9)); }
+async function vtAddFile(file){ if(!file) return; const box = $("vt-shot"), pic = $("vt-shotpic"), msg = $("vt-shotmsg"), pick = $("vt-qpick"); box.hidden = false; pick.innerHTML = ""; msg.textContent = "🔍 Reading your question…";
+  const isImg = /^image\//.test(file.type) || /\.(jpe?g|png|gif|webp|heic|heif|bmp)$/i.test(file.name); vt.busy = true; vtState();
+  try { let qs;
+    if(isImg){ const s = await vtShrink(file); pic.innerHTML = `<img src="${s.url}" alt="Your picture">`; qs = await vtReadImage(s.blob); }
+    else { pic.textContent = /\.pdf$/i.test(file.name) ? "📕" : "📄"; let text = ""; try { text = await vtFileText(file); } catch(e){}
+      if(text.replace(/\s/g, "").length < 15 && /\.pdf$/i.test(file.name)){ msg.textContent = "🔍 This PDF is a scan — reading the first page as a picture…"; const b = await vtPdfPageImage(file); pic.innerHTML = `<img src="${URL.createObjectURL(b)}" alt="First page">`; qs = await vtReadImage(b); }
+      else qs = vtSplitQs(text); }
+    vt.busy = false; vtGotQs(qs || [], file.name); }
+  catch(e){ console.warn(e); msg.textContent = e && e.message && e.code === "noimg" ? "📷 " + e.message : e && e.code === "ocr" ? "I couldn't load the picture reader. Check the internet connection, or type the question." : "Sorry, I couldn't read that. Try a clearer, closer photo — or type the question."; }
+  finally { vt.busy = false; vtState(); } }
+function vtGotQs(qs, name){ const msg = $("vt-shotmsg"), pick = $("vt-qpick");
+  if(!qs.length){ msg.textContent = "I couldn't find a question in that. Try a closer, brighter photo — or type it in."; return; }
+  if(qs.length === 1){ msg.textContent = "✅ I read this — fix anything I got wrong, then tap Ask:"; $("vt-in").value = qs[0]; vtLog("me", "📷 " + qs[0]); vtSolve(qs[0]); return; }
+  msg.textContent = `✅ I found ${qs.length} questions. Tap one to work on it:`; $("vt-in").value = qs[0];
+  pick.innerHTML = qs.map((q, i) => `<button type="button" data-q="${i}">${/^\s*(?:Q(?:uestion)?\s*)?\(?\d{1,2}\s*[.):]|^\s*\(?[a-h]\)/i.test(q) ? "" : `<b>${i + 1}.</b> `}${vtMath(q)}</button>`).join("");
+  pick.querySelectorAll("[data-q]").forEach(b => b.onclick = () => { const q = qs[+b.dataset.q]; $("vt-in").value = q; vtLog("me", "📷 " + q); vtSolve(q); $("vt-sol").scrollIntoView({behavior: "smooth", block: "start"}); });
+  vtSay(`I found ${qs.length} questions. Tap the one you want to work on.`); }
+function vtFileSetup(){ const pickF = e => { const f = e.target.files && e.target.files[0]; e.target.value = ""; vtAddFile(f); };
+  $("vt-cam").onchange = pickF; $("vt-file").onchange = pickF; $("vt-shotx").onclick = () => { $("vt-shot").hidden = true; $("vt-shotpic").innerHTML = ""; };
+  const card = $("vt-in").closest(".vt-card");
+  card.addEventListener("dragover", e => { if([...(e.dataTransfer.items || [])].some(i => i.kind === "file")){ e.preventDefault(); card.classList.add("drop"); } });
+  card.addEventListener("dragleave", () => card.classList.remove("drop")); card.addEventListener("drop", e => { card.classList.remove("drop"); const f = e.dataTransfer.files && e.dataTransfer.files[0]; if(f){ e.preventDefault(); vtAddFile(f); } });
+  document.addEventListener("paste", e => { if($("vt").hidden) return; const f = [...(e.clipboardData && e.clipboardData.files || [])].find(f => /^image\//.test(f.type)); if(f){ e.preventDefault(); vtAddFile(f); } });
+  // computers have no camera button: "Take a photo" simply opens the picker there
+  if(!/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) && !(navigator.maxTouchPoints > 1)) $("vt-camlab").lastChild.textContent = "📷 Add a photo"; }
 // ---------- set up ----------
 function vtInit(){ if(!$("vt")) return; requestAnimationFrame(() => vtPlot()); if(vt.inited) return; vt.inited = true; vtLoad();
   $("vt-subj").innerHTML = VT_SUBJECTS.map(s => `<option${s === vt.subject ? " selected" : ""}>${s}</option>`).join(""); $("vt-level").innerHTML = VT_LEVELS.map(([k, n]) => `<option value="${k}"${k === vt.level ? " selected" : ""}>${n}</option>`).join("");
@@ -36988,7 +37065,7 @@ function vtInit(){ if(!$("vt")) return; requestAnimationFrame(() => vtPlot()); i
   ["vt-xmin", "vt-xmax", "vt-ta", "vt-aa", "vt-ab", "vt-o-d", "vt-o-t", "vt-o-a"].forEach(id => $(id).addEventListener("change", () => vtPlot()));
   const cv = $("vt-cv"); cv.addEventListener("pointermove", e => vtTrace(e)); cv.addEventListener("pointerdown", e => vtTrace(e, true)); cv.addEventListener("pointerleave", () => { $("vt-trace").hidden = true; vtPlot(); });
   $("vt-launch").onclick = vtLaunch; window.addEventListener("resize", () => { if(!$("vt").hidden) vtPlot(); });
-  setInterval(vtState, 300); vtLogRender(); vt.g = {marks: []}; vtPlot(); }
+  vtFileSetup(); setInterval(vtState, 300); vtLogRender(); vt.g = {marks: []}; vtPlot(); }
 </script>
 <div id="voice-ctl" class="voice-ctl" hidden role="group" aria-label="Voice controls"><span class="vc-dot" aria-hidden="true"></span><button type="button" id="vc-pause">⏸ Pause</button><button type="button" id="vc-stop">⏹ Stop</button></div>
 <style>

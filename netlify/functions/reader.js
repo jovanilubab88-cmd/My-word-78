@@ -29,6 +29,8 @@ exports.handler = async function (event) {
   if (body.mode === "general") {
     const prompt = clean(body.prompt, 12000).trim();
     if (!prompt) return { statusCode: 400, body: JSON.stringify({ error: "Missing prompt" }) };
+    // a photo of a homework question (AI Tutor in the Math section): a small JPEG/PNG/WebP sent as a data URL
+    const img = typeof body.image === "string" && /^data:image\/(jpeg|png|webp|gif);base64,[A-Za-z0-9+/=]+$/.test(body.image) && body.image.length < 4500000 ? body.image : null;
     const gsys = 'You are a helpful assistant inside "My Word Book", a learning app for students from kindergarten to grade 12. Follow the request exactly. ' +
       "Use clear, simple, accurate language. Never include anything unsafe or inappropriate for children." +
       (body.json ? " Reply with ONLY valid JSON exactly in the shape requested — no other text and no markdown fences." : "");
@@ -36,12 +38,12 @@ exports.handler = async function (event) {
       const res = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
-        body: JSON.stringify({ model: "gpt-4o-mini", temperature: 0.6, max_tokens: 2000, messages: [{ role: "system", content: gsys }, { role: "user", content: prompt }] }),
+        body: JSON.stringify({ model: "gpt-4o-mini", temperature: img ? 0.1 : 0.6, max_tokens: 2000, messages: [{ role: "system", content: gsys }, { role: "user", content: img ? [{ type: "text", text: prompt }, { type: "image_url", image_url: { url: img, detail: "high" } }] : prompt }] }),
       });
       if (!res.ok) return { statusCode: res.status === 429 ? 429 : res.status === 401 ? 401 : 502, body: JSON.stringify({ error: await res.text() }) };
       const data = await res.json();
       const answer = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content || "").trim();
-      return { statusCode: 200, headers: { "Content-Type": "application/json" }, body: JSON.stringify({ answer }) };
+      return { statusCode: 200, headers: { "Content-Type": "application/json" }, body: JSON.stringify(img ? { answer, vision: true } : { answer }) };
     } catch (e) {
       return { statusCode: 502, body: JSON.stringify({ error: e.message }) };
     }
