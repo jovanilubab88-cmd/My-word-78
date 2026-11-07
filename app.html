@@ -13897,6 +13897,7 @@ document.addEventListener("pointerdown", function unlockSpeech(){
 function stopAll(){ speakToken++; synthCancel(); try { if(typeof AI_AUDIO !== "undefined" && AI_AUDIO && AI_AUDIO.__speaking){ AI_AUDIO.pause(); AI_AUDIO.__speaking = false; } } catch(e){} }
 // parts: a string, or a list of [text, pace] to say one after another
 function speak(text, pace, more, forceNow){
+  window.__vcPaused = false; try { if("speechSynthesis" in window && speechSynthesis.paused) speechSynthesis.resume(); } catch(e){}
   try { if(window.__abcAudio){ window.__abcAudio.pause(); window.__abcAudio = null; } } catch(e){}
   const parts = [[text, pace || 1], ...(more || [])];
   // on the website, read everything with the natural OpenAI voice (falls back to the device voice if it can't)
@@ -14022,6 +14023,7 @@ async function aiSpeakParts(parts, token, forceNow){
     if(i + 1 < parts.length) aiTTSUrl(parts[i + 1][0]).catch(() => {}); // get the next part ready while this one plays
     try { url = await aiTTSUrl(t); } catch(e){ if(token !== speakToken) return; if(e.status !== "network") window.__aiTTSDown = true; aiVoiceProblem(e.status, e.detail); deviceSpeak(parts.slice(i), true); return; }
     if(token !== speakToken) return;
+    while(window.__vcPaused && token === speakToken) await new Promise(r => setTimeout(r, 200)); if(token !== speakToken) return;
     const a = AI_AUDIO; a.src = url; a.playbackRate = Math.max(0.6, Math.min(1.3, speed * (p || 1) * 1.05)); try { a.preservesPitch = true; } catch(e){} a.__speaking = true;
     const ok = await new Promise(res => { a.onended = () => res(true); a.onerror = () => res(false); const pl = a.play(); if(pl && pl.catch) pl.catch(() => res(false)); });
     a.__speaking = false; if(token !== speakToken) return;
@@ -14044,7 +14046,7 @@ async function getSample(){
 const AI_SILENT = "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=";
 const AI_AUDIO = typeof Audio !== "undefined" ? new Audio() : null;
 const AI_UNLOCK_LIST = [AI_AUDIO];
-function aiAudioUnlock(){ AI_UNLOCK_LIST.forEach(a => { if(!a || a.__unlocked || (a.src && !a.paused)) return; try { a.muted = true; a.src = AI_SILENT; const pr = a.play(); const done = () => { a.pause(); a.muted = false; a.__unlocked = true; }; if(pr && pr.then) pr.then(done).catch(() => { a.muted = false; }); else done(); } catch(e){ a.muted = false; } });
+function aiAudioUnlock(){ AI_UNLOCK_LIST.forEach(a => { if(!a || a.__unlocked || (a.src && (!a.paused || (a.currentTime > 0 && !a.ended)))) return; try { a.muted = true; a.src = AI_SILENT; const pr = a.play(); const done = () => { a.pause(); a.muted = false; a.__unlocked = true; }; if(pr && pr.then) pr.then(done).catch(() => { a.muted = false; }); else done(); } catch(e){ a.muted = false; } });
   if(AI_UNLOCK_LIST.every(a => !a || a.__unlocked)) ["touchend", "pointerup", "click", "keydown"].forEach(ev => document.removeEventListener(ev, aiAudioUnlock, true)); }
 if(IS_NETLIFY) ["touchend", "pointerup", "click", "keydown"].forEach(ev => document.addEventListener(ev, aiAudioUnlock, true));
 // says exactly why the AI voice didn't work (once per visit), instead of silently using the device voice
@@ -34269,9 +34271,11 @@ async function srAIPlayChunk(tok){
   try { await a.play(); } catch(e){ if(tok === SR.tok){ SR.paused = true; srBtns(); srToast("Tap ▶ Resume to start the AI voice."); } }
 }
 async function srSayAI(text){
-  const tok = SR.tok = (SR.tok || 0) + 1, parts = srAIChunks(String(text).slice(0, 4000)); SR.sayTok = tok;
+  const tok = SR.tok = (SR.tok || 0) + 1, parts = srAIChunks(String(text).slice(0, 4000)); SR.sayTok = tok; SR.saying = tok;
   for(const p of parts){ if(SR.tok !== tok) return; let url; try { url = await srTTS(p.t); } catch(e){ srAIDown(e); srSay(text); return; } if(SR.tok !== tok) return;
-    await new Promise(ok => { const a = SR.audio; a.src = url; a.playbackRate = +SR.set.rate || 1; a.onended = ok; a.onerror = ok; a.play().catch(ok); }); }
+    while(SR.sayPaused && SR.tok === tok) await new Promise(r => setTimeout(r, 200)); if(SR.tok !== tok) return;
+    await new Promise(ok => { const a = SR.audio; a.src = url; a.playbackRate = +SR.set.rate || 1; a.onended = ok; a.onerror = ok; a.play().catch(() => { if(!SR.sayPaused) ok(); }); }); }
+  if(SR.saying === tok) SR.saying = 0;
 }
 function srEngineUI(){
   try { SR.narrLabel && SR.narrLabel(); } catch(e){}
@@ -34308,7 +34312,7 @@ function srFirstVisible(){ const r = $("sr-reader"), ps = r.querySelectorAll("p[
 function srScrollTop(i){ const r = $("sr-reader"), el = r.querySelector(`p[data-i="${i}"]`); if(el && r.classList.contains("sr-pages")){ srPageShow(el, true); return; } if(el) r.scrollTop += el.getBoundingClientRect().top - r.getBoundingClientRect().top - 6; }
 function srStop(){ if(typeof srHiClear === "function") srHiClear(); SR.tok = (SR.tok || 0) + 1; SR.playing = false; SR.paused = false; SR.loading = false; if("speechSynthesis" in window) speechSynthesis.cancel(); if(SR.audio){ SR.audio.pause(); SR.audio.onended = SR.audio.ontimeupdate = null; } const w = SR.word && SR.word.p; SR.word = null; if(w != null) srRenderPara(w); srBtns(); }
 function srBtns(){ const b = $("sr-play"); if(!b) return; try { SR.rbarSync && SR.rbarSync(); } catch(e){} b.textContent = SR.loading && SR.playing ? "⏳ Loading voice…" : SR.playing && !SR.paused ? "⏸ Pause" : SR.paused ? "▶ Resume" : srUseAI() ? "▶ Read aloud (AI voice)" : "▶ Read aloud"; }
-function srSay(text){ srStop(); if(srUseAI()){ srSayAI(text); return; } if(!("speechSynthesis" in window)) return; const u = new SpeechSynthesisUtterance(String(text).slice(0, 3000)), v = speechSynthesis.getVoices().find(x => x.voiceURI === $("sr-voice").value); if(v) u.voice = v; u.rate = +SR.set.rate || 1; speechSynthesis.speak(u); }
+function srSay(text){ srStop(); SR.sayPaused = false; if(srUseAI()){ srSayAI(text); return; } if(!("speechSynthesis" in window)) return; const tok = SR.saying = SR.tok, u = new SpeechSynthesisUtterance(String(text).slice(0, 3000)), v = speechSynthesis.getVoices().find(x => x.voiceURI === $("sr-voice").value); if(v) u.voice = v; u.rate = +SR.set.rate || 1; u.onend = u.onerror = () => { if(SR.saying === tok) SR.saying = 0; }; speechSynthesis.speak(u); }
 // ---------- text analysis helpers ----------
 const SR_STOP = new Set("a about above after again against all am an and any are aren't as at be because been before being below between both but by can can't cannot could couldn't did didn't do does doesn't doing don't down during each few for from further had hadn't has hasn't have haven't having he he'd he'll he's her here here's hers herself him himself his how how's i i'd i'll i'm i've if in into is isn't it it's its itself let's me more most mustn't my myself no nor not of off on once only or other ought our ours ourselves out over own same shan't she she'd she'll she's should shouldn't so some such than that that's the their theirs them themselves then there there's these they they'd they'll they're they've this those through to too under until up very was wasn't we we'd we'll we're we've were weren't what what's when when's where where's which while who who's whom why why's with won't would wouldn't you you'd you'll you're you've your yours yourself yourselves also just like one two may might will shall said says say get got make made much many even well back still way us new now first last use used however therefore thus within without upon among per via yet etc".split(" "));
 function srWords(s){ return (s.toLowerCase().match(/[a-z][a-z'’-]*[a-z]|[a-z]/g) || []).map(w => w.replace(/[’]/g, "'").replace(/'s$/, "")); }
@@ -36258,5 +36262,43 @@ document.addEventListener("DOMContentLoaded", function(){
 
 try { __diag("script-end"); } catch(e){}
 </script>
+
+<div id="voice-ctl" class="voice-ctl" hidden role="group" aria-label="Voice controls"><span class="vc-dot" aria-hidden="true"></span><button type="button" id="vc-pause">⏸ Pause</button><button type="button" id="vc-stop">⏹ Stop</button></div>
+<style>
+.voice-ctl{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(92px + env(safe-area-inset-bottom,0px));white-space:nowrap;z-index:9000;display:flex;align-items:center;gap:6px;padding:6px 6px 6px 12px;border-radius:999px;background:#1e293b;color:#fff;box-shadow:0 8px 24px rgba(15,23,42,.35);font:inherit}
+.voice-ctl button{white-space:nowrap;font:inherit;font-size:16px;font-weight:700;border:0;border-radius:999px;padding:10px 16px;min-height:44px;background:#facc15;color:#1e293b;cursor:pointer}
+.voice-ctl #vc-stop{background:#334155;color:#fff}
+.voice-ctl .vc-dot{width:10px;height:10px;border-radius:50%;background:#4ade80;animation:vcPulse 1.2s ease-in-out infinite}
+.voice-ctl.paused .vc-dot{background:#facc15;animation:none}
+@keyframes vcPulse{50%{opacity:.35;transform:scale(.7)}}
+@media (prefers-reduced-motion:reduce){.voice-ctl .vc-dot{animation:none}}
+</style>
+<script>
+// ⏸ Pause / ⏹ Stop that shows while the app is reading something aloud (quiz questions, explanations, summaries…)
+(function(){
+  const box = document.getElementById("voice-ctl"), pb = document.getElementById("vc-pause"), sb = document.getElementById("vc-stop"); if(!box) return;
+  let appSince = 0;
+  const hasSR = () => typeof SR !== "undefined" && SR;
+  const srOn = () => hasSR() && SR.saying && SR.saying === SR.tok && !SR.playing;
+  const appAudio = () => typeof AI_AUDIO !== "undefined" && AI_AUDIO && AI_AUDIO.__speaking;
+  const appOn = () => !srOn() && !(hasSR() && SR.playing) && (appAudio() || window.__vcPaused || ("speechSynthesis" in window && speechSynthesis.speaking));
+  function paused(){ return srOn() ? !!SR.sayPaused : !!window.__vcPaused; }
+  function tick(){
+    const sr = srOn(), app = appOn(); if(app){ if(!appSince) appSince = Date.now(); } else appSince = 0;
+    // short words (tapping a picture) don't need the controls; anything longer than a moment does
+    const show = sr || (app && (Date.now() - appSince > 1200 || window.__vcPaused));
+    if(box.hidden === show) box.hidden = !show;
+    if(!show){ window.__vcPaused = false; if(hasSR()) SR.sayPaused = false; }
+    const pz = paused(); box.classList.toggle("paused", pz); const t = pz ? "▶ Resume" : "⏸ Pause"; if(pb.textContent !== t) pb.textContent = t;
+  }
+  pb.onclick = () => {
+    const sr = srOn(), pz = paused(), syn = "speechSynthesis" in window;
+    if(sr){ SR.sayPaused = !pz; const a = SR.audio; if(!pz){ if(a) a.pause(); if(syn) speechSynthesis.pause(); } else { if(a && a.src && a.paused && !a.ended && a.currentTime > 0) a.play().catch(() => {}); if(syn) speechSynthesis.resume(); } }
+    else { window.__vcPaused = !pz; const a = typeof AI_AUDIO !== "undefined" ? AI_AUDIO : null; if(!pz){ if(a && a.__speaking) a.pause(); if(syn) speechSynthesis.pause(); } else { if(a && a.__speaking && a.paused) a.play().catch(() => {}); if(syn) speechSynthesis.resume(); } }
+    tick();
+  };
+  sb.onclick = () => { if(srOn()){ SR.sayPaused = false; try { srStop(); } catch(e){} } else { window.__vcPaused = false; try { stopAll(); } catch(e){} try { if("speechSynthesis" in window){ speechSynthesis.resume(); speechSynthesis.cancel(); } } catch(e){} } tick(); };
+  setInterval(tick, 250);
+})();
+</script>
 </body>
-</html>
