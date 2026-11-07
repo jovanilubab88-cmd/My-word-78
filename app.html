@@ -686,8 +686,8 @@ body.spelling.own-kb .answer-row #sp-check{display:none}
 .sr-book{margin-top:4px}.sr-bbar{display:flex;gap:6px;align-items:center;margin:4px 0}.sr-bbar select{flex:1;min-width:0;font:inherit;font-size:15px;font-weight:600;padding:7px 8px;border-radius:12px;border:2.5px solid var(--line);background:var(--paper);color:var(--ink)}
 .sr-bbar2{justify-content:space-between;flex-wrap:wrap}.sr-bbar2 small{color:var(--muted);font-size:12px}.sr-bbar2 span{display:flex;gap:4px}
 .sr-bookbody{max-height:78vh;overflow:auto;border:2px solid var(--line);border-radius:16px;background:#cbd5e1;-webkit-overflow-scrolling:touch}
-.sr-bookbody.pdf{padding:6px;display:flex;flex-direction:column;align-items:center;gap:8px}
-.sr-page{position:relative;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.25);flex:none;max-width:none}.sr-page canvas{position:absolute;inset:0;display:block}
+.sr-bookbody.pdf{padding:6px;display:flex;flex-direction:column;align-items:center;gap:3px}
+.sr-page{position:relative;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.18);flex:none;max-width:none}.sr-page canvas{position:absolute;inset:0;display:block}
 .sr-page.sr-flash{animation:srFlashPg 1.6s}@keyframes srFlashPg{0%,40%{box-shadow:0 0 0 5px #8b5cf6}100%{box-shadow:0 2px 10px rgba(0,0,0,.25)}}
 .sr-tl{position:absolute;inset:0;overflow:hidden;line-height:1;z-index:2}.sr-tl span{position:absolute;white-space:pre;color:transparent;transform-origin:0 0;cursor:pointer;font-family:sans-serif}.sr-tl span::selection{background:rgba(56,130,246,.35)}
 .sr-pgno{position:absolute;right:6px;bottom:4px;font:600 10px system-ui;color:#64748b;background:rgba(255,255,255,.8);padding:1px 5px;border-radius:6px;z-index:3}
@@ -776,10 +776,10 @@ body.sr-full .sr-chat{max-height:none}
 body.sr-full.sr-focus .sr-progw,body.sr-full.sr-focus .sr-tabs,body.sr-full.sr-focus #sr-viewrow,body.sr-full.sr-focus details.sr-set,body.sr-full.sr-focus .sr-tts,body.sr-full.sr-focus #sr-hinttxt{display:none!important}
 body.sr-full.sr-focus .sr-tts .sr-ttsrow:first-child{margin:2px 0}body.sr-full.sr-focus .sr-tts .sr-play{padding:8px 14px;font-size:15px}
 body.sr-full.sr-bookon .sr-bookbody{border:0;border-radius:0;margin-left:calc(-1 * max(16px, env(safe-area-inset-left, 0px)));margin-right:calc(-1 * max(16px, env(safe-area-inset-right, 0px)));max-height:none;background:#e2e8f0}
-body.sr-full.sr-bookon .sr-bookbody.pdf{padding:4px 0;gap:6px}
+body.sr-full.sr-bookon .sr-bookbody.pdf{padding:4px 0;gap:3px}
 body.sr-bare{overflow:hidden}body.sr-bare #sr-askfab{display:none!important}
 body.sr-bare #sr-bookbody,body.sr-bare #sr-reader{position:fixed;inset:0;z-index:40;height:auto!important;max-height:none!important;margin:0!important;border:0!important;border-radius:0!important;padding-top:env(safe-area-inset-top,0px);padding-bottom:calc(8px + env(safe-area-inset-bottom,0px))}
-body.sr-bare #sr-bookbody.pdf{padding-top:env(safe-area-inset-top,0px);gap:6px}
+body.sr-bare #sr-bookbody.pdf{padding-top:env(safe-area-inset-top,0px);gap:3px}
 .sr-unbare{position:fixed;z-index:45;right:calc(12px + env(safe-area-inset-right,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:6px;border:0;border-radius:999px;padding:10px 14px;font:700 15px system-ui,sans-serif;color:#fff;background:rgba(15,23,42,.82);box-shadow:0 4px 14px rgba(0,0,0,.3);cursor:pointer;transition:opacity .4s}
 .sr-unbare.dim{opacity:.3}.sr-unbare.dim span{display:none}.sr-unbare:hover,.sr-unbare:focus-visible{opacity:1}
 .sr-qzweb[aria-pressed="true"]{background:#2563eb;color:#fff;border-color:#1e40af}.sr-qzwebn{align-self:center;color:var(--muted);font-size:13px}.sr-qzsrc{display:inline-block;margin:0 0 4px;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;background:#dbeafe;color:#1e3a8a}.sr-qzsrc.bk{background:#fef3c7;color:#78350f}.sr-qzmore{padding:18px;text-align:center;font-weight:700}
@@ -33719,19 +33719,30 @@ async function srPdfChapters(B, savedCh){
   B.noScan = true; const r = srBuildCh(B, {mode: "auto"}); B.noScan = false; return r;
 }
 async function srPdfRender(B, goPage){
-  const body = $("sr-bookbody"), c = B.chapters[B.ch], gen = B.gen = (B.gen || 0) + 1; (B.pages || []).forEach(srPdfFree); try { (B.pages || []).forEach(P => P.page && P.page.cleanup && P.page.cleanup()); } catch(e){} body.innerHTML = ""; body.className = "sr-bookbody pdf"; B.pages = []; if(B.io) B.io.disconnect();
-  const full = document.body.classList.contains("sr-bookon"), W = Math.max(240, body.clientWidth - (full ? 8 : 12)); B.renderW = body.clientWidth;
-  for(let i = c.s; i < c.e; i++){ const page = await B.pdf.getPage(i + 1); if(gen !== B.gen) return; const v1 = page.getViewport({scale: 1}), vp = page.getViewport({scale: W * B.zoom / v1.width});
-    const div = document.createElement("div"); div.className = "sr-page"; div.dataset.pg = i; div.style.width = vp.width + "px"; div.style.height = vp.height + "px"; div.innerHTML = `<canvas></canvas><div class="sr-tl"></div><span class="sr-pgno">${i + 1}</span>`;
-    body.appendChild(div); B.pages.push({i, page, vp, div, drawn: false, tl: false}); if(i === c.s || i === goPage) await srPdfDraw(B.pages[B.pages.length - 1]); }
-  B.io = new IntersectionObserver(es => es.forEach(e => { const P = B.pages.find(p => p.div === e.target); if(!P) return; if(e.isIntersecting) srPdfDraw(P); else srPdfFree(P); }), {root: body, rootMargin: "1200px 0px"});
+  // the whole book in one long scroll: every page gets a place straight away, and pages are fetched and drawn only as they come near the screen
+  const body = $("sr-bookbody"), gen = B.gen = (B.gen || 0) + 1; (B.pages || []).forEach(srPdfFree); try { (B.pages || []).forEach(P => P.page && P.page.cleanup && P.page.cleanup()); } catch(e){} body.innerHTML = ""; body.className = "sr-bookbody pdf"; B.pages = []; if(B.io) B.io.disconnect();
+  const full = document.body.classList.contains("sr-bookon"), W = Math.max(240, body.clientWidth - (full ? 8 : 12)), SW = W * B.zoom; B.renderW = body.clientWidth; B.renderZoom = B.zoom;
+  const p1 = await B.pdf.getPage(1); if(gen !== B.gen) return; const v1 = p1.getViewport({scale: 1}), vp1 = p1.getViewport({scale: SW / v1.width}), frag = document.createDocumentFragment();
+  for(let i = 0; i < B.n; i++){ const div = document.createElement("div"); div.className = "sr-page"; div.dataset.pg = i; div.style.width = vp1.width + "px"; div.style.height = vp1.height + "px"; div.innerHTML = `<canvas></canvas><div class="sr-tl"></div><span class="sr-pgno">${i + 1}</span>`;
+    frag.appendChild(div); B.pages.push({i, pdf: B.pdf, sw: SW, page: i === 0 ? p1 : null, vp: i === 0 ? vp1 : {width: vp1.width, height: vp1.height}, div, drawn: false, tl: false}); }
+  body.appendChild(frag); B.whole = true;
+  const T = B.pages[Math.max(0, Math.min(B.n - 1, goPage != null ? goPage : (B.chapters[B.ch] ? B.chapters[B.ch].s : 0)))];
+  body.scrollTop = T.i ? T.div.offsetTop - body.offsetTop - 8 : 0; await srPdfDraw(T); if(gen !== B.gen) return; body.scrollTop = T.i ? T.div.offsetTop - body.offsetTop - 8 : 0;
+  B.io = new IntersectionObserver(es => es.forEach(e => { const P = B.pages[+e.target.dataset.pg]; if(!P || P.div !== e.target) return; if(e.isIntersecting) srPdfDraw(P); else srPdfFree(P); }), {root: body, rootMargin: "1200px 0px"});
   B.pages.forEach(P => B.io.observe(P.div));
-  if(goPage != null){ const P = B.pages.find(p => p.i === goPage); if(P) body.scrollTop = P.div.offsetTop - body.offsetTop - 8; } else body.scrollTop = 0;
 }
+async function srPdfLoad(P){ if(P.page) return P.page;
+  return P.lp || (P.lp = (async () => { const page = await P.pdf.getPage(P.i + 1), v1 = page.getViewport({scale: 1}), vp = page.getViewport({scale: P.sw / v1.width});
+    if(Math.abs(vp.height - P.vp.height) > 0.5 || Math.abs(vp.width - P.vp.width) > 0.5){ const body = $("sr-bookbody"), above = P.div.getBoundingClientRect().bottom <= body.getBoundingClientRect().top + 1, dh = vp.height - P.div.offsetHeight;
+      P.div.style.width = vp.width + "px"; P.div.style.height = vp.height + "px"; if(above && dh) body.scrollTop += dh; }
+    P.vp = vp; P.page = page; return page; })());
+}
+// which chapter the page on screen belongs to (the chapter bar follows you as you scroll)
+function srPdfSyncCh(pg){ const B = SR.book; if(!B || B.kind !== "pdf" || !B.whole) return; if(pg == null) pg = srCurPage(); const k = B.chapters.findIndex(c => pg >= c.s && pg < c.e); if(k >= 0 && k !== B.ch){ B.ch = k; srBookBar(); } }
 const SR_MOBILE = /iPad|iPhone|iPod|Android/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 function srPdfFree(P){ if(!P.drawn) return; P.drawn = false; try { if(P.task) P.task.cancel(); } catch(e){} const cv = P.div.querySelector("canvas"); if(cv){ cv.width = 0; cv.height = 0; } }
 async function srPdfDraw(P){
-  if(P.drawn) return; P.drawn = true; const cv = P.div.querySelector("canvas"), maxPx = SR_MOBILE ? 2.2e6 : 6e6;
+  if(P.drawn) return; P.drawn = true; try { await srPdfLoad(P); } catch(e){ P.drawn = false; return; } if(!P.drawn) return; const cv = P.div.querySelector("canvas"), maxPx = SR_MOBILE ? 2.2e6 : 6e6;
   let dpr = Math.min(window.devicePixelRatio || 1, SR_MOBILE ? 1.5 : 2); const area = P.vp.width * P.vp.height; if(area * dpr * dpr > maxPx) dpr = Math.max(0.6, Math.sqrt(maxPx / area));
   // keep only a few pages drawn at once (Safari on iPad has a small memory budget for pictures)
   const drawn = (SR.book && SR.book.pages || []).filter(p => p.drawn && p !== P); if(drawn.length > (SR_MOBILE ? 5 : 10)){ const far = drawn.sort((a, b) => Math.abs(b.i - P.i) - Math.abs(a.i - P.i)); far.slice(0, drawn.length - (SR_MOBILE ? 5 : 10)).forEach(srPdfFree); }
@@ -33741,7 +33752,7 @@ async function srPdfDraw(P){
 }
 async function srPdfText(P){
   if(P.tl) return P.tlp; P.tl = true;
-  return P.tlp = (async () => { const tc = await P.page.getTextContent(), tl = P.div.querySelector(".sr-tl"), U = SR.book.lib.Util, spans = [];
+  return P.tlp = (async () => { await srPdfLoad(P); const tc = await P.page.getTextContent(), tl = P.div.querySelector(".sr-tl"), U = SR.book.lib.Util, spans = [];
     tc.items.forEach(it => { if(!it.str || !it.str.trim()) return; const tx = U.transform(P.vp.transform, it.transform), fh = Math.hypot(tx[2], tx[3]); if(fh < 1) return;
       const sp = document.createElement("span"); sp.textContent = it.str; sp.style.left = tx[4] + "px"; sp.style.top = (tx[5] - fh) + "px"; sp.style.fontSize = fh + "px"; spans.push({sp, w: it.width * P.vp.scale, a: Math.atan2(tx[1], tx[0])}); tl.appendChild(sp); });
     const ws = spans.map(s => s.sp.getBoundingClientRect().width); spans.forEach((s, k) => { const sx = ws[k] > 0 && s.w > 0 ? s.w / ws[k] : 1; s.sp.style.transform = `${s.a ? `rotate(${s.a}rad) ` : ""}scaleX(${sx})`; }); })();
@@ -33828,7 +33839,10 @@ function srBookFit(){
 }
 // ---------- book UI ----------
 async function srBookGo(i, goPage){
-  const B = SR.book; if(!B) return; srStop(); B.ch = Math.max(0, Math.min(B.chapters.length - 1, i)); B.flows = new Map(); srBookBar();
+  const B = SR.book; if(!B) return; srStop();
+  if(B.kind === "pdf" && B.whole && B.pages && B.pages.length === B.n && B.pages[0].div.isConnected && B.renderZoom === B.zoom && Math.abs($("sr-bookbody").clientWidth - (B.renderW || 0)) <= 30){
+    B.ch = Math.max(0, Math.min(B.chapters.length - 1, i)); srBookBar(); const body = $("sr-bookbody"), P = B.pages[goPage != null ? goPage : B.chapters[B.ch].s];
+    if(P){ body.scrollTop = P.div.offsetTop - body.offsetTop - 8; await srPdfDraw(P); body.scrollTop = P.div.offsetTop - body.offsetTop - 8; } srSaveState(); return; } B.ch = Math.max(0, Math.min(B.chapters.length - 1, i)); B.flows = new Map(); srBookBar();
   $("sr-bookbody").innerHTML = `<p class="sr-note" style="padding:30px">Loading “${esc(B.chapters[B.ch].title)}”…</p>`;
   srBookFit();
   try { if(B.kind === "pdf") await srPdfRender(B, goPage); else await srFrameRender(B); try { SR.rbarSync && SR.rbarSync(); } catch(e){} } catch(e){ console.warn(e); $("sr-bookbody").innerHTML = `<p class="sr-aifail" style="padding:20px">This chapter couldn't be shown. Try 📄 Text view.</p>`; }
@@ -33976,6 +33990,8 @@ function srHiScroll(F, rect){ if(!rect) return; const body = $("sr-bookbody"), b
   if(top < br.top + 40 || top > br.bottom - 80) body.scrollTo({top: body.scrollTop + (top - br.top) - body.clientHeight * 0.3, behavior: "smooth"}); }
 async function srPdfFlow(B, P){ if(B.flows.has(P.i)) return B.flows.get(P.i); await srPdfText(P); const F = srFlowBuild(P.div.querySelector(".sr-tl"), document, true); F.page = P.i; B.flows.set(P.i, F); return F; }
 async function srFlowNextOf(F){ const B = SR.book; if(!B) return null;
+  if(B.kind === "pdf" && B.whole){ let k = F.page + 1;
+    while(k < B.n){ const P = B.pages[k]; if(P){ srPdfDraw(P); const nf = await srPdfFlow(B, P); if(nf.S.trim()){ srPdfSyncCh(k); return nf; } } k++; } return null; }
   if(B.kind === "pdf"){ const c = B.chapters[B.ch]; let k = F.page + 1;
     while(k < c.e){ const P = B.pages.find(p => p.i === k); if(P){ srPdfDraw(P); const nf = await srPdfFlow(B, P); if(nf.S.trim()) return nf; } k++; }
     if(B.ch + 1 >= B.chapters.length) return null; await srBookGo(B.ch + 1); for(const P of B.pages){ const nf = await srPdfFlow(B, P); if(nf.S.trim()) return nf; } return null; }
@@ -34823,7 +34839,7 @@ function openReader(){ SR.userOpened = true; window.__storeWanted = true; if(win
   $("sr-bdivide").onclick = () => srChEditor(); $("sr-bhere").onclick = () => srChEditor(true);
   $("sr-bzin").onclick = () => srBookZoom(1.2); $("sr-bzout").onclick = () => srBookZoom(1 / 1.2); $("sr-bzfit").onclick = () => srBookZoom(1);
   $("sr-bookbody").addEventListener("click", e => { if(SR.book && SR.book.kind === "pdf") srBookTap(e, document); });
-  $("sr-bookbody").addEventListener("scroll", () => { clearTimeout(SR.bposT); SR.bposT = setTimeout(() => srSaveState(), 800); }, {passive: true});
+  $("sr-bookbody").addEventListener("scroll", () => { clearTimeout(SR.bposT); SR.bposT = setTimeout(() => srSaveState(), 800); clearTimeout(SR.bchT); SR.bchT = setTimeout(() => srPdfSyncCh(), 150); }, {passive: true});
   $("sr-bmbtn").onclick = srToggleBM;
   const rd = $("sr-reader"); rd.addEventListener("scroll", () => { srProgress(); srHideTools(); }, {passive: true});
   rd.addEventListener("click", e => { if(window.getSelection && String(window.getSelection()).trim()) return; const p = e.target.closest("p[data-i]"); if(!p || !$("sr-tapread").checked) return; let off = 0; const c = srCaret(document, e.clientX, e.clientY);
@@ -34849,7 +34865,7 @@ function openReader(){ SR.userOpened = true; window.__storeWanted = true; if(win
   SR.rbarSync = () => { srRbarSync(); try { srPagesApply(); } catch(e){} };
   // ---------- 📖 Pages: the text view as a book with page turns ----------
   const srPgR = () => $("sr-reader");
-  const srPgOn = () => SR.set.pages !== false && !(SR.book && SR.view === "book") && !srPgR().hidden && !$("sr-panel").hidden;
+  const srPgOn = () => SR.set.pages === true && !(SR.book && SR.view === "book") && !srPgR().hidden && !$("sr-panel").hidden;
   const srPgW = () => srPgR().clientWidth || 1;
   const srPgCount = () => Math.max(1, Math.round(srPgR().scrollWidth / srPgW()));
   const srPgCur = () => Math.round(srPgR().scrollLeft / srPgW());
@@ -34861,14 +34877,14 @@ function openReader(){ SR.userOpened = true; window.__storeWanted = true; if(win
     r.scrollLeft = k * srPgW(); if(anim){ r.classList.remove("sr-turn"); void r.offsetWidth; r.classList.add("sr-turn"); } srPgNum(); try { srProgress(); } catch(e){} }
   window.srPageShow = function(el, instant){ const r = srPgR(); if(!el || !r.classList.contains("sr-pages")) return; const x = el.getBoundingClientRect().left - r.getBoundingClientRect().left + r.scrollLeft; srPgGo(Math.floor((x + 3) / srPgW()), !instant); };
   function srPagesApply(){ const r = srPgR(), on = srPgOn(), was = r.classList.contains("sr-pages");
-    $("sr-rpages").hidden = (SR.book && SR.view === "book") || r.hidden; $("sr-rpages").textContent = SR.set.pages !== false ? "📜 Scroll" : "📖 Pages";
+    $("sr-rpages").hidden = (SR.book && SR.view === "book") || r.hidden; $("sr-rpages").textContent = SR.set.pages === true ? "📜 Scroll" : "📖 Pages";
     const wide = on && r.clientWidth >= 820 && window.innerWidth > window.innerHeight * 0.9;
     if(on === was && (!on || wide === r.classList.contains("sr-two"))){ if(on) srPgNum(); $("sr-pgnav").hidden = !on; return; }
     const keep = r.clientHeight ? srFirstVisible() : (SR.pos || 0);
     r.classList.toggle("sr-pages", on); r.classList.toggle("sr-two", wide); srPgGap(); $("sr-pgnav").hidden = !on; r.scrollLeft = 0;
     requestAnimationFrame(() => { const el = r.querySelector(`p[data-i="${keep}"]`); if(el){ if(on) srPageShow(el, true); else { r.style.scrollBehavior = "auto"; srScrollTop(keep); requestAnimationFrame(() => { srScrollTop(keep); setTimeout(() => { srScrollTop(keep); r.style.scrollBehavior = ""; }, 120); }); } } srPgNum(); }); }
   window.srPagesApply = srPagesApply;
-  $("sr-rpages").onclick = () => { SR.set.pages = SR.set.pages === false; srSave(); srPagesApply(); };
+  $("sr-rpages").onclick = () => { SR.set.pages = SR.set.pages !== true; srSave(); srPagesApply(); };
   $("sr-pgprev").onclick = () => srPgGo(srPgCur() - 1, true);
   $("sr-pgnext").onclick = () => srPgGo(srPgCur() + 1, true);
   { let sx = 0, sy = 0, st = 0; const r = srPgR();
