@@ -745,6 +745,7 @@ body.sr-full.sr-focus #sr-reader.sr-pages{height:calc(100vh - 186px);height:calc
 .sr-pgnav{display:flex;align-items:center;justify-content:center;gap:14px;margin:8px 0 2px}
 .sr-pgb{min-width:52px;min-height:44px;border:2px solid var(--line);border-radius:999px;background:var(--paper);color:var(--ink);font:800 26px/1 system-ui,sans-serif;cursor:pointer}
 .sr-pgb:disabled{opacity:.35;cursor:default}
+.sr-sumdel{color:#b91c1c!important;border-color:#fca5a5!important}.sr-sumdel.sure{background:#dc2626!important;color:#fff!important;border-color:#dc2626!important}
 .sr-origbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:6px 0 8px;padding:10px 14px;border-radius:14px;background:#fef3c7;color:#78350f;font:600 14.5px/1.4 system-ui,sans-serif}
 .sr-origbtn{display:inline-flex;align-items:center;min-height:42px;padding:6px 14px;border-radius:999px;background:#f59e0b;color:#fff;font-weight:800;cursor:pointer}
 .sr-pgnum{font:700 14.5px system-ui,sans-serif;color:var(--muted,#64748b);min-width:120px;text-align:center}
@@ -2181,7 +2182,7 @@ window.MWB_TRIAL_DAYS = 14;
           <div class="sr-ttsrow"><button class="chip" data-srmode="brief">Brief · 3</button><button class="chip" data-srmode="standard" aria-pressed="true">Standard · 6</button><button class="chip" data-srmode="detailed">Detailed · 12</button></div>
           <div class="sr-ttsrow sr-aiopt"><select id="sr-ailevel" aria-label="Summary level"><option value="kid">Simple words</option><option value="teen" selected>Middle school</option><option value="expert">Advanced</option></select><button type="button" class="btn sr-sm" id="sr-aisum">✨ AI summary</button><button type="button" class="btn sr-sm" id="sr-webdetail">🌐 Detailed + internet</button></div>
           <div id="sr-sumout"></div>
-          <div class="sr-ttsrow"><button type="button" class="btn alt sr-sm" id="sr-sumread">🔊 Read summary</button><button type="button" class="btn alt sr-sm" id="sr-copy">📋 Copy summary</button></div>
+          <div class="sr-ttsrow"><button type="button" class="btn alt sr-sm" id="sr-sumread">🔊 Read summary</button><button type="button" class="btn alt sr-sm" id="sr-copy">📋 Copy summary</button><button type="button" class="btn alt sr-sm sr-sumdel" id="sr-sumdel">🗑️ Delete summary</button></div>
         </div>
         <div id="sr-t-quiz" hidden>
           <div class="sr-qzview" id="sr-qzview" role="group" aria-label="Quiz page style">
@@ -33526,7 +33527,7 @@ function srLS(k, v){ try { if(v === undefined) return localStorage.getItem(k); i
 function srState(id){ let st = {}; try { st = JSON.parse(srLS("sr-doc-" + id) || "{}") || {}; } catch(e){}
   const m = SR.mem.get(id), r = SR.remoteMeta.get(id);
   [m && m.state, r && r.state].forEach(s => { if(s && (s.updated || 0) > (st.updated || 0)) st = s; }); return st; }
-function srCurState(){ return {pos: SR.cur >= 0 ? SR.cur : SR.pos || 0, hl: SR.hl, bm: SR.bm, notes: SR.notes, chat: SR.chat.slice(-20).map(c => ({q: String(c.q).slice(0, 400), a: String(c.a).slice(0, 8000), ch: c.ch || null, depth: c.depth || 0, g: c.g || null})), aiSum: SR.aiSum ? {text: String(SR.aiSum.text).slice(0, 6000), level: SR.aiSum.level} : null, open: !$("sr-panel").hidden, book: SR.book ? srBookPos() : null, chSet: SR.book ? SR.book.chSet || null : null, updated: Date.now()}; }
+function srCurState(){ return {pos: SR.cur >= 0 ? SR.cur : SR.pos || 0, hl: SR.hl, bm: SR.bm, notes: SR.notes, chat: SR.chat.slice(-20).map(c => ({q: String(c.q).slice(0, 400), a: String(c.a).slice(0, 8000), ch: c.ch || null, depth: c.depth || 0, g: c.g || null})), aiSum: SR.aiSum ? {text: String(SR.aiSum.text).slice(0, 6000), level: SR.aiSum.level, ch: SR.aiSum.ch || "all"} : null, sumOff: !!SR.sumOff, open: !$("sr-panel").hidden, book: SR.book ? srBookPos() : null, chSet: SR.book ? SR.book.chSet || null : null, updated: Date.now()}; }
 function srBookPos(){ const B = SR.book, body = $("sr-bookbody");
   // when the book is hidden (closed, another screen open) or still loading, keep the last real position instead of "top of chapter"
   const shown = SR.view === "book" && !$("sr-panel").hidden && !$("view-reader").hidden && body.offsetParent !== null && body.clientHeight > 0;
@@ -34151,7 +34152,7 @@ function srLoad(title, paras, fmt, heads, store, opts){
   srStop(); const nid = opts.id || srHash(title + "|" + paras.slice(0, 40).join(" ")); if(SR.id && SR.id !== nid) srSaveState(true);
   if(store) SR.added = Date.now(); if(SR.book && SR.book !== opts.book){ try { SR.book.urls.forEach(u => URL.revokeObjectURL(u)); if(SR.book.pdf) SR.book.pdf.destroy(); } catch(e){} }
   Object.assign(SR, {paras, heads: heads || {}, title, fmt: fmt || "", id: nid, cur: -1, chat: [], sum: null, aiSum: null, q: "", idx: null, book: opts.book || null, pp: opts.pp || null, bookCh: opts.bookCh || null, origMeta: opts.origMeta || null});
-  const st = srState(SR.id); SR.hl = st.hl || []; SR.bm = st.bm || []; SR.notes = st.notes || {}; SR.pos = st.pos || 0; SR.chat = st.chat || []; SR.aiSum = st.aiSum || null;
+  const st = srState(SR.id); SR.hl = st.hl || []; SR.bm = st.bm || []; SR.notes = st.notes || {}; SR.pos = st.pos || 0; SR.chat = st.chat || []; SR.aiSum = st.aiSum || null; SR.sumOff = !!st.sumOff;
   if(!SR.added){ const m = SR.remoteMeta.get(SR.id) || SR.mem.get(SR.id); SR.added = m && m.added || Date.now(); }
   const all = paras.join(" "), words = all.split(/\s+/).filter(Boolean).length, lvl = srLevel(all);
   SR.stats = {words, lvl};
@@ -34508,6 +34509,8 @@ function srSumScope(){ const L = srChRanges(), sel = $("sr-sumch"); sel.closest(
   if(SR.sumCh == null || SR.sumChDoc !== SR.id){ SR.sumCh = "all"; SR.sumChDoc = SR.id; } srChOptions(sel, L, SR.sumCh); const v = sel.value; return v === "all" ? null : L[+v] || null; }
 function srSummary(){
   const out = $("sr-sumout"); document.querySelectorAll("[data-srmode]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.srmode === SR.mode)));
+  if(SR.sumOff){ srSumScope(); SR.sum = null; out.innerHTML = `<p class="sr-empty">🗑️ The summary was deleted. Tap <b>Brief</b>, <b>Standard</b> or <b>Detailed</b> for a quick summary, or ✨ for a new AI summary.</p>`; $("sr-sumdel").hidden = true; return; }
+  $("sr-sumdel").hidden = false;
   const C = srSumScope(), off = C ? C.s : 0; let S = srSummarize(C ? SR.paras.slice(C.s, C.e) : SR.paras, SR.mode);
   if(S && off){ const sh = o => ({...o, p: o.p + off}); S = {...S, bullets: S.bullets.map(sh), quotes: S.quotes.map(sh), keyLines: S.keyLines.map(sh), idx: S.idx.map(i => i + off)}; }
   if(!C) SR.sum = S;
@@ -34528,7 +34531,7 @@ async function srAISummary(){
     const step = Math.max(1, Math.floor(SR.paras.length / 25)); for(let i = 0; i < SR.paras.length; i += step) ids.push(i); ids = [...new Set(ids)].sort((a, b) => a - b); P = srPassages(ids, 14000); }
   const lv = {kid: "for a grade 3 student, in very simple words", teen: "for a grade 8 student", expert: "for an advanced high-school student, with precise vocabulary"}[level];
   try { const text = await srAI(`Write a summary of ${C ? `the chapter "${C.title}"` : "the whole document"} ${lv}. Start with one sentence giving the big idea, then 4–7 "• " bullet points of the most important ideas in order, each citing paragraph numbers, then one sentence on why it matters.`, `DOCUMENT PASSAGES (a sample from the beginning to the end${C ? " of " + C.title : ""}, numbered by paragraph):\n${P.text}`);
-    SR.aiSum = {text, level: {kid: "simple", teen: "middle school", expert: "advanced"}[level], ch: C ? C.title : "all"}; srSummary(); srSaveState();
+    SR.aiSum = {text, level: {kid: "simple", teen: "middle school", expert: "advanced"}[level], ch: C ? C.title : "all"}; SR.sumOff = false; srSummary(); srSaveState();
   } catch(e){ srToast(srAIFail(e)); }
   finally { SR.busy = false; btn.disabled = false; btn.textContent = "✨ AI summary"; }
 }
@@ -34757,7 +34760,11 @@ function openReader(){ SR.userOpened = true; window.__storeWanted = true; if(win
   $("sr-close").onclick = () => { srStop(); srSaveState(); $("sr-panel").hidden = true; srSaveState(true); srLibRender(); srToast("Saved — find it under 📚 My books"); };
   window.addEventListener("pagehide", () => { if(SR.id) srSaveState(true); }); document.addEventListener("visibilitychange", () => { if(document.hidden && SR.id) srSaveState(true); });
   document.querySelectorAll("[data-srtab]").forEach(b => b.onclick = () => srTab(b.dataset.srtab));
-  document.querySelectorAll("[data-srmode]").forEach(b => b.onclick = () => { SR.mode = b.dataset.srmode; srSummary(); });
+  document.querySelectorAll("[data-srmode]").forEach(b => b.onclick = () => { SR.mode = b.dataset.srmode; if(SR.sumOff){ SR.sumOff = false; srSaveState(); } srSummary(); });
+  // 🗑️ Delete summary: tap twice (the first tap asks "Tap again to delete")
+  $("sr-sumdel").onclick = () => { const b = $("sr-sumdel");
+    if(!b.classList.contains("sure")){ b.classList.add("sure"); b.textContent = "Tap again to delete"; clearTimeout(b.__t); b.__t = setTimeout(() => { b.classList.remove("sure"); b.textContent = "🗑️ Delete summary"; }, 3500); return; }
+    clearTimeout(b.__t); b.classList.remove("sure"); b.textContent = "🗑️ Delete summary"; SR.aiSum = null; SR.sum = null; SR.sumOff = true; srSaveState(); srSummary(); srToast("🗑️ Summary deleted"); };
   const bind = (id, key, num) => { const f = e => { SR.set[key] = num ? +e.target.value : e.target.value; srApply(); srSave(); }; $(id).oninput = f; $(id).onchange = f; };
   bind("sr-font", "font", true); bind("sr-line", "line", true); bind("sr-margin", "margin", true); bind("sr-family", "family"); bind("sr-theme", "theme");
   $("sr-wordhl").onchange = e => { SR.set.words = e.target.checked; srSave(); };
@@ -34911,8 +34918,8 @@ function openReader(){ SR.userOpened = true; window.__storeWanted = true; if(win
   $("sr-qzgo").onclick = () => srQuizStart();
   $("sr-search").addEventListener("input", e => { clearTimeout(SR.findT); SR.findT = setTimeout(() => srFind(e.target.value), 180); });
   $("sr-aisum").onclick = srAISummary;
-  $("sr-copy").onclick = () => { const t = srSumText(); navigator.clipboard && navigator.clipboard.writeText(t).then(() => srToast("✅ Summary copied"), () => srToast("Couldn't copy")); };
-  $("sr-sumread").onclick = () => { if(SR.sum) srSay("Summary. " + SR.sum.tldr + " Key points. " + SR.sum.bullets.map(b => b.t).join(" ")); };
+  $("sr-copy").onclick = () => { const t = srSumText(); if(!t){ srToast("There's no summary to copy."); return; } navigator.clipboard && navigator.clipboard.writeText(t).then(() => srToast("✅ Summary copied"), () => srToast("Couldn't copy")); };
+  $("sr-sumread").onclick = () => { if(!SR.sum){ srToast("There's no summary to read."); return; } if(SR.sum) srSay("Summary. " + SR.sum.tldr + " Key points. " + SR.sum.bullets.map(b => b.t).join(" ")); };
   $("sr-notescopy").onclick = () => { navigator.clipboard && navigator.clipboard.writeText(srNotesText()).then(() => srToast("✅ Notes copied"), () => srToast("Couldn't copy")); };
   // jump links anywhere in the panel
   $("sr-panel").addEventListener("click", e => { const c = e.target.closest("[data-p]"); if(c && !c.closest("#sr-reader")){ srFlash(+c.dataset.p); return; }
