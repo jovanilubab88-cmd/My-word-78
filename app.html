@@ -3004,7 +3004,6 @@ window.MWB_TRIAL_DAYS = 14;
       <button class="mp-mode" data-mpmode="facts" aria-pressed="true">➕ ➖ ✖️ ➗<small>Add, subtract, multiply, divide</small></button>
       <button class="mp-mode" data-mpmode="alg" aria-pressed="false">🔤 Algebra<small>Find the missing <i>x</i></small></button>
       <button class="mp-mode" data-mpmode="trig" aria-pressed="false">📐 Trig Lab<small>Unit circle, graphs, equations</small></button>
-      <button class="mp-mode" data-mpmode="tutor" aria-pressed="false">🎙️ AI Tutor<small>Talk through hard problems</small></button>
     </div>
     <div class="vt" id="vt" hidden>
       <div class="vt-hub">
@@ -24475,6 +24474,7 @@ function renderFolders(){
   const ex = appSection(bi, "🔬 Explore & play");
   ex.appendChild(folderTile("⭐", "My stars", all.filter(x => stars.includes(x.w)).length, "", () => openFolder("stars")));
   ex.appendChild(folderTile("📄", "Smart Reader", null, "Read · Ask · Listen", openReader, "reader"));
+  ex.appendChild(folderTile("🚀", "Advanced Math", null, "AI Tutor · Photos · Graphs", openAdvMath, "advmath"));
   ex.appendChild(folderTile("🧫", "Cell City", all.filter(x => x.c === "Cell Parts").length + cellTopicWords("Types of cells").length + cellTopicWords("Cell ideas").length, "+ DNA Lab", openCellFolder));
   ex.appendChild(folderTile("👁️", "Eye Explorer", all.filter(x => x.c === "Eye Parts").length, "", openEyeFolder, "eye"));
   ex.appendChild(folderTile("🧠", "Brain Lab", all.filter(x => x.c === "Anatomy" && x.t === "Brain & nerves").length, "+ Diagram", openBrainLab, "brain"));
@@ -33254,8 +33254,12 @@ document.addEventListener("keydown", e => {
   else if(e.key === "Backspace"){ e.preventDefault(); mpKey("⌫"); }
   else if(e.key === "Enter"){ if(document.activeElement && document.activeElement.tagName === "BUTTON" && document.activeElement !== $("mp-go")) return; e.preventDefault(); if(!$("mp-done").hidden) mpRestart(); else mpCheck(); }
 });
-function openMath(){ showView("math", "folders"); syncMPControls(); if(mp.mode === "trig") tlInit(); else if(!mp.q || !$("mp-done").hidden) mpRestart(); else renderMP(); }
-$("math-back").onclick = () => openFolder("group:Math");
+// 🚀 Advanced Math: the AI Voice Tutor on its own, opened from the home page
+function openAdvMath(){ showView("math", "folders"); const v = $("view-math"); v.classList.add("adv"); v.querySelector(".cell-head h2").textContent = "🚀 Advanced Math"; $("math-back").setAttribute("aria-label", "Back to the home page");
+  $("vt").hidden = false; window.scrollTo(0, 0); vtInit(); }
+function openMath(){ const v = $("view-math"); v.classList.remove("adv"); v.querySelector(".cell-head h2").textContent = "🧮 Math Practice"; $("math-back").setAttribute("aria-label", "Back to the Math folder"); if(mp.mode === "tutor") mp.mode = "facts";
+  showView("math", "folders"); syncMPControls(); if(mp.mode === "trig") tlInit(); else if(!mp.q || !$("mp-done").hidden) mpRestart(); else renderMP(); }
+$("math-back").onclick = () => { if($("view-math").classList.contains("adv")){ try { vtMicStop(); stopAll(); } catch(e){} $("view-math").classList.remove("adv"); $("vt").hidden = true; openFolders(); } else openFolder("group:Math"); };
 
 const BOOK_LIBS = {pdf: "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/legacy/build/pdf.min.mjs", worker: "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/legacy/build/pdf.worker.min.mjs", zip: "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"};
 
@@ -36318,6 +36322,7 @@ try { __diag("script-end"); } catch(e){}
 <style>
 /* ===== 🎙️ AI Voice Tutor (Math) ===== */
 .vt{display:flex;flex-direction:column;gap:14px;margin-top:12px}
+#view-math.adv > *:not(.cell-head):not(#vt){display:none!important}
 .vt-hub,.vt-card{background:var(--paper);border:3px solid var(--line);border-radius:22px;padding:14px;box-shadow:0 5px 0 var(--line);min-width:0}
 .vt-hub{text-align:center;background:linear-gradient(180deg,#1e2a52,#2b2f6b);color:#fff}
 .vt-hubtop{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;font-weight:600;opacity:.92}
@@ -36811,7 +36816,7 @@ function vtSay(text){ vt.lastSaid = text; if(vt.muted || !text) return; vtMicSto
 function vtState(){ const el = $("vt"); if(!el) return; const sp = vtIsSpeaking(); el.classList.toggle("speaking", sp && !vt.listening); el.classList.toggle("listening", vt.listening); el.classList.toggle("thinking", vt.busy);
   $("vt-status").textContent = vt.listening ? "Listening…" : vt.busy ? "Thinking…" : sp ? "Speaking…" : "Mic ready";
   // hands-free: when the tutor finishes talking, listen again
-  if(vt.hands && vt.wasSpeaking && !sp && !vt.listening && !vt.busy && !$("vt").hidden){ vt.wasSpeaking = false; setTimeout(() => { if(vt.hands && !vtIsSpeaking() && !vt.listening) vtMicStart(); }, 500); }
+  if(vt.hands && vt.wasSpeaking && !sp && !vt.listening && !vt.busy && !$("vt").hidden && !$("view-math").hidden){ vt.wasSpeaking = false; setTimeout(() => { if(vt.hands && !vtIsSpeaking() && !vt.listening) vtMicStart(); }, 500); }
   if(!sp && !vt.hands) vt.wasSpeaking = false; }
 function vtMicOK(){ return !!(window.SpeechRecognition || window.webkitSpeechRecognition); }
 function vtMicStart(){ if(vt.listening) return; if(!vtMicOK()){ $("vt-live").textContent = "🎤 Voice input doesn't work in this browser — type your question instead (Chrome, Edge and Safari support it)."; return; }
