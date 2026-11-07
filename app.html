@@ -2308,17 +2308,35 @@ window.MWB_TRIAL_DAYS = 14;
       </svg>
     </div>
     <div class="k5" id="k5">
-      <div class="k5-top">
-        <h3 class="k5-title">🌟 K–5 Learning Studio</h3>
+      <div class="k5-hero">
+        <div class="k5-sky" aria-hidden="true"><i>☁️</i><i>⭐</i><i>🎈</i><i>✨</i><i>☁️</i></div>
+        <div class="k5-herorow">
+          <button type="button" class="k5-buddy" id="k5-buddy" aria-label="My buddy. Tap to pick a different one."><span class="k5-acc" id="k5-acc"></span><span class="k5-bface-in" id="k5-bface">🐻</span></button>
+          <div class="k5-hinfo">
+            <h3 class="k5-title">🌟 K–5 Learning Studio</h3>
+            <div class="k5-lv" id="k5-lvname">Level 1 · Seedling</div>
+            <div class="k5-xpbar" role="progressbar" aria-label="Progress to the next level"><i id="k5-xpfill"></i></div>
+            <small id="k5-xpnext"></small>
+          </div>
+          <div class="k5-goal" title="Today's goal: 5 stars"><svg viewBox="0 0 44 44" aria-hidden="true"><circle class="bg" cx="22" cy="22" r="18"/><circle class="fg" id="k5-ring" cx="22" cy="22" r="18"/></svg><div><b id="k5-goaltxt">0/5</b><small>today</small></div></div>
+        </div>
+        <div class="k5-bubble" id="k5-bubble" aria-live="polite">Hi! Pick something fun to play!</div>
+        <div class="k5-buddies" id="k5-buddies" hidden></div>
         <div class="k5-score" aria-live="polite"><span id="k5-stars">⭐ 0</span><span id="k5-xp">✨ 0 XP</span><span id="k5-streak">🔥 1 day</span></div>
+        <div class="k5-lvpick" role="group" aria-label="My level"><span>My level:</span><button type="button" data-lv="0" aria-pressed="true">🌱 K–1</button><button type="button" data-lv="1" aria-pressed="false">🌿 Gr 2–3</button><button type="button" data-lv="2" aria-pressed="false">🌳 Gr 4–5</button></div>
       </div>
       <div class="k5-tabs" role="tablist" aria-label="Learning studio activities">
-        <button type="button" role="tab" data-k5="trace" aria-selected="true">✍️ Trace</button>
-        <button type="button" role="tab" data-k5="blend" aria-selected="false">🧩 Blend</button>
-        <button type="button" role="tab" data-k5="sight" aria-selected="false">🃏 Sight words</button>
-        <button type="button" role="tab" data-k5="math" aria-selected="false">🔟 Math</button>
-        <button type="button" role="tab" data-k5="sci" aria-selected="false">🧪 Science</button>
-        <button type="button" role="tab" data-k5="sparky" aria-selected="false">🐻 Sparky</button>
+        <button type="button" role="tab" data-k5="trace" aria-selected="true"><span class="ti">✍️</span>Trace</button>
+        <button type="button" role="tab" data-k5="blend" aria-selected="false"><span class="ti">🧩</span>Blend</button>
+        <button type="button" role="tab" data-k5="sight" aria-selected="false"><span class="ti">🃏</span>Words</button>
+        <button type="button" role="tab" data-k5="math" aria-selected="false"><span class="ti">🔟</span>Math</button>
+        <button type="button" role="tab" data-k5="build" aria-selected="false"><span class="ti">🧱</span>Build</button>
+        <button type="button" role="tab" data-k5="clock" aria-selected="false"><span class="ti">⏰</span>Clock</button>
+        <button type="button" role="tab" data-k5="sci" aria-selected="false"><span class="ti">🧪</span>Science</button>
+        <button type="button" role="tab" data-k5="space" aria-selected="false"><span class="ti">🪐</span>Space</button>
+        <button type="button" role="tab" data-k5="matter" aria-selected="false"><span class="ti">🧊</span>Matter</button>
+        <button type="button" role="tab" data-k5="sparky" aria-selected="false"><span class="ti" id="k5-tabbear">🐻</span>Sparky</button>
+        <button type="button" role="tab" data-k5="stickers" aria-selected="false"><span class="ti">🏆</span>Stickers</button>
       </div>
       <!-- ✍️ tracing -->
       <div class="k5-pane" data-pane="trace">
@@ -2374,6 +2392,60 @@ window.MWB_TRIAL_DAYS = 14;
         <div class="k5-row"><input id="k5-ask" placeholder="Ask Sparky anything… (e.g. Why is the sky blue?)" aria-label="Ask Sparky"><button type="button" class="k5-btn" id="k5-askgo">Ask</button></div>
         <div class="k5-chips" id="k5-sug"></div>
         <div class="k5-log" id="k5-log"></div>
+      </div>
+      <!-- 🧱 build -->
+      <div class="k5-pane" data-pane="build" hidden>
+        <div class="k5-card"><div class="k5-row sp"><b>🧱 Number blocks</b><button type="button" class="k5-btn alt" id="k5-bsay2">🔊 Say it</button></div>
+          <div class="k5-bnum" id="k5-bnum">0</div><div class="k5-bwords" id="k5-bwords">zero</div><div class="k5-bexp" id="k5-bexp"></div>
+          <div class="k5-cols" id="k5-cols"></div>
+          <p class="k5-fb" id="k5-bfb2" aria-live="polite">Tap + to add blocks. When a column reaches 10, it jumps to the next one!</p>
+          <div class="k5-row"><button type="button" class="k5-btn" id="k5-bch">🎯 Build challenge</button><button type="button" class="k5-btn alt" id="k5-bclr">🧽 Clear</button></div></div>
+        <div class="k5-card"><div class="k5-row sp"><b>✖️ Groups &amp; arrays</b><span class="k5-frac" id="k5-aeq">3 × 4 = 12</span></div>
+          <div class="k5-dots" id="k5-arr" role="img" aria-label="Array of dots"></div>
+          <p class="k5-fb" id="k5-asum"></p>
+          <label class="k5-slide">Rows <input type="range" id="k5-arows" min="1" max="5" value="3"> <b id="k5-arn">3</b></label>
+          <label class="k5-slide">Columns <input type="range" id="k5-acols" min="1" max="5" value="4"> <b id="k5-acn">4</b></label>
+          <div class="k5-row"><button type="button" class="k5-btn" id="k5-aq">❓ Multiplication challenge</button><button type="button" class="k5-btn alt" id="k5-apeek" hidden>👀 Peek</button></div>
+          <div class="k5-row"><input id="k5-aans" type="number" inputmode="numeric" placeholder="?" aria-label="Your answer" class="k5-num"><button type="button" class="k5-btn" id="k5-ack">Check</button></div>
+          <p class="k5-fb" id="k5-afb" aria-live="polite"></p></div>
+      </div>
+      <!-- ⏰ clock -->
+      <div class="k5-pane" data-pane="clock" hidden>
+        <div class="k5-card"><b>⏰ Play with time</b>
+          <div class="k5-cscene" id="k5-cscene"><svg id="k5-clk" viewBox="0 0 200 200" role="img" aria-label="Clock you can drag"></svg>
+            <div class="k5-cinfo"><div class="k5-cicon" id="k5-cicon">☀️</div><div class="k5-digi" id="k5-digi">3:00</div><div class="k5-croutine" id="k5-croutine"></div></div></div>
+          <p class="k5-tipline">Drag the long pink hand for minutes and the short blue hand for hours.</p>
+          <div class="k5-row"><button type="button" class="k5-btn alt" id="k5-hm">− Hour</button><button type="button" class="k5-btn alt" id="k5-hp">+ Hour</button><button type="button" class="k5-btn alt" id="k5-mm">− 5 min</button><button type="button" class="k5-btn alt" id="k5-mp">+ 5 min</button><button type="button" class="k5-btn alt" id="k5-ampm">☀️ AM</button></div>
+          <div class="k5-row"><button type="button" class="k5-btn" id="k5-csay">🔊 Say the time</button><button type="button" class="k5-btn" id="k5-cq">🎯 Time challenge</button><button type="button" class="k5-btn alt" id="k5-cck">✅ Check</button></div>
+          <p class="k5-fb" id="k5-cfb" aria-live="polite"></p></div>
+      </div>
+      <!-- 🪐 space -->
+      <div class="k5-pane" data-pane="space" hidden>
+        <div class="k5-card"><div class="k5-row sp"><b>🪐 Solar system</b><button type="button" class="k5-btn alt" id="k5-orbit">⏸ Pause orbits</button></div>
+          <svg class="k5-solar" id="k5-solar" viewBox="-180 -180 360 360" role="img" aria-label="The solar system. Tap a planet."></svg>
+          <div class="k5-pchips" id="k5-pchips" role="group" aria-label="Pick a planet"></div>
+          <div class="k5-pcard" id="k5-pinfo"><p class="k5-fb">Tap a planet to meet it!</p></div></div>
+        <div class="k5-card"><b>⚖️ Your weight on other worlds</b>
+          <label class="k5-slide">I weigh <input type="number" id="k5-wkg" min="5" max="150" value="30" inputmode="numeric" class="k5-num"> kg</label>
+          <div class="k5-wbars" id="k5-wbars"></div></div>
+        <div class="k5-card"><div class="k5-row sp"><b>🧠 Space quiz</b><span id="k5-sscore">Score: 0</span></div>
+          <p class="k5-q" id="k5-sq">Ready for a question?</p><div class="k5-opts" id="k5-sopts"></div>
+          <button type="button" class="k5-big" id="k5-sqgo">🚀 Ask me a question</button><p class="k5-fb" id="k5-sfb2" aria-live="polite"></p></div>
+      </div>
+      <!-- 🧊 matter -->
+      <div class="k5-pane" data-pane="matter" hidden>
+        <div class="k5-card"><div class="k5-row sp"><b>🧊 Water lab</b><span class="k5-frac" id="k5-mstate">🧊 Solid</span></div>
+          <div class="k5-lab"><canvas id="k5-mcv" aria-label="Water particles"></canvas><div class="k5-therm" aria-hidden="true"><i id="k5-mer"></i></div></div>
+          <label class="k5-slide">🌡️ <input type="range" id="k5-temp" min="-20" max="120" value="20" step="1" aria-label="Temperature"> <b id="k5-tn">20°C</b></label>
+          <div class="k5-row"><button type="button" class="k5-btn alt" id="k5-cool">❄️ Cool</button><button type="button" class="k5-btn" id="k5-heat">🔥 Heat</button><button type="button" class="k5-btn alt" id="k5-msay">🔊 Explain</button></div>
+          <p class="k5-fb k5-mexp" id="k5-mexp" aria-live="polite"></p>
+          <div class="k5-spd" id="k5-spd" hidden>Particle speed <span class="k5-spbar"><i id="k5-spfill"></i></span> <small id="k5-ftxt"></small></div>
+          <button type="button" class="k5-big" id="k5-mlab">🎯 Lab challenge</button><p class="k5-fb" id="k5-mfb3" aria-live="polite"></p></div>
+      </div>
+      <!-- 🏆 stickers -->
+      <div class="k5-pane" data-pane="stickers" hidden>
+        <div class="k5-card"><div class="k5-row sp"><b>🏆 My sticker book</b><span class="k5-frac" id="k5-stcount">0/22</span></div>
+          <div class="k5-stickers" id="k5-stk"></div><p class="k5-fb" id="k5-stinfo" aria-live="polite">Earn stars to unlock stickers!</p></div>
       </div>
     </div>
     <p class="cell-intro" style="text-align:center;font-size:.95rem">Tap any word to hear it! The coloured letters show the special sound. ✨ Use AI to discover more words!</p>
@@ -37284,6 +37356,106 @@ function vtInit(){ if(!$("vt")) return; requestAnimationFrame(() => vtPlot()); i
 @keyframes k5Fly{to{transform:translate(var(--dx),-120px) scale(.6);opacity:0}}
 @media (prefers-reduced-motion:reduce){.k5-flipin,.k5-tiles button{transition:none}.k5-bear.talk,.k5-burst{animation:none}}
 :root[data-theme="dark"] .k5-trace{background:#2a2410}:root[data-theme="dark"] .k5-frame{background:#1e293b}:root[data-theme="dark"] .k5-wc{background:#0c2a43}:root[data-theme="dark"] .k5-circ{background:#0f172a}
+/* ===== K–5 Studio upgrade: hero, level, tiles, labs ===== */
+.k5{position:relative;overflow:hidden}
+.k5-hero{position:relative;margin:-12px -12px 6px;padding:16px 14px 12px;border-radius:21px 21px 28px 28px;background:linear-gradient(160deg,#38bdf8 0%,#818cf8 52%,#f472b6 100%);color:#fff;overflow:hidden;text-shadow:0 1px 0 rgba(0,0,0,.18)}
+.k5-sky i{position:absolute;font-style:normal;font-size:26px;opacity:.5;animation:k5Float 9s ease-in-out infinite;pointer-events:none}
+.k5-sky i:nth-child(1){left:4%;top:6%}.k5-sky i:nth-child(2){left:46%;top:4%;animation-delay:-3s}.k5-sky i:nth-child(3){right:6%;top:30%;animation-delay:-5s}.k5-sky i:nth-child(4){left:30%;bottom:6%;animation-delay:-2s}.k5-sky i:nth-child(5){right:26%;bottom:10%;animation-delay:-6s}
+@keyframes k5Float{50%{transform:translate(14px,-9px)}}
+.k5-herorow{position:relative;display:flex;gap:12px;align-items:center}
+.k5-buddy{position:relative;flex:none;width:88px;height:88px;border-radius:50%;border:4px solid #fff;background:radial-gradient(circle at 35% 28%,rgba(255,255,255,.75),rgba(255,255,255,.25));cursor:pointer;display:grid;place-items:center;padding:0;box-shadow:0 6px 0 rgba(0,0,0,.2);font:inherit}
+.k5-bface-in{display:inline-block;font-size:54px;line-height:1;animation:k5Bob 2.8s ease-in-out infinite}
+.k5-buddy.hop .k5-bface-in{animation:k5Hop .65s}
+@keyframes k5Hop{30%{transform:translateY(-18px) scale(1.22) rotate(-8deg)}65%{transform:translateY(0) scale(.94)}}
+.k5-acc{position:absolute;top:-16px;left:50%;transform:translateX(-50%) rotate(-8deg);font-size:30px;filter:drop-shadow(0 2px 0 rgba(0,0,0,.25))}
+.k5-hinfo{flex:1;min-width:0}.k5-hero .k5-title{font-size:18px;color:#fff}
+.k5-lv{font-weight:800;font-size:16px;margin-top:2px}
+.k5-xpbar{height:15px;border-radius:99px;background:rgba(255,255,255,.3);overflow:hidden;margin:5px 0 3px;border:2px solid rgba(255,255,255,.7)}
+.k5-xpbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#fde047,#fb923c);border-radius:99px;transition:width .7s cubic-bezier(.3,1.4,.5,1)}
+.k5-hinfo small{font-weight:700;font-size:12.5px}
+.k5-goal{position:relative;flex:none;width:60px;height:60px;display:grid;place-items:center;text-align:center}
+.k5-goal svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+.k5-goal .bg{fill:none;stroke:rgba(255,255,255,.35);stroke-width:5}.k5-goal .fg{fill:none;stroke:#fde047;stroke-width:5;stroke-linecap:round;stroke-dasharray:113.1;stroke-dashoffset:113.1;transition:stroke-dashoffset .7s}
+.k5-goal b{display:block;font-size:14px;line-height:1.1}.k5-goal small{display:block;font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.k5-bubble{position:relative;margin:12px 0 0 6px;background:#fff;color:#1b2a4a;border-radius:16px;padding:8px 12px;font-weight:700;font-size:15px;text-shadow:none;box-shadow:0 3px 0 rgba(0,0,0,.15)}
+.k5-bubble::before{content:"";position:absolute;left:30px;top:-9px;border:9px solid transparent;border-top:0;border-bottom-color:#fff}
+.k5-bubble.pop{animation:k5Pop .5s}
+.k5-hero .k5-score{margin-top:10px}
+.k5-lvpick{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:10px;font-weight:800;font-size:13px}
+.k5-lvpick button{font:inherit;font-size:13px;font-weight:800;padding:4px 10px;border-radius:999px;border:2px solid rgba(255,255,255,.85);background:rgba(255,255,255,.18);color:#fff;cursor:pointer;text-shadow:none}
+.k5-lvpick button[aria-pressed="true"]{background:#fff;color:#4338ca}
+.k5-buddies{display:flex;gap:4px;flex-wrap:wrap;margin-top:10px;background:rgba(255,255,255,.3);padding:6px;border-radius:16px}
+.k5-buddies button{font-size:30px;line-height:1;padding:4px 6px;border-radius:12px;border:3px solid transparent;background:rgba(255,255,255,.35);cursor:pointer}
+.k5-buddies button[aria-pressed="true"]{border-color:#fde047;background:#fff}
+/* big colourful activity tiles */
+.k5-tabs{display:grid;grid-template-columns:repeat(auto-fill,minmax(74px,1fr));gap:8px;overflow:visible;padding:10px 2px 10px}
+.k5-tabs button{--c:#6366f1;display:flex;flex-direction:column;align-items:center;gap:1px;padding:7px 2px 6px;font-size:12.5px;font-weight:800;border-radius:16px;border:3px solid var(--c);background:var(--paper);color:var(--ink);box-shadow:0 4px 0 var(--c);transition:transform .12s}
+.k5-tabs .ti{font-size:28px;line-height:1.1}
+.k5-tabs button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--c)}
+.k5-tabs button[aria-selected="true"]{background:var(--c);color:#fff;border-color:var(--c);transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.25)}
+.k5-tabs [data-k5=trace]{--c:#f59e0b}.k5-tabs [data-k5=blend]{--c:#8b5cf6}.k5-tabs [data-k5=sight]{--c:#ec4899}.k5-tabs [data-k5=math]{--c:#10b981}.k5-tabs [data-k5=build]{--c:#16a34a}.k5-tabs [data-k5=clock]{--c:#ef4444}.k5-tabs [data-k5=sci]{--c:#0ea5e9}.k5-tabs [data-k5=space]{--c:#4f46e5}.k5-tabs [data-k5=matter]{--c:#06b6d4}.k5-tabs [data-k5=sparky]{--c:#d97706}.k5-tabs [data-k5=stickers]{--c:#db2777}
+.k5-pane:not([hidden]){animation:k5In .35s ease-out}@keyframes k5In{from{opacity:0;transform:translateY(10px)}}
+.k5-btn:active,.k5-big:active{transform:translateY(3px);box-shadow:0 0 0 var(--line)}
+.k5-num{width:92px;font:inherit;font-size:22px;font-weight:700;text-align:center;padding:6px;border-radius:12px;border:3px solid var(--line);background:var(--paper);color:var(--ink)}
+.k5-tipline{margin:0;text-align:center;font-size:13.5px;color:var(--muted);font-weight:600}
+/* 🧱 number blocks */
+.k5-bnum{font-size:48px;font-weight:800;text-align:center;line-height:1;color:#047857;font-variant-numeric:tabular-nums}
+.k5-bwords{text-align:center;font-weight:800;font-size:17px;text-transform:capitalize}.k5-bexp{text-align:center;color:var(--muted);font-weight:700;min-height:1.3em}
+.k5-cols{display:grid;gap:6px}
+.k5-col{--cc:#3b82f6;border:3px solid var(--cc);border-radius:16px;padding:6px 3px 8px;display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--paper);min-width:0}
+.k5-col.c10{--cc:#eab308}.k5-col.c100{--cc:#22c55e}.k5-col.c1000{--cc:#a855f7}
+.k5-col b{font-size:12.5px;color:var(--ink)}
+.k5-blocks{display:flex;flex-wrap:wrap;gap:3px;justify-content:center;align-content:flex-start;min-height:96px;width:100%}
+.blk{display:block;border-radius:4px;animation:k5Drop .35s cubic-bezier(.3,1.6,.5,1)}
+@keyframes k5Drop{from{transform:translateY(-22px) scale(.4);opacity:0}}
+.blk.b1{width:14px;height:14px;background:#60a5fa;border:2px solid #1d4ed8}
+.blk.b10{width:13px;height:48px;background:repeating-linear-gradient(#fde047 0 4px,#a16207 4px 5px);border:2px solid #a16207}
+.blk.b100{width:31px;height:31px;background:repeating-linear-gradient(0deg,transparent 0 2px,#15803d 2px 3px),repeating-linear-gradient(90deg,#86efac 0 2px,#15803d 2px 3px);border:2px solid #166534}
+.blk.b1000{width:34px;height:34px;background:linear-gradient(135deg,#d8b4fe,#7e22ce);border:2px solid #581c87;box-shadow:3px 3px 0 #581c87}
+.k5-digit{font-size:30px;font-weight:800;line-height:1;color:var(--cc)}
+.k5-cbtn{display:flex;gap:4px}.k5-cbtn button{width:38px;height:38px;border-radius:12px;border:3px solid var(--line);background:var(--paper);color:var(--ink);font-size:22px;font-weight:800;cursor:pointer;padding:0;line-height:1}.k5-cbtn button:disabled{opacity:.28}
+.k5-col.pulse{animation:k5Pulse .8s}@keyframes k5Pulse{30%{transform:scale(1.08);box-shadow:0 0 0 6px rgba(250,204,21,.6)}}
+.k5-dots{display:grid;gap:4px;max-width:300px;margin:0 auto;width:100%;transition:filter .3s}.k5-dots i{aspect-ratio:1;border-radius:50%;animation:k5Drop .35s backwards;box-shadow:inset -2px -3px 0 rgba(0,0,0,.18)}.k5-dots.hid{filter:blur(9px)}
+/* ⏰ clock */
+.k5-cscene{border-radius:20px;padding:12px;display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;color:#fff;transition:background .8s;background:linear-gradient(#38bdf8,#bae6fd)}
+#k5-clk{width:min(250px,100%);height:auto;touch-action:none;cursor:grab;filter:drop-shadow(0 6px 0 rgba(0,0,0,.2))}
+.k5-cinfo{text-align:center;display:flex;flex-direction:column;gap:6px;align-items:center}
+.k5-cicon{font-size:42px;line-height:1;animation:k5Bob 3s ease-in-out infinite}
+.k5-digi{font-size:44px;font-weight:800;font-variant-numeric:tabular-nums;text-shadow:0 3px 0 rgba(0,0,0,.28)}
+.k5-croutine{font-weight:800;font-size:16px;background:rgba(0,0,0,.28);padding:4px 12px;border-radius:12px}
+/* 🪐 space */
+.k5-solar{width:100%;max-width:440px;height:auto;margin:0 auto;display:block;border-radius:20px;background:#0b1026;touch-action:manipulation}
+.k5-solar [data-p]{cursor:pointer}
+.k5-pchips{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.k5-pchips button{font:inherit;font-size:13px;font-weight:800;padding:4px 10px 4px 5px;border-radius:999px;border:2px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer;display:flex;align-items:center;gap:5px}
+.k5-pchips button i{width:20px;height:20px;border-radius:50%;box-shadow:inset -4px -3px 0 rgba(0,0,0,.25)}.k5-pchips button[aria-pressed="true"]{background:#4f46e5;border-color:#4f46e5;color:#fff}
+.k5-pcard{display:flex;gap:12px;align-items:flex-start;min-width:0}.k5-pcard p{margin:0 0 6px;line-height:1.45}
+.k5-pdot{flex:none;width:58px;height:58px;border-radius:50%;box-shadow:inset -12px -9px 0 rgba(0,0,0,.28),0 0 18px rgba(129,140,248,.6);animation:k5Spin 14s linear infinite}
+@keyframes k5Spin{to{transform:rotate(360deg)}}
+.k5-pstats{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0}.k5-pstats span{font-size:13px;font-weight:700;padding:3px 9px;border-radius:999px;background:#e0e7ff;color:#312e81}
+.k5-sci{background:#fef9c3;color:#422006;border-left:5px solid #f59e0b;padding:6px 10px;border-radius:8px}
+.k5-wbars{display:flex;flex-direction:column;gap:5px}.k5-wrow{display:grid;grid-template-columns:86px 1fr 74px;gap:8px;align-items:center;font-size:14px;font-weight:700}
+.k5-wrow .tr{height:16px;border-radius:99px;background:rgba(127,127,127,.2);overflow:hidden}.k5-wrow .tr i{display:block;height:100%;border-radius:99px;transition:width .5s}
+/* 🧊 matter */
+.k5-lab{display:flex;gap:8px;align-items:stretch}
+#k5-mcv{flex:1;min-width:0;width:100%;height:240px;border-radius:16px;border:3px solid var(--line);background:#e0f2fe}
+.k5-therm{position:relative;flex:none;width:30px;border-radius:99px;border:3px solid var(--line);background:#f1f5f9;overflow:hidden}
+.k5-therm i{position:absolute;left:0;right:0;bottom:0;height:30%;background:linear-gradient(0deg,#38bdf8,#f97316,#ef4444);transition:height .2s}
+.k5-mexp{min-height:3em;font-weight:600}
+.k5-spd{display:flex;align-items:center;gap:8px;font-weight:700;font-size:13.5px;flex-wrap:wrap}.k5-spbar{flex:1;min-width:90px;height:12px;border-radius:99px;background:rgba(127,127,127,.25);overflow:hidden}.k5-spbar i{display:block;height:100%;width:10%;background:linear-gradient(90deg,#38bdf8,#f97316);transition:width .2s}
+/* 🏆 stickers */
+.k5-stickers{display:grid;grid-template-columns:repeat(auto-fill,minmax(82px,1fr));gap:8px}
+.k5-stk{font:inherit;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;border-radius:16px;border:3px dashed var(--line);background:var(--paper);color:var(--muted);cursor:pointer;min-width:0}
+.k5-stk span{font-size:34px;line-height:1.1;filter:grayscale(1);opacity:.5}.k5-stk small{font-size:11.5px;font-weight:700;text-align:center;line-height:1.2}
+.k5-stk.on{border-style:solid;border-color:#f59e0b;background:linear-gradient(160deg,#fef9c3,#fde68a);color:#78350f;box-shadow:0 3px 0 #d97706}.k5-stk.on span{filter:none;opacity:1;animation:k5Bob 3s ease-in-out infinite}
+.k5-toast{pointer-events:none;position:fixed;left:50%;bottom:calc(150px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:10000;display:flex;gap:10px;align-items:center;background:linear-gradient(135deg,#f59e0b,#ec4899);color:#fff;padding:10px 18px 10px 12px;border-radius:18px;border:3px solid #fff;box-shadow:0 8px 24px rgba(0,0,0,.35);animation:k5ToastIn .5s cubic-bezier(.3,1.6,.5,1);max-width:92vw}
+.k5-toast .ti{font-size:36px;line-height:1}.k5-toast b{display:block;font-size:16px}.k5-toast small{display:block;font-size:13px;font-weight:700}.k5-toast.out{opacity:0;transition:opacity .35s}
+@keyframes k5ToastIn{from{transform:translate(-50%,40px) scale(.7);opacity:0}}
+.k5-burst{font-size:30px}
+@media (max-width:420px){.k5-buddy{width:76px;height:76px}.k5-bface-in{font-size:46px}.k5-goal{width:52px;height:52px}.k5-wrow{grid-template-columns:70px 1fr 66px;font-size:13px}.k5-digi{font-size:38px}}
+@media (prefers-reduced-motion:reduce){.k5-sky i,.k5-bface-in,.k5-cicon,.k5-pdot,.k5-stk.on span{animation:none}.blk,.k5-dots i,.k5-pane:not([hidden]){animation:none}}
+:root[data-theme="dark"] .k5-bnum,:root[data-theme="dark"] .k5-frac{color:#34d399}:root[data-theme="dark"] .k5-pstats span{background:#312e81;color:#e0e7ff}:root[data-theme="dark"] .k5-sci{background:#3a2a0a;color:#fde68a}
+:root[data-theme="dark"] .k5-stk.on{background:linear-gradient(160deg,#78350f,#92400e);color:#fef3c7}
 </style>
 <script>
 // ===== 🌟 K–5 Learning Studio (inside Sounds Lab) =====
@@ -37296,17 +37468,10 @@ const K5_SIGHT = {
   "Grade 2–3": [["because","I am happy because we learned math."],["before","Wash your hands before eating."],["around","The Earth goes around the Sun."],["change","Caterpillars change into butterflies."],["always","I always brush my teeth."],["different","Every snowflake is different."],["thought","I thought it would rain."],["laugh","The joke made us laugh."],["through","We walked through the forest."],["enough","Is there enough cake for everyone?"],["special","Today is a special day."],["important","Sleep is important for your body."]],
   "Grade 4–5": [["between","The blue line is between two numbers."],["fraction","One half is a simple fraction."],["distance","Measure the distance with a ruler."],["equation","Solve the equation to find x."],["temperature","The temperature dropped at night."],["environment","Plants and animals share an environment."],["experiment","Our experiment tested which ball bounces highest."],["paragraph","Start a new paragraph for a new idea."],["perimeter","The perimeter is the distance around a shape."],["recognize","Can you recognize this song?"],["necessary","Water is necessary for life."],["describe","Describe your favourite animal."]]};
 const k5 = {tab: "trace", stars: 0, xp: 0, streak: 1, last: "", letter: 0, lower: false, ink: [], bw: 0, sg: "Pre-K & K", si: 0, ms: 0, mt: null, mk: "add", frame: 0, prob: null, slices: 4, shaded: 3, fq: null, wcs: 0, sw: false, inited: false, log: [], rec: null};
-function k5Load(){ try { const s = JSON.parse(localStorage.getItem("wordbook-k5") || "{}"); k5.stars = s.stars || 0; k5.xp = s.xp || 0; k5.streak = s.streak || 1; k5.last = s.last || ""; } catch(e){}
-  const today = new Date().toDateString(), y = new Date(Date.now() - 864e5).toDateString(); if(k5.last !== today){ k5.streak = k5.last === y ? k5.streak + 1 : 1; k5.last = today; k5Save(); } }
-function k5Save(){ try { localStorage.setItem("wordbook-k5", JSON.stringify({stars: k5.stars, xp: k5.xp, streak: k5.streak, last: k5.last})); } catch(e){} }
-function k5Score(){ $("k5-stars").textContent = `⭐ ${k5.stars}`; $("k5-xp").textContent = `✨ ${k5.xp} XP`; $("k5-streak").textContent = `🔥 ${k5.streak} day${k5.streak === 1 ? "" : "s"}`; }
-function k5Win(xp, el){ k5.stars++; k5.xp += xp; k5Save(); k5Score(); ["k5-stars", "k5-xp"].forEach(id => { const s = $(id); s.classList.remove("pop"); void s.offsetWidth; s.classList.add("pop"); });
-  try { if(typeof playChime === "function") playChime(true); } catch(e){}
-  const r = (el || $("k5")).getBoundingClientRect(); for(let i = 0; i < 6; i++){ const b = document.createElement("span"); b.className = "k5-burst"; b.textContent = ["⭐", "✨", "🌟"][i % 3]; b.style.left = (r.left + r.width / 2) + "px"; b.style.top = (r.top + Math.min(r.height, 120) / 2) + "px"; b.style.setProperty("--dx", (i - 2.5) * 30 + "px"); document.body.appendChild(b); setTimeout(() => b.remove(), 1100); } }
 const k5Say = (t, pace) => { try { speak(t, pace || 0.95); } catch(e){} };
 const k5Shuffle = a => { a = a.slice(); for(let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 function k5Tab(t){ k5.tab = t; document.querySelectorAll("[data-k5]").forEach(b => b.setAttribute("aria-selected", String(b.dataset.k5 === t))); document.querySelectorAll(".k5-pane").forEach(p => p.hidden = p.dataset.pane !== t);
-  if(t === "trace") requestAnimationFrame(k5TraceDraw); if(t === "sci"){ k5WC(); k5Circ(); k5Plant(); } }
+  if(t === "trace") requestAnimationFrame(k5TraceDraw); if(t === "sci"){ k5WC(); k5Circ(); k5Plant(); } try { k5xTab(t); } catch(e){ console.warn("k5x", e); } }
 // ---------- ✍️ tracing (it checks how much of the letter you covered) ----------
 function k5Letters(){ $("k5-letters").innerHTML = K5_ABC.map((a, i) => `<button type="button" data-l="${i}" style="--h:${i * 14}" aria-pressed="${i === k5.letter}" aria-label="Letter ${a[0]}">${k5.lower ? a[0].toLowerCase() : a[0]}</button>`).join("");
   $("k5-letters").querySelectorAll("[data-l]").forEach(b => b.onclick = () => { k5.letter = +b.dataset.l; k5.ink = []; k5Letters(); k5TraceDraw(); k5SayLetter(); }); }
@@ -37414,9 +37579,16 @@ function k5Plant(){ const sun = +$("k5-sun").value, wat = +$("k5-water").value, 
 // ---------- 🐻 Sparky the voice buddy ----------
 function k5Log(who, t){ k5.log.push({who, t}); if(k5.log.length > 40) k5.log.shift(); $("k5-log").innerHTML = k5.log.map(m => `<div class="k5-msg ${m.who}">${esc(m.t)}</div>`).join(""); $("k5-log").scrollTop = 1e6; }
 function k5Reply(t){ k5Log("bot", t); k5Say(t); const b = $("k5-bear"); b.classList.add("talk"); setTimeout(() => b.classList.remove("talk"), Math.min(8000, 900 + t.length * 55)); }
-async function k5Heard(t){ t = String(t || "").trim(); if(!t) return; k5Log("me", t); const s = t.toLowerCase();
+async function k5Heard(t){ t = String(t || "").trim(); if(!t) return; k5Log("me", t); const s = t.toLowerCase(); try { k5xAsk(); } catch(e){}
   const go = (tab, msg) => { k5Tab(tab); k5Reply(msg); $("k5").scrollIntoView({behavior: "smooth", block: "start"}); };
   const m = s.match(/(\d+)\s*(\+|plus|-|minus|x|times|×)\s*(\d+)/); if(m){ const a = +m[1], b = +m[3], op = m[2], v = /\+|plus/.test(op) ? a + b : /-|minus/.test(op) ? a - b : a * b; return k5Reply(`${a} ${/\+|plus/.test(op) ? "plus" : /-|minus/.test(op) ? "minus" : "times"} ${b} is ${v}! Great question!`); }
+  if(!/\b(why|how|what|who|which)\b/.test(s)){
+    if(/\b(stickers?|badges?|trophies)\b/.test(s)) return go("stickers", "Here are your stickers! Earn more by playing!");
+    if(/\b(blocks?|place value|multiply|multiplication|arrays?|times tables?)\b/.test(s)) return go("build", "Let's build numbers with blocks!");
+    if(/\b(clock|o'?clock|telling time|tell the time)\b/.test(s)) return go("clock", "Let's practise telling the time!");
+    if(/\b(space|planets?|solar system|astronaut|rocket)\b/.test(s)) return go("space", "Blast off! Let's explore the solar system!");
+    if(/\b(melt|melting|freeze|freezing|boil|boiling|states of matter|solid|liquid|steam)\b/.test(s)) return go("matter", "Let's explore the water lab!");
+  }
   if(/\b(trace|tracing|write|letter)\b/.test(s)) return go("trace", "Let's trace letters! Pick a letter and trace it with your finger.");
   if(/\b(blend|sound it out|spell)\b/.test(s)) return go("blend", "Let's blend sounds into words!");
   if(/\bsight words?\b|\bflash ?cards?\b/.test(s)) return go("sight", "Let's practise sight words!");
@@ -37436,8 +37608,193 @@ function k5Mic(){ const R0 = window.SpeechRecognition || window.webkitSpeechReco
   R.onerror = e => { $("k5-mst").textContent = e.error === "not-allowed" || e.error === "service-not-allowed" ? "🎤 The microphone isn't allowed here — type to Sparky instead!" : "I didn't hear you. Tap the mic and try again!"; };
   R.onend = () => { k5.rec = null; btn.classList.remove("on"); $("k5-bear").classList.remove("listen"); if(/listening/.test($("k5-mst").textContent)) $("k5-mst").textContent = "Tap the mic and talk to Sparky — or type below."; };
   try { R.start(); } catch(e){ k5.rec = null; btn.classList.remove("on"); } }
+// ===== K–5 STUDIO UPGRADE: buddy, levels, stickers and the virtual labs =====
+Object.assign(k5, {buddy: "🐻", lv: 0, day: {k: "", n: 0}, badges: {}, wins: {}, seen: {tabs: [], planets: [], states: []}, asks: 0, shownLevel: 1,
+  bn: 0, bt: null, ar: 3, acl: 4, aq: null, apeek: false, ch: 3, cm: 0, pm: false, cq: null, pi: -2, sq: null, sqs: 0, T: 20, mq: null, mraf: 0, parts: null, audio: null, wired: false});
+const K5_LV = [0, 40, 100, 180, 280, 400, 550, 720, 920, 1150, 1400, 1700];
+const K5_TITLES = ["Seedling", "Explorer", "Adventurer", "Star Scout", "Word Wizard", "Number Ninja", "Science Whiz", "Champion", "Genius", "Hero", "Legend", "Superstar"];
+const K5_ACC = ["", "🎀", "🧢", "🕶️", "🎩", "🦸", "🔬", "🏅", "🎓", "🚀", "👑", "💎"];
+const K5_BUDDIES = ["🐻", "🐱", "🐶", "🦊", "🐼", "🐸", "🦄", "🐙", "🦖", "🐰"];
+const K5_CHEERS = ["Awesome!", "You did it!", "Super star!", "Brilliant!", "Wow, great job!", "Keep going!", "High five! ✋", "You're on fire! 🔥"];
+const K5_TIPS = {trace: "Let's trace! Follow the dotted letter with your finger ✍️", blend: "Tap each letter to hear its sound, then blend them! 🧩", sight: "Flip the cards, then play Listen & match! 🃏", math: "Count, add and slice pizzas! 🍕", build: "Build big numbers with blocks! 🧱", clock: "Drag the clock hands to tell the time! ⏰", sci: "Make rain, light a bulb, grow a plant! 🧪", space: "Tap a planet to visit it! 🚀", matter: "Heat and cool the water. What happens? 🔬", sparky: "Ask me anything! 🎤", stickers: "Look at all your stickers! 🏆"};
+const K5_BADGES = [
+  ["first", "⭐", "First Star", "Earn your very first star.", k => k.stars >= 1], ["s10", "🌟", "Star Collector", "Collect 10 stars.", k => k.stars >= 10],
+  ["s25", "💫", "Star Shower", "Collect 25 stars.", k => k.stars >= 25], ["s50", "🌠", "Galaxy Glow", "Collect 50 stars.", k => k.stars >= 50], ["s100", "🏆", "Super Star", "Collect 100 stars.", k => k.stars >= 100],
+  ["st3", "🔥", "On Fire", "Learn 3 days in a row.", k => k.streak >= 3], ["st7", "📅", "Week Warrior", "Learn 7 days in a row.", k => k.streak >= 7],
+  ["lv3", "🦸", "Level 3 Hero", "Reach level 3.", k => k5Level(k.xp) >= 3], ["lv6", "👑", "Level 6 Champion", "Reach level 6.", k => k5Level(k.xp) >= 6],
+  ["daily", "🎯", "Daily Hero", "Earn 5 stars in one day.", k => k.day.n >= 5], ["explorer", "🧭", "Explorer", "Visit every activity.", k => k.seen.tabs.length >= 10],
+  ["trace", "✍️", "Letter Pro", "Trace 5 letters well.", k => (k.wins.trace || 0) >= 5], ["blend", "🧩", "Word Builder", "Win 5 times in Blend.", k => (k.wins.blend || 0) >= 5],
+  ["sight", "🃏", "Sight Star", "Win 5 sight-word matches.", k => (k.wins.sight || 0) >= 5], ["math", "🔟", "Math Whiz", "Win 5 times in Math.", k => (k.wins.math || 0) >= 5],
+  ["build", "🧱", "Block Builder", "Build 3 numbers or arrays.", k => (k.wins.build || 0) >= 3], ["clock", "⏰", "Time Keeper", "Set the clock right 3 times.", k => (k.wins.clock || 0) >= 3],
+  ["space", "🚀", "Astronaut", "Answer 3 space questions.", k => (k.wins.space || 0) >= 3], ["planets", "🪐", "Planet Hunter", "Visit all 8 planets.", k => k.seen.planets.length >= 8],
+  ["matter", "🧪", "Scientist", "Win 2 lab challenges.", k => (k.wins.matter || 0) >= 2], ["states", "🧊", "State Spotter", "See solid, liquid and gas.", k => k.seen.states.length >= 3],
+  ["sparky", "🐻", "Chatterbox", "Ask your buddy 3 questions.", k => k.asks >= 3]];
+const k5Level = xp => { let l = 1; while(l < K5_LV.length && xp >= K5_LV[l]) l++; return l >= K5_LV.length ? K5_LV.length + Math.floor((xp - K5_LV[K5_LV.length - 1]) / 300) : l; };
+const k5LvBounds = l => [l <= K5_LV.length ? K5_LV[l - 1] : K5_LV[K5_LV.length - 1] + (l - K5_LV.length) * 300, l < K5_LV.length ? K5_LV[l] : K5_LV[K5_LV.length - 1] + (l - K5_LV.length + 1) * 300];
+const k5Pick = a => a[Math.floor(Math.random() * a.length)];
+function k5Load(){ try { const s = JSON.parse(localStorage.getItem("wordbook-k5") || "{}"); k5.stars = s.stars || 0; k5.xp = s.xp || 0; k5.streak = s.streak || 1; k5.last = s.last || ""; k5.buddy = s.buddy || "🐻"; k5.lv = [0, 1, 2].includes(s.lv) ? s.lv : 0;
+    k5.day = s.day && s.day.k ? s.day : {k: "", n: 0}; k5.badges = s.badges || {}; k5.wins = s.wins || {}; k5.seen = Object.assign({tabs: [], planets: [], states: []}, s.seen || {}); k5.asks = s.asks || 0; } catch(e){}
+  const today = new Date().toDateString(), y = new Date(Date.now() - 864e5).toDateString(); if(k5.last !== today){ k5.streak = k5.last === y ? k5.streak + 1 : 1; k5.last = today; }
+  if(k5.day.k !== today) k5.day = {k: today, n: 0}; k5.shownLevel = k5Level(k5.xp); k5Badges(true); k5Save(); }
+function k5Save(){ try { localStorage.setItem("wordbook-k5", JSON.stringify({stars: k5.stars, xp: k5.xp, streak: k5.streak, last: k5.last, buddy: k5.buddy, lv: k5.lv, day: k5.day, badges: k5.badges, wins: k5.wins, seen: k5.seen, asks: k5.asks})); } catch(e){} }
+function k5Score(){ $("k5-stars").textContent = `⭐ ${k5.stars}`; $("k5-xp").textContent = `✨ ${k5.xp} XP`; $("k5-streak").textContent = `🔥 ${k5.streak} day${k5.streak === 1 ? "" : "s"}`;
+  const l = k5Level(k5.xp), [lo, hi] = k5LvBounds(l); $("k5-lvname").textContent = `Level ${l} · ${K5_TITLES[Math.min(l - 1, K5_TITLES.length - 1)]}`;
+  $("k5-xpfill").style.width = Math.max(4, Math.min(100, Math.round((k5.xp - lo) / (hi - lo) * 100))) + "%"; $("k5-xpnext").textContent = `${hi - k5.xp} XP to level ${l + 1}`;
+  $("k5-acc").textContent = K5_ACC[Math.min(l - 1, K5_ACC.length - 1)]; $("k5-bface").textContent = k5.buddy; $("k5-bear").textContent = k5.buddy; $("k5-tabbear").textContent = k5.buddy;
+  const n = Math.min(5, k5.day.n); $("k5-ring").style.strokeDashoffset = String(113.1 * (1 - n / 5)); $("k5-goaltxt").textContent = `${n}/5`; }
+function k5Tone(notes, step){ try { const A = window.AudioContext || window.webkitAudioContext; if(!A) return; k5.audio = k5.audio || new A(); const c = k5.audio; if(c.state === "suspended") c.resume();
+    notes.forEach((f, i) => { const o = c.createOscillator(), g = c.createGain(), t = c.currentTime + i * (step || 0.12); o.type = "triangle"; o.frequency.value = f; g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.16, t + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.3); o.connect(g); g.connect(c.destination); o.start(t); o.stop(t + 0.32); }); } catch(e){} }
+const k5Fanfare = () => k5Tone([523, 659, 784, 1047, 1319], 0.1), k5Blip = () => k5Tone([740], 0);
+function k5Bubble(t){ const b = $("k5-bubble"); if(!b) return; b.textContent = t; b.classList.remove("pop"); void b.offsetWidth; b.classList.add("pop"); }
+function k5Hop(){ const b = $("k5-buddy"); b.classList.remove("hop"); void b.offsetWidth; b.classList.add("hop"); }
+const k5Q = []; let k5QBusy = false;
+function k5Toast(icon, title, sub){ k5Q.push([icon, title, sub]); if(!k5QBusy) k5ToastNext(); }
+function k5ToastNext(){ const t = k5Q.shift(); if(!t){ k5QBusy = false; return; } k5QBusy = true; const el = document.createElement("div"); el.className = "k5-toast"; el.setAttribute("role", "status");
+  const ic = document.createElement("span"); ic.className = "ti"; ic.textContent = t[0]; const d = document.createElement("div"), b = document.createElement("b"), s = document.createElement("small"); b.textContent = t[1]; s.textContent = t[2]; d.append(b, s); el.append(ic, d); document.body.appendChild(el);
+  setTimeout(() => { el.classList.add("out"); setTimeout(() => { el.remove(); k5ToastNext(); }, 350); }, 2500); }
+function k5Burst(el, n){ const r = (el || $("k5")).getBoundingClientRect(); for(let i = 0; i < n; i++){ const b = document.createElement("span"); b.className = "k5-burst"; b.textContent = ["⭐", "✨", "🌟", "🎉", "💖"][i % 5]; b.style.left = (r.left + r.width / 2) + "px"; b.style.top = (r.top + Math.min(r.height, 120) / 2) + "px"; b.style.setProperty("--dx", (i - n / 2) * (180 / n) + (Math.random() * 30 - 15) + "px"); document.body.appendChild(b); setTimeout(() => b.remove(), 1100); } }
+function k5Badges(silent){ K5_BADGES.forEach(b => { if(!k5.badges[b[0]] && b[4](k5)){ k5.badges[b[0]] = 1; if(!silent){ k5Toast(b[1], "New sticker!", b[2]); k5Fanfare(); } } }); if(!silent) k5Save(); }
+function k5Win(xp, el){ k5.stars++; k5.xp += xp; k5.wins[k5.tab] = (k5.wins[k5.tab] || 0) + 1; const today = new Date().toDateString(); if(k5.day.k !== today) k5.day = {k: today, n: 0};
+  const before = k5.day.n; k5.day.n++; k5Score(); ["k5-stars", "k5-xp"].forEach(id => { const s = $(id); s.classList.remove("pop"); void s.offsetWidth; s.classList.add("pop"); });
+  try { if(typeof playChime === "function") playChime(true); } catch(e){} k5Hop(); k5Burst(el, 10); k5Bubble(k5Pick(K5_CHEERS) + ` +${xp} XP`);
+  const l = k5Level(k5.xp); if(l > k5.shownLevel){ k5.shownLevel = l; const t = K5_TITLES[Math.min(l - 1, K5_TITLES.length - 1)]; setTimeout(() => { k5Toast("🎉", `Level ${l}!`, `You are now a ${t}!`); k5Fanfare(); k5Burst($("k5-buddy"), 14); k5Say(`Level up! You are now level ${l}, a ${t}!`); }, 500); }
+  if(before < 5 && k5.day.n >= 5) setTimeout(() => k5Toast("🎯", "Daily goal reached!", "5 stars today. Amazing!"), 900);
+  k5Badges(); k5Save(); }
+function k5Stickers(){ const got = K5_BADGES.filter(b => k5.badges[b[0]]).length; $("k5-stcount").textContent = `${got}/${K5_BADGES.length}`;
+  $("k5-stk").innerHTML = K5_BADGES.map(b => k5.badges[b[0]] ? `<button type="button" class="k5-stk on" data-b="${b[0]}"><span>${b[1]}</span><small>${b[2]}</small></button>` : `<button type="button" class="k5-stk" data-b="${b[0]}" aria-label="Locked sticker. ${b[3]}"><span>🔒</span><small>???</small></button>`).join("");
+  $("k5-stk").querySelectorAll("[data-b]").forEach(btn => btn.onclick = () => { const b = K5_BADGES.find(x => x[0] === btn.dataset.b), on = k5.badges[b[0]]; $("k5-stinfo").textContent = on ? `${b[1]} ${b[2]} — ${b[3]}` : `🔒 How to get it: ${b[3]}`; if(on) k5Say(`${b[2]}. ${b[3]}`); }); }
+function k5xTab(t){ if(t !== "stickers" && !k5.seen.tabs.includes(t)){ k5.seen.tabs.push(t); k5Badges(); k5Save(); }
+  k5Bubble(K5_TIPS[t] || "Let's play!"); if(t === "build"){ k5BuildDraw(); k5ArrDraw(); } if(t === "clock") k5ClockDraw(); if(t === "space") k5SpaceInit(); if(t === "matter") k5MatterStart(); if(t === "stickers") k5Stickers(); }
+function k5xAsk(){ k5.asks++; k5Badges(); k5Save(); }
+// ---------- 🧱 number blocks + arrays ----------
+const K5_ONES = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"], K5_TENS = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
+const k5Words = n => n < 20 ? K5_ONES[n] : n < 100 ? K5_TENS[Math.floor(n / 10)] + (n % 10 ? "-" + K5_ONES[n % 10] : "") : n < 1000 ? K5_ONES[Math.floor(n / 100)] + " hundred" + (n % 100 ? " " + k5Words(n % 100) : "") : k5Words(Math.floor(n / 1000)) + " thousand" + (n % 1000 ? " " + k5Words(n % 1000) : "");
+const K5_UNIT = {1: "one", 10: "ten", 100: "hundred", 1000: "thousand"}, K5_PLACE = {1: "Ones", 10: "Tens", 100: "Hundreds", 1000: "Thousands"};
+const k5Places = () => k5.lv === 0 ? [10, 1] : k5.lv === 1 ? [100, 10, 1] : [1000, 100, 10, 1];
+function k5BuildDraw(pulse, msg){ const P = k5Places(), max = Math.pow(10, P.length) - 1; k5.bn = Math.max(0, Math.min(max, k5.bn)); const n = k5.bn;
+  $("k5-bnum").textContent = n.toLocaleString("en-US"); $("k5-bwords").textContent = k5Words(n); $("k5-bexp").textContent = n ? P.filter(p => Math.floor(n / p) % 10).map(p => (Math.floor(n / p) % 10) * p).join(" + ") : "";
+  const cols = $("k5-cols"); cols.style.gridTemplateColumns = `repeat(${P.length}, minmax(0,1fr))`;
+  cols.innerHTML = P.map(p => { const d = Math.floor(n / p) % 10; return `<div class="k5-col c${p}${pulse === p ? " pulse" : ""}"><b>${K5_PLACE[p]}</b><div class="k5-blocks" role="img" aria-label="${d} ${K5_PLACE[p].toLowerCase()}">${`<i class="blk b${p}"></i>`.repeat(d)}</div><div class="k5-digit">${d}</div><div class="k5-cbtn"><button type="button" data-d="${-p}" aria-label="Take away one ${K5_UNIT[p]}"${n - p < 0 ? " disabled" : ""}>−</button><button type="button" data-d="${p}" aria-label="Add one ${K5_UNIT[p]}"${n + p > max ? " disabled" : ""}>+</button></div></div>`; }).join("");
+  $("k5-bfb2").textContent = msg || (k5.bt != null ? `🎯 Build the number ${k5.bt.toLocaleString("en-US")}!` : "Tap + to add blocks. When a column reaches 10, it jumps to the next one!"); }
+function k5BuildTap(d){ const p = Math.abs(d), old = k5.bn; k5.bn = old + d; const od = Math.floor(old / p) % 10, nd = Math.floor(k5.bn / p) % 10; let msg = "", pulse = 0;
+  if(d > 0 && nd < od){ msg = `🎁 10 ${K5_PLACE[p].toLowerCase()} = 1 ${K5_UNIT[p * 10]}!`; pulse = p * 10; k5Fanfare(); } else if(d < 0 && nd > od){ msg = `✂️ 1 ${K5_UNIT[p * 10]} broke into 10 ${K5_PLACE[p].toLowerCase()}!`; pulse = p; k5Blip(); } else k5Blip();
+  k5BuildDraw(pulse, msg);
+  if(k5.bt != null && k5.bn === k5.bt){ const t = k5.bt; k5.bt = null; k5BuildDraw(0, `🎉 You built ${t.toLocaleString("en-US")}!`); k5Say(`${k5Words(t)}! You built it!`); k5Win(20, $("k5-cols")); } }
+function k5BuildChallenge(){ const lo = [11, 101, 1001][k5.lv], hi = [99, 999, 9999][k5.lv]; k5.bt = lo + Math.floor(Math.random() * (hi - lo + 1)); k5.bn = 0; k5BuildDraw(); k5Say(`Build the number ${k5Words(k5.bt)}.`); }
+const k5AMax = () => [5, 10, 12][k5.lv];
+function k5ArrDraw(){ const mx = k5AMax(); k5.ar = Math.min(k5.ar, mx); k5.acl = Math.min(k5.acl, mx); const r = k5.ar, c = k5.acl;
+  ["k5-arows", "k5-acols"].forEach(id => $(id).max = mx); $("k5-arows").value = r; $("k5-acols").value = c; $("k5-arn").textContent = r; $("k5-acn").textContent = c;
+  const hide = k5.aq && k5.lv === 2 && !k5.apeek, g = $("k5-arr"); g.className = "k5-dots" + (hide ? " hid" : ""); g.style.gridTemplateColumns = `repeat(${c}, 1fr)`;
+  g.innerHTML = Array.from({length: r * c}, (_, i) => `<i style="background:hsl(${(Math.floor(i / c) * 41 + 10) % 360},85%,55%)"></i>`).join("");
+  $("k5-aeq").textContent = k5.aq ? `${r} × ${c} = ?` : `${r} × ${c} = ${r * c}`;
+  $("k5-asum").textContent = k5.aq ? "Count the dots, or add up the rows!" : `${r} row${r > 1 ? "s" : ""} of ${c}: ` + (r <= 6 ? Array(r).fill(c).join(" + ") : `${c} + ${c} + ${c} + …`) + ` = ${r * c}`;
+  $("k5-apeek").hidden = !(k5.aq && k5.lv === 2); }
+// ---------- ⏰ clock ----------
+const k5Pad = n => String(n).padStart(2, "0");
+function k5TimeWords(h, m){ const nx = h % 12 + 1; return m === 0 ? `${h} o'clock` : m === 30 ? `half past ${h}` : m === 15 ? `quarter past ${h}` : m === 45 ? `quarter to ${nx}` : m < 30 ? `${m} minutes past ${h}` : `${60 - m} minutes to ${nx}`; }
+function k5ClockHour(dir){ if(dir > 0){ k5.ch = k5.ch === 12 ? 1 : k5.ch + 1; if(k5.ch === 12) k5.pm = !k5.pm; } else { if(k5.ch === 12) k5.pm = !k5.pm; k5.ch = k5.ch === 1 ? 12 : k5.ch - 1; } }
+function k5ClockDraw(){ const h = k5.ch, m = k5.cm, ha = (h % 12) * 30 + m * 0.5, ma = m * 6;
+  let s = `<circle cx="100" cy="100" r="96" fill="#fff" stroke="#6366f1" stroke-width="6"/>`;
+  for(let i = 0; i < 60; i++){ const a = i * 6 * Math.PI / 180, big = i % 5 === 0, r1 = big ? 82 : 88; s += `<line x1="${(100 + Math.sin(a) * r1).toFixed(1)}" y1="${(100 - Math.cos(a) * r1).toFixed(1)}" x2="${(100 + Math.sin(a) * 92).toFixed(1)}" y2="${(100 - Math.cos(a) * 92).toFixed(1)}" stroke="${big ? "#4338ca" : "#a5b4fc"}" stroke-width="${big ? 3 : 1.2}"/>`; }
+  for(let i = 1; i <= 12; i++){ const a = i * 30 * Math.PI / 180; s += `<text x="${(100 + Math.sin(a) * 66).toFixed(1)}" y="${(100 - Math.cos(a) * 66 + 7).toFixed(1)}" text-anchor="middle" font-size="20" font-weight="800" fill="#312e81" font-family="Fredoka,Andika,system-ui,sans-serif">${i}</text>`; }
+  s += `<g transform="rotate(${ha} 100 100)"><line x1="100" y1="108" x2="100" y2="58" stroke="#2563eb" stroke-width="9" stroke-linecap="round"/></g><g transform="rotate(${ma} 100 100)"><line x1="100" y1="114" x2="100" y2="26" stroke="#ec4899" stroke-width="6" stroke-linecap="round"/></g><circle cx="100" cy="100" r="7" fill="#f59e0b" stroke="#fff" stroke-width="2"/>`;
+  $("k5-clk").innerHTML = s; $("k5-digi").textContent = `${h}:${k5Pad(m)}`; $("k5-ampm").textContent = k5.pm ? "🌙 PM" : "☀️ AM";
+  const H = (h % 12) + (k5.pm ? 12 : 0), sky = H >= 21 || H < 5 ? ["#0f172a", "#312e81", "🌙"] : H < 8 ? ["#fb923c", "#fde68a", "🌅"] : H < 17 ? ["#38bdf8", "#bae6fd", "☀️"] : H < 20 ? ["#f97316", "#a78bfa", "🌇"] : ["#4338ca", "#1e1b4b", "🌙"];
+  $("k5-cscene").style.background = `linear-gradient(${sky[0]},${sky[1]})`; $("k5-cicon").textContent = sky[2];
+  $("k5-croutine").textContent = H < 5 ? "😴 Sleeping time" : H < 7 ? "🌅 Early morning" : H === 7 ? "🥣 Breakfast time" : H === 8 ? "🚌 Off to school!" : H < 12 ? "📚 Learning time" : H === 12 ? "🥪 Lunch time" : H < 15 ? "⚽ Playtime" : H === 15 ? "🏠 Home from school" : H < 18 ? "🎨 Fun & homework" : H === 18 ? "🍝 Dinner time" : H === 19 ? "📖 Story time" : H === 20 ? "🛁 Bath & pyjamas" : "🌙 Bedtime — sleep tight"; }
+function k5ClockWire(){ const svg = $("k5-clk"); let drag = null;
+  const ang = e => { const r = svg.getBoundingClientRect(), x = e.clientX - (r.left + r.width / 2), y = e.clientY - (r.top + r.height / 2); let a = Math.atan2(x, -y) * 180 / Math.PI; if(a < 0) a += 360; return {a, d: Math.hypot(x, y) / (r.width / 200)}; };
+  const move = e => { const {a} = ang(e); if(drag === "m"){ const step = k5.lv === 2 ? 1 : 5, m = (Math.round(a / 6 / step) * step) % 60, old = k5.cm; if(old >= 45 && m <= 14) k5ClockHour(1); else if(old <= 14 && m >= 45) k5ClockHour(-1); k5.cm = m; } else { const h = Math.round(a / 30) % 12; k5.ch = h === 0 ? 12 : h; } k5ClockDraw(); };
+  svg.onpointerdown = e => { drag = ang(e).d < 52 ? "h" : "m"; try { svg.setPointerCapture(e.pointerId); } catch(_){} move(e); e.preventDefault(); };
+  svg.onpointermove = e => { if(drag) move(e); }; svg.onpointerup = svg.onpointercancel = () => { drag = null; };
+  $("k5-hp").onclick = () => { k5ClockHour(1); k5ClockDraw(); }; $("k5-hm").onclick = () => { k5ClockHour(-1); k5ClockDraw(); };
+  $("k5-mp").onclick = () => { k5.cm += 5; if(k5.cm >= 60){ k5.cm -= 60; k5ClockHour(1); } k5ClockDraw(); }; $("k5-mm").onclick = () => { k5.cm -= 5; if(k5.cm < 0){ k5.cm += 60; k5ClockHour(-1); } k5ClockDraw(); };
+  $("k5-ampm").onclick = () => { k5.pm = !k5.pm; k5ClockDraw(); };
+  $("k5-csay").onclick = () => k5Say(`It is ${k5TimeWords(k5.ch, k5.cm)}. That is ${k5.ch}:${k5Pad(k5.cm)}.`);
+  $("k5-cq").onclick = () => { const ms = k5.lv === 0 ? [0, 30] : k5.lv === 1 ? [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55] : null, m = ms ? k5Pick(ms) : 1 + Math.floor(Math.random() * 59), h = 1 + Math.floor(Math.random() * 12); k5.cq = [h, m];
+    k5.ch = h === 6 ? 9 : 6; k5.cm = 0; k5ClockDraw(); const q = k5.lv < 2 ? `Show ${k5TimeWords(h, m)}.` : `Show ${h}:${k5Pad(m)}.`; $("k5-cfb").textContent = `🎯 ${q}`; k5Say(q.replace(/(\d+):(\d+)/, "$1 $2")); };
+  $("k5-cck").onclick = () => { if(!k5.cq){ $("k5-cfb").textContent = "Tap “Time challenge” first!"; return; } const [h, m] = k5.cq;
+    if(k5.ch === h && k5.cm === m){ k5.cq = null; $("k5-cfb").textContent = `🎉 Yes! That is ${h}:${k5Pad(m)}!`; k5Say(`Yes! ${k5TimeWords(h, m)}!`); k5Win(20, $("k5-clk")); }
+    else $("k5-cfb").textContent = k5.ch !== h ? "Almost! Look at the short blue hour hand. 🔵" : "Almost! Check the long pink minute hand. 🩷"; }; }
+// ---------- 🪐 space ----------
+const K5_PL = [
+  {n: "Mercury", c: "#a8a29e", r: 28, s: 4, dur: 9, g: 0.38, size: "0.38× Earth", year: "88 days", day: "59 Earth days", moons: "0", temp: "−173 to 427 °C", fact: "The smallest planet and the closest to the Sun. It zooms around the Sun in just 88 days!", sci: "Mercury has almost no air, so its temperature swings from −173 °C at night to 427 °C in the day."},
+  {n: "Venus", c: "#fbbf24", r: 44, s: 6.5, dur: 15, g: 0.91, size: "0.95× Earth", year: "225 days", day: "243 Earth days", moons: "0", temp: "464 °C", fact: "The hottest planet! Thick clouds trap heat like a blanket, and it spins backwards.", sci: "A day on Venus is longer than its year: it spins once in 243 Earth days but circles the Sun in 225."},
+  {n: "Earth", c: "#38bdf8", r: 61, s: 7, dur: 22, g: 1, size: "1× Earth", year: "365 days", day: "24 hours", moons: "1", temp: "15 °C average", fact: "Our home! It is the only planet we know that has liquid water and living things.", sci: "About 71% of Earth's surface is ocean. Earth is tilted, and that tilt gives us the four seasons."},
+  {n: "Mars", c: "#f87171", r: 78, s: 5, dur: 34, g: 0.38, size: "0.53× Earth", year: "687 days", day: "24.6 hours", moons: "2", temp: "−65 °C average", fact: "The Red Planet! Rusty dust makes it look red, and robot rovers explore it.", sci: "Mars has Olympus Mons, a volcano about 2½ times taller than Mount Everest."},
+  {n: "Jupiter", c: "#fdba74", r: 102, s: 13, dur: 55, g: 2.34, size: "11× Earth", year: "12 Earth years", day: "10 hours", moons: "90+", temp: "−110 °C (cloud tops)", fact: "The biggest planet! Its Great Red Spot is a giant storm bigger than Earth.", sci: "More than 1,300 Earths could fit inside Jupiter. It spins so fast that a day lasts only about 10 hours."},
+  {n: "Saturn", c: "#fde68a", r: 126, s: 11, dur: 80, g: 1.06, size: "9× Earth", year: "29 Earth years", day: "10.7 hours", moons: "140+", temp: "−140 °C", ring: true, fact: "Famous for its beautiful rings made of ice and rock.", sci: "Saturn is so light for its size that it would float in a giant bathtub. Its rings are wide but very thin."},
+  {n: "Uranus", c: "#67e8f9", r: 148, s: 8.5, dur: 110, g: 0.92, size: "4× Earth", year: "84 Earth years", day: "17 hours", moons: "25+", temp: "−195 °C", fact: "An ice giant that spins tipped on its side, rolling around the Sun.", sci: "Uranus is tilted about 98°, so each pole gets 42 years of sunlight, then 42 years of darkness."},
+  {n: "Neptune", c: "#6366f1", r: 168, s: 8.3, dur: 140, g: 1.19, size: "4× Earth", year: "165 Earth years", day: "16 hours", moons: "14+", temp: "−200 °C", fact: "Deep blue, very far away, and the windiest planet of all.", sci: "Neptune's winds can blow at about 2,000 km/h. It takes 165 Earth years to circle the Sun once."}];
+const K5_SQ = [["Which planet is the biggest?", "Jupiter", ["Mars", "Earth"]], ["Which planet is called the Red Planet?", "Mars", ["Venus", "Neptune"]], ["Which planet has famous rings?", "Saturn", ["Mercury", "Earth"]], ["Which planet is closest to the Sun?", "Mercury", ["Jupiter", "Uranus"]], ["Which planet do we live on?", "Earth", ["Venus", "Mars"]], ["Which planet is the hottest?", "Venus", ["Mercury", "Mars"]], ["Which planet is the windiest and very far away?", "Neptune", ["Saturn", "Mars"]], ["Which planet spins tipped on its side?", "Uranus", ["Jupiter", "Earth"]], ["What is at the centre of our solar system?", "The Sun", ["The Moon", "Earth"]], ["How many planets are in our solar system?", "8", ["7", "9"]]];
+function k5SpaceInit(){ if(!$("k5-solar").dataset.built){ $("k5-solar").dataset.built = "1"; let h = `<defs><radialGradient id="k5sun"><stop offset="0" stop-color="#fff7ae"/><stop offset=".6" stop-color="#fbbf24"/><stop offset="1" stop-color="#f97316"/></radialGradient></defs><rect x="-180" y="-180" width="360" height="360" fill="#0b1026"/>`;
+    for(let i = 0; i < 46; i++){ const a = (i * 137.5) * Math.PI / 180, d = 20 + (i * 53) % 160; h += `<circle cx="${(Math.cos(a) * d).toFixed(1)}" cy="${(Math.sin(a) * d).toFixed(1)}" r="${i % 5 === 0 ? 1.2 : 0.7}" fill="#fff" opacity="${0.35 + (i % 4) * 0.15}"/>`; }
+    h += `<circle r="22" fill="#fbbf24" opacity=".25"/><circle r="15" fill="url(#k5sun)" data-p="sun"/><circle r="26" fill="transparent" data-p="sun"/>`;
+    K5_PL.forEach((p, i) => { h += `<circle r="${p.r}" fill="none" stroke="#fff" stroke-opacity=".16" stroke-dasharray="2 5"/><g><animateTransform attributeName="transform" type="rotate" from="${i * 47} 0 0" to="${i * 47 + 360} 0 0" dur="${p.dur}s" repeatCount="indefinite"/>`
+      + `<circle cx="${p.r}" r="${p.s}" fill="${p.c}"/>${p.ring ? `<ellipse cx="${p.r}" rx="${p.s * 1.9}" ry="${p.s * 0.55}" fill="none" stroke="#fde68a" stroke-width="2" transform="rotate(-20 ${p.r} 0)"/>` : ""}<circle cx="${p.r}" r="${Math.max(11, p.s + 6)}" fill="transparent" data-p="${i}"><title>${p.n}</title></circle></g>`; });
+    $("k5-solar").innerHTML = h; $("k5-solar").onclick = e => { const t = e.target.closest("[data-p]"); if(t) k5Planet(t.dataset.p === "sun" ? -1 : +t.dataset.p); };
+    $("k5-pchips").innerHTML = K5_PL.map((p, i) => `<button type="button" data-pc="${i}" aria-pressed="false"><i style="background:${p.c}"></i>${p.n}</button>`).join(""); $("k5-pchips").querySelectorAll("[data-pc]").forEach(b => b.onclick = () => k5Planet(+b.dataset.pc));
+    $("k5-orbit").onclick = () => { const sv = $("k5-solar"), paused = $("k5-orbit").dataset.on === "1"; try { paused ? sv.unpauseAnimations() : sv.pauseAnimations(); } catch(e){} $("k5-orbit").dataset.on = paused ? "0" : "1"; $("k5-orbit").textContent = paused ? "⏸ Pause orbits" : "▶️ Play orbits"; };
+    $("k5-wkg").oninput = k5Weights; k5Weights(); $("k5-sqgo").onclick = k5SpaceQ; }
+}
+function k5Planet(i, quiet){ k5.pi = i; $("k5-pchips").querySelectorAll("[data-pc]").forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.pc === i)));
+  if(i < 0){ $("k5-pinfo").innerHTML = `<div class="k5-pdot" style="background:radial-gradient(circle at 35% 30%,#fff7ae,#fbbf24 55%,#f97316)"></div><div><b>The Sun</b><p>The Sun is a star, a giant ball of hot glowing gas. It gives us light and warmth!</p>${k5.lv >= 1 ? `<p class="k5-sci">🔬 More than 1 million Earths could fit inside the Sun. Its surface is about 5,500 °C.</p>` : ""}</div>`; if(!quiet) k5Say("The Sun is a star, a giant ball of hot glowing gas. It gives us light and warmth!"); return; }
+  const p = K5_PL[i]; if(!k5.seen.planets.includes(i)){ k5.seen.planets.push(i); k5Badges(); k5Save(); }
+  $("k5-pinfo").innerHTML = `<div class="k5-pdot" style="background:radial-gradient(circle at 35% 30%,#fff8,${p.c} 55%)"></div><div><b>${p.n}</b><p>${p.fact}</p>${k5.lv >= 1 ? `<div class="k5-pstats"><span>📏 ${p.size}</span><span>☀️ Year: ${p.year}</span><span>🔄 Day: ${p.day}</span><span>🌙 Moons: ${p.moons}</span><span>🌡️ ${p.temp}</span></div>` : `<div class="k5-pstats"><span>☀️ Year: ${p.year}</span><span>🌙 Moons: ${p.moons}</span></div>`}${k5.lv >= 2 ? `<p class="k5-sci">🔬 ${p.sci}</p>` : ""}<button type="button" class="k5-btn alt" id="k5-phear">🔊 Hear it</button></div>`;
+  $("k5-phear").onclick = () => k5Say(`${p.n}. ${p.fact}`); if(!quiet) k5Say(`${p.n}. ${p.fact}`); }
+function k5Weights(){ const kg = Math.max(1, Math.min(300, +$("k5-wkg").value || 30)), B = K5_PL.map(p => [p.n, p.g, p.c]); B.splice(3, 0, ["Moon", 0.165, "#d4d4d8"]); const mx = Math.max(...B.map(b => kg * b[1]));
+  $("k5-wbars").innerHTML = B.map(b => { const v = kg * b[1]; return `<div class="k5-wrow"><span>${b[0] === "Moon" ? "🌙 " : ""}${b[0]}</span><div class="tr"><i style="width:${Math.max(4, v / mx * 100)}%;background:${b[2]}"></i></div><span>${v < 10 ? v.toFixed(1) : Math.round(v)} kg</span></div>`; }).join(""); }
+function k5SpaceQ(){ let q = k5Pick(K5_SQ.slice(0, k5.lv === 0 ? 9 : 10)); k5.sq = q; const opts = k5Shuffle([q[1], ...q[2]]); $("k5-sq").textContent = q[0]; $("k5-sfb2").textContent = "";
+  $("k5-sopts").innerHTML = opts.map(o => `<button type="button" data-o="${o}" style="font-size:19px">${o}</button>`).join(""); k5Say(q[0]);
+  $("k5-sopts").querySelectorAll("[data-o]").forEach(b => b.onclick = () => { if(!k5.sq) return; if(b.dataset.o === q[1]){ b.classList.add("ok"); k5.sq = null; k5.sqs++; $("k5-sscore").textContent = `Score: ${k5.sqs}`; $("k5-sfb2").textContent = `🚀 Yes! ${q[1]}!`; k5Say(`Yes! ${q[1]}!`); k5Win(15, b); setTimeout(k5SpaceQ, 1900); } else { b.classList.add("no"); $("k5-sfb2").textContent = "Not quite. Tap a planet above to find out, then try again!"; } }); }
+// ---------- 🧊 matter lab ----------
+const k5MState = T => T <= 0 ? "solid" : T >= 100 ? "gas" : "liquid";
+function k5MatterParts(){ if(k5.parts) return; k5.parts = []; for(let r = 0; r < 5; r++) for(let c = 0; c < 8; c++){ const hx = 0.14 + c * 0.104, hy = 0.5 + r * 0.095; k5.parts.push({x: hx, y: hy, hx, hy, vx: 0, vy: 0, c, r}); } }
+function k5MatterStart(){ k5MatterParts(); k5MatterUpdate(true); if(!k5.mraf) k5.mraf = requestAnimationFrame(k5MatterFrame); }
+function k5MatterUpdate(quiet){ const T = k5.T, st = k5MState(T), name = {solid: "🧊 Solid (ice)", liquid: "💧 Liquid (water)", gas: "♨️ Gas (steam)"}[st];
+  $("k5-temp").value = T; $("k5-tn").textContent = `${T}°C`; $("k5-mstate").textContent = name; $("k5-mer").style.height = Math.max(4, (T + 20) / 140 * 100) + "%";
+  $("k5-mexp").textContent = {solid: "Solid ice: the particles are packed tightly in fixed spots. They only jiggle, so ice keeps its shape.", liquid: "Liquid water: the particles slide past each other. Water flows and takes the shape of its container.", gas: "Gas (steam): the particles zoom around, far apart. Steam spreads out to fill all the space."}[st] + (T === 0 ? " 0°C is the freezing and melting point!" : T === 100 ? " 100°C is the boiling point!" : "");
+  $("k5-spd").hidden = k5.lv < 2; if(k5.lv >= 2){ $("k5-spfill").style.width = Math.min(100, Math.max(6, (T + 20) / 140 * 100)) + "%"; $("k5-ftxt").textContent = `${T}°C = ${Math.round(T * 9 / 5 + 32)}°F`; }
+  if(!k5.seen.states.includes(st)){ k5.seen.states.push(st); k5Badges(); k5Save(); }
+  if(!quiet && k5.mq && k5.mq[2](T)){ const q = k5.mq; k5.mq = null; $("k5-mfb3").textContent = "🎉 You did it!"; k5Say("You did it! " + q[3]); k5Win(20, $("k5-mcv")); } }
+function k5MatterFrame(){ const c = $("k5-mcv"); if(!c || !c.offsetParent || k5.tab !== "matter"){ k5.mraf = 0; return; }
+  const r = c.getBoundingClientRect(), d = window.devicePixelRatio || 1, w = Math.max(160, r.width), h = r.height || 240; if(c.width !== Math.round(w * d) || c.height !== Math.round(h * d)){ c.width = Math.round(w * d); c.height = Math.round(h * d); }
+  const x = c.getContext("2d"); x.setTransform(d, 0, 0, d, 0, 0); const T = k5.T, st = k5MState(T);
+  const bg = x.createLinearGradient(0, 0, 0, h); st === "solid" ? (bg.addColorStop(0, "#e0f2fe"), bg.addColorStop(1, "#bfdbfe")) : st === "liquid" ? (bg.addColorStop(0, "#f0f9ff"), bg.addColorStop(1, "#e0f2fe")) : (bg.addColorStop(0, "#fff7ed"), bg.addColorStop(1, "#fed7aa")); x.fillStyle = bg; x.fillRect(0, 0, w, h);
+  if(st === "liquid"){ x.fillStyle = "rgba(56,189,248,.35)"; x.fillRect(0, h * 0.46, w, h * 0.54); x.fillStyle = "rgba(255,255,255,.5)"; x.fillRect(0, h * 0.46, w, 3); }
+  if(st === "solid"){ x.fillStyle = "rgba(147,197,253,.4)"; x.strokeStyle = "rgba(37,99,235,.55)"; x.lineWidth = 3; x.beginPath(); x.roundRect ? x.roundRect(w * 0.07, h * 0.42, w * 0.86, h * 0.54, 14) : x.rect(w * 0.07, h * 0.42, w * 0.86, h * 0.54); x.fill(); x.stroke(); }
+  const sp = st === "solid" ? 0 : st === "liquid" ? 0.0022 + Math.max(0, T) / 100 * 0.004 : 0.008 + (T - 100) / 20 * 0.002, top = st === "liquid" ? 0.5 : 0.05, P = k5.parts;
+  P.forEach(p => { if(st === "solid"){ const amp = 0.003 + (T + 20) / 20 * 0.0016; p.vx += (p.hx - p.x) * 0.07 + (Math.random() - .5) * amp; p.vy += (p.hy - p.y) * 0.07 + (Math.random() - .5) * amp; p.vx *= 0.78; p.vy *= 0.78; }
+    else { const v = Math.hypot(p.vx, p.vy) || 0.0001, k = 1 + (sp / v - 1) * 0.06; p.vx = p.vx * k + (Math.random() - .5) * sp * 0.35; p.vy = p.vy * k + (Math.random() - .5) * sp * 0.35; if(st === "liquid" && p.y < top) p.vy += 0.0018; }
+    p.x += p.vx; p.y += p.vy; if(st !== "solid"){ if(p.x < 0.05){ p.x = 0.05; p.vx = Math.abs(p.vx); } if(p.x > 0.95){ p.x = 0.95; p.vx = -Math.abs(p.vx); } if(p.y > 0.95){ p.y = 0.95; p.vy = -Math.abs(p.vy); } if(p.y < top && (st === "gas" || p.y > top - 0.03) && p.vy < 0){ if(st === "gas") p.y = top; p.vy = Math.abs(p.vy); } } });
+  if(st === "solid"){ x.strokeStyle = "rgba(37,99,235,.5)"; x.lineWidth = 2.5; x.beginPath(); P.forEach(p => { const R = P[p.r * 8 + p.c + 1], D = P[(p.r + 1) * 8 + p.c]; if(p.c < 7 && R){ x.moveTo(p.x * w, p.y * h); x.lineTo(R.x * w, R.y * h); } if(p.r < 4 && D){ x.moveTo(p.x * w, p.y * h); x.lineTo(D.x * w, D.y * h); } }); x.stroke(); }
+  const rad = Math.max(6, Math.min(w, h) * 0.034); P.forEach(p => { const px = p.x * w, py = p.y * h, g = x.createRadialGradient(px - rad * .3, py - rad * .3, 1, px, py, rad); st === "solid" ? (g.addColorStop(0, "#dbeafe"), g.addColorStop(1, "#3b82f6")) : st === "liquid" ? (g.addColorStop(0, "#e0f2fe"), g.addColorStop(1, "#0ea5e9")) : (g.addColorStop(0, "#fed7aa"), g.addColorStop(1, "#ea580c"));
+    x.fillStyle = g; x.beginPath(); x.arc(px, py, rad, 0, 6.283); x.fill(); x.fillStyle = "rgba(255,255,255,.85)"; x.beginPath(); x.arc(px - rad * .3, py - rad * .3, rad * .22, 0, 6.283); x.fill(); });
+  k5.mraf = requestAnimationFrame(k5MatterFrame); }
+function k5MatterWire(){ $("k5-temp").oninput = e => { k5.T = +e.target.value; k5MatterUpdate(); };
+  $("k5-heat").onclick = () => { k5.T = Math.min(120, k5.T + 10); k5MatterUpdate(); }; $("k5-cool").onclick = () => { k5.T = Math.max(-20, k5.T - 10); k5MatterUpdate(); };
+  $("k5-msay").onclick = () => k5Say($("k5-mexp").textContent);
+  $("k5-mlab").onclick = () => { const Q = [["Melt the ice into liquid water! 💧", -10, T => T > 0 && T < 100, "The ice melted into water."], ["Boil the water until it becomes steam! ♨️", 25, T => T >= 100, "The water boiled into steam."], ["Freeze the water into ice! 🧊", 25, T => T <= 0, "The water froze into ice."]]; if(k5.lv >= 2) Q.push(["Warm the water to between 40 and 60 degrees! 🌡️", -10, T => T >= 40 && T <= 60, "The water is nice and warm."]);
+    const q = k5Pick(Q); k5.mq = q; k5.T = q[1]; k5MatterUpdate(true); $("k5-mfb3").textContent = `🎯 ${q[0]}`; k5Say(q[0].replace(/[^\w\s.,!?']/g, "")); }; }
+// ---------- upgrade wiring ----------
+function k5xInit(){ if(k5.wired) return; k5.wired = true;
+  document.querySelectorAll("#k5 [data-lv]").forEach(b => { b.setAttribute("aria-pressed", String(+b.dataset.lv === k5.lv)); b.onclick = () => { k5.lv = +b.dataset.lv; document.querySelectorAll("#k5 [data-lv]").forEach(x => x.setAttribute("aria-pressed", String(x === b))); k5Save(); k5.bt = null; k5.aq = null; k5.cq = null; k5.bn = 0; k5.mq = null; k5xRefresh();
+      k5Bubble(["Starting with the basics! 🌱", "Nice, a bit trickier! 🌿", "Big-kid challenges! 🌳"][k5.lv]); }; });
+  $("k5-buddies").innerHTML = K5_BUDDIES.map(e => `<button type="button" data-e="${e}" aria-pressed="${e === k5.buddy}" aria-label="Pick ${e}">${e}</button>`).join("");
+  $("k5-buddies").querySelectorAll("[data-e]").forEach(b => b.onclick = () => { k5.buddy = b.dataset.e; $("k5-buddies").querySelectorAll("[data-e]").forEach(x => x.setAttribute("aria-pressed", String(x === b))); k5Save(); k5Score(); k5Hop(); k5Bubble("Hi! I'm your new buddy! 💖"); });
+  $("k5-buddy").onclick = () => { $("k5-buddies").hidden = !$("k5-buddies").hidden; k5Hop(); k5Blip(); };
+  $("k5-cols").onclick = e => { const b = e.target.closest("[data-d]"); if(b && !b.disabled) k5BuildTap(+b.dataset.d); };
+  $("k5-bsay2").onclick = () => k5Say(k5Words(k5.bn)); $("k5-bch").onclick = k5BuildChallenge; $("k5-bclr").onclick = () => { k5.bn = 0; k5.bt = null; k5BuildDraw(); };
+  ["k5-arows", "k5-acols"].forEach(id => $(id).oninput = e => { if(id === "k5-arows") k5.ar = +e.target.value; else k5.acl = +e.target.value; k5.aq = null; $("k5-afb").textContent = ""; k5Blip(); k5ArrDraw(); });
+  $("k5-aq").onclick = () => { const mx = k5AMax(), lo = k5.lv === 0 ? 1 : 2, f = () => lo + Math.floor(Math.random() * (mx - lo + 1)); k5.ar = f(); k5.acl = f(); k5.aq = [k5.ar, k5.acl]; k5.apeek = false; $("k5-aans").value = ""; $("k5-afb").textContent = `What is ${k5.ar} × ${k5.acl}? Type your answer!`; k5Say(`What is ${k5.ar} times ${k5.acl}? That is ${k5.ar} rows of ${k5.acl}.`); k5ArrDraw(); };
+  $("k5-apeek").onclick = () => { k5.apeek = !k5.apeek; k5ArrDraw(); };
+  const ack = () => { if(!k5.aq){ $("k5-afb").textContent = "Tap “Multiplication challenge” first!"; return; } const v = parseInt($("k5-aans").value, 10), [r, c] = k5.aq;
+    if(v === r * c){ k5.aq = null; $("k5-afb").textContent = `🎉 Yes! ${r} × ${c} = ${r * c}!`; k5Say(`Yes! ${r} times ${c} equals ${r * c}!`); k5ArrDraw(); k5Win(20, $("k5-arr")); } else $("k5-afb").textContent = isNaN(v) ? "Type a number first!" : "Not yet. Count the dots in each row, then add the rows. You can do it! 💪"; };
+  $("k5-ack").onclick = ack; $("k5-aans").onkeydown = e => { if(e.key === "Enter") ack(); };
+  k5ClockWire(); k5MatterWire(); k5xRefresh(); }
+function k5xRefresh(){ k5BuildDraw(); k5ArrDraw(); k5ClockDraw(); if($("k5-solar").dataset.built && k5.pi !== -2) k5Planet(k5.pi, true); k5MatterUpdate(true); if(k5.tab === "stickers") k5Stickers(); }
 // ---------- set up ----------
-function k5Init(){ if(!$("k5")) return; if(k5.inited){ k5Score(); if(k5.tab === "trace") requestAnimationFrame(k5TraceDraw); return; } k5.inited = true; k5Load(); k5Score();
+function k5Init(){ if(!$("k5")) return; if(k5.inited){ k5Score(); if(k5.tab === "trace") requestAnimationFrame(k5TraceDraw); if(k5.tab === "matter") k5MatterStart(); return; } k5.inited = true; k5Load(); k5Score();
   document.querySelectorAll("[data-k5]").forEach(b => b.onclick = () => k5Tab(b.dataset.k5));
   k5Letters(); k5TraceSetup(); requestAnimationFrame(k5TraceDraw);
   k5.bw = Math.floor(Math.random() * K5_CVC.length); k5Blend(); $("k5-bslow").onclick = () => k5BlendSay(false); $("k5-bfast").onclick = () => k5BlendSay(true); $("k5-bnext").onclick = () => { k5.bw = (k5.bw + 1 + Math.floor(Math.random() * (K5_CVC.length - 1))) % K5_CVC.length; k5Blend(); k5Say(K5_CVC[k5.bw][0]); };
@@ -37456,7 +37813,7 @@ function k5Init(){ if(!$("k5")) return; if(k5.inited){ k5Score(); if(k5.tab === 
   $("k5-mic").onclick = k5Mic; $("k5-askgo").onclick = () => { const v = $("k5-ask").value; $("k5-ask").value = ""; k5Heard(v); }; $("k5-ask").onkeydown = e => { if(e.key === "Enter") $("k5-askgo").click(); };
   $("k5-sug").innerHTML = ["Why is the sky blue?", "How do bees make honey?", "What is 7 plus 5?", "Let's trace letters!", "Why do leaves change colour?"].map(q => `<button type="button">${q}</button>`).join("");
   $("k5-sug").querySelectorAll("button").forEach(b => b.onclick = () => k5Heard(b.textContent));
-  k5Log("bot", "Hi! I'm Sparky! 🐻 Ask me anything, or say “let's trace letters”, “sight words”, “math” or “science”!"); }
+  k5Log("bot", "Hi! I'm Sparky! 🐻 Ask me anything, or say “let's trace letters”, “sight words”, “math” or “science”!");  try { k5xInit(); } catch(e){ console.warn("k5x init", e); } }
 </script>
 <div id="voice-ctl" class="voice-ctl" hidden role="group" aria-label="Voice controls"><span class="vc-dot" aria-hidden="true"></span><button type="button" id="vc-pause">⏸ Pause</button><button type="button" id="vc-stop">⏹ Stop</button></div>
 <style>
