@@ -24,7 +24,7 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Fredoka:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Fredoka:wght@500;700&family=Patrick+Hand&display=swap" rel="stylesheet">
 <style>
 :root{
   --sky:#CDEBFF; --ink:#1B2A4A; --sun:#FFC93C; --grass:#2FA85F; --berry:#E8456B; --paper:#FFFFFF;
@@ -36323,6 +36323,78 @@ try { __diag("script-end"); } catch(e){}
 /* ===== 🎙️ AI Voice Tutor (Math) ===== */
 .vt{display:flex;flex-direction:column;gap:14px;margin-top:12px}
 #view-math.adv > *:not(.cell-head):not(#vt){display:none!important}
+/* ===== 🚀 Advanced Math: notebook-paper look ===== */
+#view-math.adv{--pp-paper:#fffdf5;--pp-ink:#1f3a7a;--pp-pencil:#3b4252;--pp-line:#cfdcf2;--pp-margin:#ef8f8f;--pp-hand:"Patrick Hand","Comic Sans MS","Segoe Print",cursive;
+  position:relative;background-color:var(--pp-paper);color:var(--pp-pencil);
+  background-image:linear-gradient(90deg,transparent 46px,var(--pp-margin) 46px,var(--pp-margin) 48px,transparent 48px),repeating-linear-gradient(180deg,transparent 0 31px,var(--pp-line) 31px 32px);
+  background-attachment:local;border-radius:6px 18px 18px 6px;box-shadow:0 2px 3px rgba(0,0,0,.08),6px 8px 0 -2px #f4efe1,6px 8px 0 -1px #d9d2bd,12px 16px 0 -4px #efe8d6,12px 16px 0 -3px #d9d2bd;
+  padding:14px 14px 28px 62px!important;margin-bottom:24px}
+#view-math.adv::before{content:"";position:absolute;left:14px;top:60px;bottom:40px;width:18px;pointer-events:none;
+  background:radial-gradient(circle at 9px 9px,#e8e2cf 0 7px,#cfc6ad 7px 8px,transparent 8.5px) 0 0/18px 33.3% repeat-y}
+#view-math.adv .cell-head h2{font-family:var(--pp-hand);font-weight:400;font-size:34px;color:var(--pp-ink);letter-spacing:.5px;
+  background:linear-gradient(transparent 70%,rgba(250,204,21,.55) 70% 92%,transparent 92%);padding:0 6px}
+#view-math.adv .cell-head .icon-btn{background:var(--pp-paper);border:2px solid var(--pp-ink);color:var(--pp-ink);box-shadow:2px 2px 0 var(--pp-ink)}
+#view-math.adv .vt{gap:22px}
+#view-math.adv .vt-card,#view-math.adv .vt-hub{background:#fff;color:var(--pp-pencil);border:1px solid #ddd6c3;border-radius:3px;
+  box-shadow:0 1px 2px rgba(0,0,0,.08),0 6px 14px -8px rgba(60,50,20,.35);position:relative}
+/* the voice box is a sticky note held on with tape */
+#view-math.adv .vt-hub{background:linear-gradient(180deg,#fff6b8,#fff1a1);color:#3f3a1d;transform:rotate(-.6deg);border-color:#eadc8b}
+#view-math.adv .vt-hub::before{content:"";position:absolute;top:-12px;left:50%;width:120px;height:26px;transform:translateX(-50%) rotate(2deg);background:rgba(255,255,255,.55);border:1px solid rgba(0,0,0,.06);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+#view-math.adv .vt-hubtop,#view-math.adv .vt-live,#view-math.adv .vt-check{color:#3f3a1d;font-family:var(--pp-hand);font-size:18px}
+#view-math.adv .vt-live{font-size:20px}
+#view-math.adv .vt-wave i{background:rgba(31,58,122,.25)}
+#view-math.adv .vt-mic{background:var(--pp-ink);border:3px solid #fff;box-shadow:3px 3px 0 #1e293b}
+#view-math.adv .vt.listening .vt-mic{background:#dc2626}
+#view-math.adv .vt-round{background:#fff;border:2px solid var(--pp-ink);color:var(--pp-ink);box-shadow:2px 2px 0 var(--pp-ink)}
+#view-math.adv .vt-round[aria-pressed="true"]{background:#fee2e2;border-color:#b91c1c;color:#b91c1c}
+#view-math.adv .vt-cmds{background:rgba(255,255,255,.55);color:#3f3a1d}#view-math.adv .vt-chips span{background:#fff;color:var(--pp-ink);border:1px dashed #c9b95c;font-family:var(--pp-hand);font-size:15px}
+/* lined sheets */
+#view-math.adv .vt-card{background-color:#fff;background-image:repeating-linear-gradient(180deg,transparent 0 31px,#e6edf8 31px 32px);background-position:0 10px}
+#view-math.adv .vt-h,#view-math.adv .vt-solhead h3{font-family:var(--pp-hand);font-weight:400;font-size:26px;color:var(--pp-ink)}
+#view-math.adv .vt-mini{color:#9a3412;font-family:var(--pp-hand);font-size:16px;letter-spacing:.04em}
+#view-math.adv .vt-lab{font-family:var(--pp-hand);font-size:19px;font-weight:400;color:var(--pp-ink)}
+#view-math.adv .vt-lab select,#view-math.adv #vt-in,#view-math.adv .vt-fx input,#view-math.adv .vt-opts input[type=number],#view-math.adv .vt-mine .vt-row input{background:transparent;color:var(--pp-pencil);border:0;border-bottom:2px solid var(--pp-ink);border-radius:0}
+#view-math.adv #vt-in{font-family:var(--pp-hand);font-size:22px;line-height:32px;padding:0 4px;background-image:repeating-linear-gradient(180deg,transparent 0 31px,#b9cbe9 31px 32px);border-bottom:0;min-height:96px}
+#view-math.adv .vt-persona{background:#fff;border:1.5px solid #cbd5e1;border-radius:4px 14px 4px 4px;box-shadow:2px 2px 0 #e2e8f0}
+#view-math.adv .vt-persona b{font-family:var(--pp-hand);font-weight:400;font-size:19px;color:var(--pp-ink)}
+#view-math.adv .vt-persona[aria-pressed="true"]{background:#fff6b8;border-color:#d4b106;box-shadow:2px 2px 0 #d4b106}
+#view-math.adv .vt-file{background:#fff;border:2px dashed var(--pp-ink);color:var(--pp-ink);box-shadow:none;font-family:var(--pp-hand);font-weight:400;font-size:20px}
+#view-math.adv #vt-go{font-family:var(--pp-hand);font-size:24px;font-weight:400;background:var(--pp-ink);color:#fff;border:2px solid #0f1f4a;box-shadow:3px 3px 0 #0f1f4a}
+#view-math.adv .vt .btn.alt{background:#fff;color:var(--pp-ink);border:2px solid var(--pp-ink);box-shadow:2px 2px 0 var(--pp-ink)}
+#view-math.adv .vt-sample{background:#fff;border:1px solid #d6dbe6;border-left:4px solid var(--pp-margin);border-radius:3px}#view-math.adv .vt-sample b{color:#b91c1c}
+#view-math.adv .vt-samples summary,#view-math.adv .vt-tip{font-family:var(--pp-hand);font-size:18px;color:#57534e}
+#view-math.adv .vt-shot{background:#fff;border:1px solid #ddd6c3;border-radius:3px}
+#view-math.adv .vt-shotpic{transform:rotate(-2deg);border:5px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.25);background:#f8fafc}
+#view-math.adv .vt-qpick button{border:1px solid #cbd5e1;border-left:4px solid var(--pp-ink);border-radius:3px;background:#fff}
+/* the answer is highlighted, like a marked answer in a notebook */
+#view-math.adv .vt-badge{background:transparent;border:2px solid #15803d;color:#15803d;font-family:var(--pp-hand);font-size:15px;font-weight:400;transform:rotate(-2deg)}
+#view-math.adv .vt-badge.ai{border-color:#a16207;color:#a16207}
+#view-math.adv .vt-answer{background:linear-gradient(transparent 12%,rgba(250,204,21,.45) 12% 88%,transparent 88%);border:0;border-radius:0;color:#14532d;font-family:var(--pp-hand);font-weight:400;font-size:26px;padding:6px 4px;box-shadow:inset 0 -3px 0 #16a34a}
+#view-math.adv .vt-over,#view-math.adv .vt-why{color:var(--pp-pencil);line-height:32px;margin-top:0}
+#view-math.adv .vt-step{background:transparent;border:0;border-left:3px solid transparent;border-radius:0;padding:4px 4px 4px 12px;box-shadow:none}
+#view-math.adv .vt-step.on{border-left-color:var(--pp-margin);background:rgba(254,243,199,.45);box-shadow:none}
+#view-math.adv .vt-stephead b{font-family:var(--pp-hand);font-weight:400;font-size:21px;color:var(--pp-ink)}
+#view-math.adv .vt-stepbtns button{background:#fff;border:1.5px solid #cbd5e1}
+#view-math.adv .vt-math{background:transparent;color:#0f172a;font-size:20px;padding:2px 4px;border-left:2px dotted #94a3b8;border-radius:0}
+#view-math.adv .vt-hint{background:#fff6b8;border-left:0;color:#57461b;font-family:var(--pp-hand);font-size:18px;transform:rotate(-.4deg);box-shadow:1px 2px 3px rgba(0,0,0,.12)}
+#view-math.adv .vt-guide{background:#fff;border:2px dashed var(--pp-margin);color:var(--pp-pencil);font-family:var(--pp-hand);font-size:19px}
+#view-math.adv .vt-mine{background:#fff;border:2px solid #e7c58a;border-radius:3px;color:#7c2d12}
+#view-math.adv .vt-mine b{font-family:var(--pp-hand);font-weight:400;font-size:21px}
+#view-math.adv .vt-mineres{font-family:var(--pp-hand);font-weight:400;font-size:21px}
+#view-math.adv .vt-follow button{border:1.5px solid var(--pp-ink);color:var(--pp-ink);background:#fff;font-family:var(--pp-hand);font-size:17px}
+#view-math.adv .vt-tog{border:1.5px solid #cbd5e1;border-radius:4px;background:#fff}
+/* graph studio on graph paper */
+#view-math.adv .vt-cw{border:1px solid #9fb6dc;border-radius:2px;background-color:#fbfdff;background-image:linear-gradient(#e3ecfa 1px,transparent 1px),linear-gradient(90deg,#e3ecfa 1px,transparent 1px);background-size:12px 12px}
+#view-math.adv .vt-fx{color:var(--pp-ink);font-family:var(--pp-hand);font-weight:400;font-size:22px}
+#view-math.adv .vt-analysis div{background:#fff;border:1px solid #d6dbe6;border-radius:3px}#view-math.adv .vt-analysis b{color:#b91c1c;font-family:var(--pp-hand);font-weight:400;font-size:15px}
+/* conversation like notes in the margin */
+#view-math.adv .vt-msg{border-radius:3px;font-size:16px}
+#view-math.adv .vt-msg.me{background:#e8f0fe;color:var(--pp-ink);font-family:var(--pp-hand);font-size:19px}
+#view-math.adv .vt-msg.bot{background:#fff;border:1px solid #e5e7eb;border-left:3px solid var(--pp-margin);color:var(--pp-pencil)}
+#view-math.adv .vt-empty{font-family:var(--pp-hand);font-size:19px}
+@media (max-width:520px){#view-math.adv{padding-left:40px!important;background-image:linear-gradient(90deg,transparent 30px,var(--pp-margin) 30px,var(--pp-margin) 32px,transparent 32px),repeating-linear-gradient(180deg,transparent 0 31px,var(--pp-line) 31px 32px)}
+  #view-math.adv::before{left:6px;width:16px;background-size:16px 33.3%}#view-math.adv .cell-head h2{font-size:28px}}
+
 .vt-hub,.vt-card{background:var(--paper);border:3px solid var(--line);border-radius:22px;padding:14px;box-shadow:0 5px 0 var(--line);min-width:0}
 .vt-hub{text-align:center;background:linear-gradient(180deg,#1e2a52,#2b2f6b);color:#fff}
 .vt-hubtop{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;font-weight:600;opacity:.92}
@@ -36951,7 +37023,7 @@ function vtGraphFrom(S){ const g = S.graph; vt.anim = null; $("vt-launch").hidde
 function vtNice(r){ const raw = r / 8, p = Math.pow(10, Math.floor(Math.log10(raw))), m = raw / p; return (m < 1.5 ? 1 : m < 3 ? 2 : m < 7 ? 5 : 10) * p; }
 function vtCanvas(){ const c = $("vt-cv"), r = c.getBoundingClientRect(), d = window.devicePixelRatio || 1, w = Math.max(260, r.width), h = r.height || 300; c.width = Math.round(w * d); c.height = Math.round(h * d); const x = c.getContext("2d"); x.setTransform(d, 0, 0, d, 0, 0); return {c, x, w, h}; }
 function vtPlot(){ const st = $("vt-studio"); if(!st || $("vt").hidden) return; const G = vt.g || {}; const {x, w, h} = vtCanvas(); const dark = document.documentElement.getAttribute("data-theme") === "dark";
-  const ink = dark ? "#e2e8f0" : "#1b2a4a", grid = dark ? "rgba(148,163,184,.18)" : "rgba(27,42,74,.09)", axis = dark ? "#94a3b8" : "#475569"; x.clearRect(0, 0, w, h); x.font = "600 11px system-ui, sans-serif";
+  const paper = $("view-math").classList.contains("adv"), ink = paper ? "#1f3a7a" : dark ? "#e2e8f0" : "#1b2a4a", grid = paper ? "rgba(59,130,246,.22)" : dark ? "rgba(148,163,184,.18)" : "rgba(27,42,74,.09)", axis = paper ? "#1f3a7a" : dark ? "#94a3b8" : "#475569"; x.clearRect(0, 0, w, h); x.font = "600 11px system-ui, sans-serif";
   const an = []; vt.view = null; $("vt-gtip").hidden = false;
   const frame = (xmin, xmax, ymin, ymax) => { const X = v => (v - xmin) / (xmax - xmin) * w, Y = v => h - (v - ymin) / (ymax - ymin) * h; const sx = vtNice(xmax - xmin), sy = vtNice(ymax - ymin);
     x.lineWidth = 1; x.strokeStyle = grid; x.fillStyle = axis; x.textAlign = "center"; x.textBaseline = "top";
