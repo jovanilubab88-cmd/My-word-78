@@ -2335,6 +2335,10 @@ window.MWB_TRIAL_DAYS = 14;
         <button type="button" role="tab" data-k5="sci" aria-selected="false"><span class="ti">🧪</span>Science</button>
         <button type="button" role="tab" data-k5="space" aria-selected="false"><span class="ti">🪐</span>Space</button>
         <button type="button" role="tab" data-k5="matter" aria-selected="false"><span class="ti">🧊</span>Matter</button>
+        <button type="button" role="tab" data-k5="money" aria-selected="false"><span class="ti">💰</span>Money</button>
+        <button type="button" role="tab" data-k5="shapes" aria-selected="false"><span class="ti">📐</span>Shapes</button>
+        <button type="button" role="tab" data-k5="music" aria-selected="false"><span class="ti">🎹</span>Music</button>
+        <button type="button" role="tab" data-k5="animals" aria-selected="false"><span class="ti">🐾</span>Animals</button>
         <button type="button" role="tab" data-k5="sparky" aria-selected="false"><span class="ti" id="k5-tabbear">🐻</span>Sparky</button>
         <button type="button" role="tab" data-k5="stickers" aria-selected="false"><span class="ti">🏆</span>Stickers</button>
       </div>
@@ -2441,6 +2445,59 @@ window.MWB_TRIAL_DAYS = 14;
           <p class="k5-fb k5-mexp" id="k5-mexp" aria-live="polite"></p>
           <div class="k5-spd" id="k5-spd" hidden>Particle speed <span class="k5-spbar"><i id="k5-spfill"></i></span> <small id="k5-ftxt"></small></div>
           <button type="button" class="k5-big" id="k5-mlab">🎯 Lab challenge</button><p class="k5-fb" id="k5-mfb3" aria-live="polite"></p></div>
+      </div>
+      <!-- 💰 money -->
+      <div class="k5-pane" data-pane="money" hidden>
+        <div class="k5-card"><div class="k5-row sp"><b>💰 Coin purse</b><button type="button" class="k5-btn alt" id="k5-msayt">🔊 Say it</button></div>
+          <div class="k5-bnum" id="k5-mtot">0¢</div>
+          <div class="k5-tray" id="k5-tray" aria-live="polite"></div>
+          <div class="k5-coinbar" id="k5-coinbar" role="group" aria-label="Coins"></div>
+          <div class="k5-row"><button type="button" class="k5-btn alt" id="k5-mundo">↩ Undo</button><button type="button" class="k5-btn alt" id="k5-mclr">🧽 Clear</button><button type="button" class="k5-btn" id="k5-mchal">🎯 Make this much</button></div>
+          <p class="k5-fb" id="k5-mnyfb" aria-live="polite">Tap the coins to count your money!</p></div>
+        <div class="k5-card"><b>🛍️ Little shop: how much change?</b>
+          <p class="k5-q" id="k5-shopq">Tap “New customer” to start!</p>
+          <div class="k5-row"><input id="k5-shopans" type="text" inputmode="decimal" placeholder="?" aria-label="Change" class="k5-num"><button type="button" class="k5-btn" id="k5-shopck">Check</button><button type="button" class="k5-btn alt" id="k5-shopnew">🔀 New customer</button></div>
+          <p class="k5-fb" id="k5-shopfb" aria-live="polite"></p></div>
+      </div>
+      <!-- 📐 shapes -->
+      <div class="k5-pane" data-pane="shapes" hidden>
+        <div class="k5-card"><b>📐 Shape explorer</b>
+          <svg class="k5-shsvg" id="k5-shsvg" viewBox="0 0 200 200" role="img" aria-label="Shape"></svg>
+          <div class="k5-pchips" id="k5-shchips" role="group" aria-label="Pick a shape"></div>
+          <p class="k5-shinfo" id="k5-shinfo"></p>
+          <div class="k5-row"><button type="button" class="k5-btn alt" id="k5-shsay">🔊 Hear it</button><button type="button" class="k5-btn" id="k5-shq">🎯 Shape challenge</button></div>
+          <p class="k5-fb" id="k5-shfb" aria-live="polite"></p></div>
+        <div class="k5-card"><div class="k5-row sp"><b>🟦 Grid builder</b><span class="k5-frac" id="k5-gstat">Area 0 · Perimeter 0</span></div>
+          <div class="k5-pgrid" id="k5-grid" role="group" aria-label="Grid. Tap squares to colour them."></div>
+          <p class="k5-tipline">Area = squares you coloured. Perimeter = the edges around the outside.</p>
+          <div class="k5-row"><button type="button" class="k5-btn" id="k5-gq">🎯 Grid challenge</button><button type="button" class="k5-btn alt" id="k5-gck">✅ Check</button><button type="button" class="k5-btn alt" id="k5-gclr">🧽 Clear</button></div>
+          <p class="k5-fb" id="k5-gfb" aria-live="polite"></p></div>
+        <div class="k5-card"><div class="k5-row sp"><b>📏 Angle explorer</b><span class="k5-frac" id="k5-angtxt">45° · acute</span></div>
+          <svg class="k5-angsvg" id="k5-angsvg" viewBox="0 0 200 130" role="img" aria-label="Angle"></svg>
+          <label class="k5-slide">0° <input type="range" id="k5-angr" min="0" max="180" value="45" aria-label="Angle size"> 180°</label>
+          <div class="k5-row"><button type="button" class="k5-btn" id="k5-angq">🎯 Angle challenge</button><button type="button" class="k5-btn alt" id="k5-angck">✅ Check</button></div>
+          <p class="k5-fb" id="k5-angfb" aria-live="polite"></p></div>
+      </div>
+      <!-- 🎹 music -->
+      <div class="k5-pane" data-pane="music" hidden>
+        <div class="k5-card"><b>🎹 Little piano</b>
+          <div class="k5-piano" id="k5-piano" role="group" aria-label="Piano keys"></div>
+          <p class="k5-tipline">Tap the keys to play. Pick a song and follow the glowing key!</p>
+          <div class="k5-pchips" id="k5-songs" role="group" aria-label="Songs"></div>
+          <div class="k5-row"><button type="button" class="k5-btn alt" id="k5-sglisten">▶ Listen to the song</button></div>
+          <p class="k5-fb" id="k5-sgfb" aria-live="polite"></p></div>
+        <div class="k5-card"><b>🎧 Higher or lower?</b>
+          <button type="button" class="k5-big" id="k5-hl">🔊 Play two notes</button>
+          <div class="k5-opts"><button type="button" id="k5-hl1">1️⃣ was higher</button><button type="button" id="k5-hl2">2️⃣ was higher</button></div>
+          <p class="k5-fb" id="k5-hlfb" aria-live="polite"></p></div>
+      </div>
+      <!-- 🐾 animals -->
+      <div class="k5-pane" data-pane="animals" hidden>
+        <div class="k5-card"><div class="k5-row sp"><b>🐾 Animal explorers</b><span id="k5-anscore">Score: 0</span></div>
+          <div class="k5-anbox"><div class="k5-anemo" id="k5-anemo">🐋</div><p class="k5-q" id="k5-anq"></p></div>
+          <div class="k5-opts" id="k5-anopts"></div>
+          <p class="k5-fb" id="k5-anfb" aria-live="polite"></p>
+          <div class="k5-row"><button type="button" class="k5-btn alt" id="k5-anskip">⏭ Next animal</button></div></div>
       </div>
       <!-- 🏆 stickers -->
       <div class="k5-pane" data-pane="stickers" hidden>
@@ -37454,6 +37511,26 @@ function vtInit(){ if(!$("vt")) return; requestAnimationFrame(() => vtPlot()); i
 .k5-burst{font-size:30px}
 @media (max-width:420px){.k5-buddy{width:76px;height:76px}.k5-bface-in{font-size:46px}.k5-goal{width:52px;height:52px}.k5-wrow{grid-template-columns:70px 1fr 66px;font-size:13px}.k5-digi{font-size:38px}}
 @media (prefers-reduced-motion:reduce){.k5-sky i,.k5-bface-in,.k5-cicon,.k5-pdot,.k5-stk.on span{animation:none}.blk,.k5-dots i,.k5-pane:not([hidden]){animation:none}}
+/* ===== K–5 more labs ===== */
+.k5-tabs [data-k5=money]{--c:#ca8a04}.k5-tabs [data-k5=shapes]{--c:#0d9488}.k5-tabs [data-k5=music]{--c:#7c3aed}.k5-tabs [data-k5=animals]{--c:#ea580c}
+.k5-coinbar{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center}
+.k5-coin{width:var(--s);height:var(--s);border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,var(--bg) 62%);border:3px solid #64748b;display:flex;flex-direction:column;align-items:center;justify-content:center;font:inherit;font-weight:800;color:#1e293b;cursor:pointer;padding:0;box-shadow:0 4px 0 #475569;line-height:1.05;flex:none}
+.k5-coin b{font-size:15px}.k5-coin small{font-size:9.5px;font-weight:700}.k5-coin:active{transform:translateY(3px);box-shadow:0 1px 0 #475569}
+.k5-coin[data-c="100"]{border-color:#b45309;box-shadow:0 4px 0 #92400e}.k5-coin[data-c="200"]{border-color:#b45309;box-shadow:0 4px 0 #92400e;background:radial-gradient(circle,#f1f5f9 52%,#fbbf24 55%)}
+.k5-coin.mini{font-size:11px;cursor:default;animation:k5Drop .35s cubic-bezier(.3,1.6,.5,1);box-shadow:0 2px 0 #475569}
+.k5-tray{min-height:84px;border:3px dashed var(--line);border-radius:16px;padding:8px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;background:rgba(250,204,21,.14)}
+.k5-shsvg{width:min(230px,100%);display:block;margin:0 auto}.k5-shinfo{margin:0;text-align:center;line-height:1.5}
+.k5-pgrid{display:grid;grid-template-columns:repeat(10,1fr);gap:3px;max-width:380px;margin:0 auto;width:100%}
+.k5-pgrid button{aspect-ratio:1;padding:0;border-radius:6px;border:2px solid #99f6e4;background:var(--paper);cursor:pointer}
+.k5-pgrid button.on{background:linear-gradient(135deg,#2dd4bf,#0d9488);border-color:#0f766e;animation:k5Drop .25s}
+.k5-angsvg{width:100%;max-width:300px;display:block;margin:0 auto;background:var(--paper);border:3px solid var(--line);border-radius:16px}
+.k5-piano{position:relative;height:176px;display:flex;user-select:none;touch-action:manipulation}
+.k5-wk{flex:1;min-width:0;font:inherit;font-weight:800;font-size:16px;color:#334155;border:2px solid #334155;border-bottom:9px solid hsl(var(--h),80%,55%);border-radius:0 0 12px 12px;background:linear-gradient(#fff,#e2e8f0);display:flex;align-items:flex-end;justify-content:center;padding:0 0 8px;cursor:pointer}
+.k5-wk.hit{background:#fde047;transform:translateY(2px)}.k5-wk.next{box-shadow:inset 0 0 0 4px #ec4899;animation:k5Glow 1s infinite}@keyframes k5Glow{50%{box-shadow:inset 0 0 0 4px #ec4899,0 0 14px 3px rgba(236,72,153,.7)}}
+.k5-bk{position:absolute;top:0;width:11%;height:104px;background:linear-gradient(#0f172a,#334155);border:2px solid #0f172a;border-radius:0 0 8px 8px;cursor:pointer;z-index:2;padding:0}.k5-bk.hit{background:#7c3aed}
+.k5-anbox{text-align:center}.k5-anemo{font-size:88px;line-height:1.1;animation:k5Bob 2.4s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.k5-anemo,.k5-wk.next{animation:none}}
+:root[data-theme="dark"] .k5-pgrid button{border-color:#115e59}
 :root[data-theme="dark"] .k5-bnum,:root[data-theme="dark"] .k5-frac{color:#34d399}:root[data-theme="dark"] .k5-pstats span{background:#312e81;color:#e0e7ff}:root[data-theme="dark"] .k5-sci{background:#3a2a0a;color:#fde68a}
 :root[data-theme="dark"] .k5-stk.on{background:linear-gradient(160deg,#78350f,#92400e);color:#fef3c7}
 </style>
@@ -37585,6 +37662,10 @@ async function k5Heard(t){ t = String(t || "").trim(); if(!t) return; k5Log("me"
   if(!/\b(why|how|what|who|which)\b/.test(s)){
     if(/\b(stickers?|badges?|trophies)\b/.test(s)) return go("stickers", "Here are your stickers! Earn more by playing!");
     if(/\b(blocks?|place value|multiply|multiplication|arrays?|times tables?)\b/.test(s)) return go("build", "Let's build numbers with blocks!");
+    if(/\b(money|coins?|dollars?|shop|nickel|loonie|toonie)\b/.test(s)) return go("money", "Let's count some coins!");
+    if(/\b(shapes?|triangle|square|circle|perimeter|area|angles?)\b/.test(s)) return go("shapes", "Let's explore shapes!");
+    if(/\b(piano|music|songs?|notes?)\b/.test(s)) return go("music", "Let's make some music!");
+    if(/\b(animals?|habitats?|zoo)\b/.test(s)) return go("animals", "Let's meet some animals!");
     if(/\b(clock|o'?clock|telling time|tell the time)\b/.test(s)) return go("clock", "Let's practise telling the time!");
     if(/\b(space|planets?|solar system|astronaut|rocket)\b/.test(s)) return go("space", "Blast off! Let's explore the solar system!");
     if(/\b(melt|melting|freeze|freezing|boil|boiling|states of matter|solid|liquid|steam)\b/.test(s)) return go("matter", "Let's explore the water lab!");
@@ -37616,18 +37697,20 @@ const K5_TITLES = ["Seedling", "Explorer", "Adventurer", "Star Scout", "Word Wiz
 const K5_ACC = ["", "🎀", "🧢", "🕶️", "🎩", "🦸", "🔬", "🏅", "🎓", "🚀", "👑", "💎"];
 const K5_BUDDIES = ["🐻", "🐱", "🐶", "🦊", "🐼", "🐸", "🦄", "🐙", "🦖", "🐰"];
 const K5_CHEERS = ["Awesome!", "You did it!", "Super star!", "Brilliant!", "Wow, great job!", "Keep going!", "High five! ✋", "You're on fire! 🔥"];
-const K5_TIPS = {trace: "Let's trace! Follow the dotted letter with your finger ✍️", blend: "Tap each letter to hear its sound, then blend them! 🧩", sight: "Flip the cards, then play Listen & match! 🃏", math: "Count, add and slice pizzas! 🍕", build: "Build big numbers with blocks! 🧱", clock: "Drag the clock hands to tell the time! ⏰", sci: "Make rain, light a bulb, grow a plant! 🧪", space: "Tap a planet to visit it! 🚀", matter: "Heat and cool the water. What happens? 🔬", sparky: "Ask me anything! 🎤", stickers: "Look at all your stickers! 🏆"};
+const K5_TIPS = {trace: "Let's trace! Follow the dotted letter with your finger ✍️", blend: "Tap each letter to hear its sound, then blend them! 🧩", sight: "Flip the cards, then play Listen & match! 🃏", math: "Count, add and slice pizzas! 🍕", build: "Build big numbers with blocks! 🧱", clock: "Drag the clock hands to tell the time! ⏰", sci: "Make rain, light a bulb, grow a plant! 🧪", space: "Tap a planet to visit it! 🚀", matter: "Heat and cool the water. What happens? 🔬", money: "Count coins and give change! 💰", shapes: "Shapes, perimeter and angles! 📐", music: "Play the piano! 🎹", animals: "Where do animals live? 🐾", sparky: "Ask me anything! 🎤", stickers: "Look at all your stickers! 🏆"};
 const K5_BADGES = [
   ["first", "⭐", "First Star", "Earn your very first star.", k => k.stars >= 1], ["s10", "🌟", "Star Collector", "Collect 10 stars.", k => k.stars >= 10],
   ["s25", "💫", "Star Shower", "Collect 25 stars.", k => k.stars >= 25], ["s50", "🌠", "Galaxy Glow", "Collect 50 stars.", k => k.stars >= 50], ["s100", "🏆", "Super Star", "Collect 100 stars.", k => k.stars >= 100],
   ["st3", "🔥", "On Fire", "Learn 3 days in a row.", k => k.streak >= 3], ["st7", "📅", "Week Warrior", "Learn 7 days in a row.", k => k.streak >= 7],
   ["lv3", "🦸", "Level 3 Hero", "Reach level 3.", k => k5Level(k.xp) >= 3], ["lv6", "👑", "Level 6 Champion", "Reach level 6.", k => k5Level(k.xp) >= 6],
-  ["daily", "🎯", "Daily Hero", "Earn 5 stars in one day.", k => k.day.n >= 5], ["explorer", "🧭", "Explorer", "Visit every activity.", k => k.seen.tabs.length >= 10],
+  ["daily", "🎯", "Daily Hero", "Earn 5 stars in one day.", k => k.day.n >= 5], ["explorer", "🧭", "Explorer", "Visit every activity.", k => k.seen.tabs.length >= 14],
   ["trace", "✍️", "Letter Pro", "Trace 5 letters well.", k => (k.wins.trace || 0) >= 5], ["blend", "🧩", "Word Builder", "Win 5 times in Blend.", k => (k.wins.blend || 0) >= 5],
   ["sight", "🃏", "Sight Star", "Win 5 sight-word matches.", k => (k.wins.sight || 0) >= 5], ["math", "🔟", "Math Whiz", "Win 5 times in Math.", k => (k.wins.math || 0) >= 5],
   ["build", "🧱", "Block Builder", "Build 3 numbers or arrays.", k => (k.wins.build || 0) >= 3], ["clock", "⏰", "Time Keeper", "Set the clock right 3 times.", k => (k.wins.clock || 0) >= 3],
   ["space", "🚀", "Astronaut", "Answer 3 space questions.", k => (k.wins.space || 0) >= 3], ["planets", "🪐", "Planet Hunter", "Visit all 8 planets.", k => k.seen.planets.length >= 8],
   ["matter", "🧪", "Scientist", "Win 2 lab challenges.", k => (k.wins.matter || 0) >= 2], ["states", "🧊", "State Spotter", "See solid, liquid and gas.", k => k.seen.states.length >= 3],
+  ["money", "💰", "Coin Collector", "Win 3 money challenges.", k => (k.wins.money || 0) >= 3], ["shapes", "📐", "Shape Master", "Win 3 shape challenges.", k => (k.wins.shapes || 0) >= 3],
+  ["music", "🎹", "Little Mozart", "Win 2 piano games.", k => (k.wins.music || 0) >= 2], ["animals", "🐾", "Zookeeper", "Answer 5 animal questions.", k => (k.wins.animals || 0) >= 5],
   ["sparky", "🐻", "Chatterbox", "Ask your buddy 3 questions.", k => k.asks >= 3]];
 const k5Level = xp => { let l = 1; while(l < K5_LV.length && xp >= K5_LV[l]) l++; return l >= K5_LV.length ? K5_LV.length + Math.floor((xp - K5_LV[K5_LV.length - 1]) / 300) : l; };
 const k5LvBounds = l => [l <= K5_LV.length ? K5_LV[l - 1] : K5_LV[K5_LV.length - 1] + (l - K5_LV.length) * 300, l < K5_LV.length ? K5_LV[l] : K5_LV[K5_LV.length - 1] + (l - K5_LV.length + 1) * 300];
@@ -37664,7 +37747,7 @@ function k5Stickers(){ const got = K5_BADGES.filter(b => k5.badges[b[0]]).length
   $("k5-stk").innerHTML = K5_BADGES.map(b => k5.badges[b[0]] ? `<button type="button" class="k5-stk on" data-b="${b[0]}"><span>${b[1]}</span><small>${b[2]}</small></button>` : `<button type="button" class="k5-stk" data-b="${b[0]}" aria-label="Locked sticker. ${b[3]}"><span>🔒</span><small>???</small></button>`).join("");
   $("k5-stk").querySelectorAll("[data-b]").forEach(btn => btn.onclick = () => { const b = K5_BADGES.find(x => x[0] === btn.dataset.b), on = k5.badges[b[0]]; $("k5-stinfo").textContent = on ? `${b[1]} ${b[2]} — ${b[3]}` : `🔒 How to get it: ${b[3]}`; if(on) k5Say(`${b[2]}. ${b[3]}`); }); }
 function k5xTab(t){ if(t !== "stickers" && !k5.seen.tabs.includes(t)){ k5.seen.tabs.push(t); k5Badges(); k5Save(); }
-  k5Bubble(K5_TIPS[t] || "Let's play!"); if(t === "build"){ k5BuildDraw(); k5ArrDraw(); } if(t === "clock") k5ClockDraw(); if(t === "space") k5SpaceInit(); if(t === "matter") k5MatterStart(); if(t === "stickers") k5Stickers(); }
+  k5Bubble(K5_TIPS[t] || "Let's play!"); if(t === "build"){ k5BuildDraw(); k5ArrDraw(); } if(t === "clock") k5ClockDraw(); if(t === "space") k5SpaceInit(); if(t === "matter") k5MatterStart(); if(t === "money") k5MoneyDraw(); if(t === "shapes"){ k5ShapeDraw(); k5GridDraw(); k5AngleDraw(); } if(t === "music") k5PianoDraw(); if(t === "animals" && !k5.anm) k5AnimalNext(); if(t === "stickers") k5Stickers(); }
 function k5xAsk(){ k5.asks++; k5Badges(); k5Save(); }
 // ---------- 🧱 number blocks + arrays ----------
 const K5_ONES = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"], K5_TENS = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
@@ -37776,6 +37859,103 @@ function k5MatterWire(){ $("k5-temp").oninput = e => { k5.T = +e.target.value; k
   $("k5-msay").onclick = () => k5Say($("k5-mexp").textContent);
   $("k5-mlab").onclick = () => { const Q = [["Melt the ice into liquid water! 💧", -10, T => T > 0 && T < 100, "The ice melted into water."], ["Boil the water until it becomes steam! ♨️", 25, T => T >= 100, "The water boiled into steam."], ["Freeze the water into ice! 🧊", 25, T => T <= 0, "The water froze into ice."]]; if(k5.lv >= 2) Q.push(["Warm the water to between 40 and 60 degrees! 🌡️", -10, T => T >= 40 && T <= 60, "The water is nice and warm."]);
     const q = k5Pick(Q); k5.mq = q; k5.T = q[1]; k5MatterUpdate(true); $("k5-mfb3").textContent = `🎯 ${q[0]}`; k5Say(q[0].replace(/[^\w\s.,!?']/g, "")); }; }
+// ===== more labs: money, shapes, music, animals =====
+Object.assign(k5, {coins: [], mny: null, shop: null, shp: 1, shpq: null, grid: Array(80).fill(0), gq: null, ang: 45, angq: null, sng: null, sgT: [], hl: null, anm: null, ans: 0});
+const k5Rand = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+// ---------- 💰 money ----------
+const K5_COINS = [[5, "5¢", "Nickel", "#cbd5e1", 46], [10, "10¢", "Dime", "#e2e8f0", 40], [25, "25¢", "Quarter", "#d4d4d8", 54], [100, "$1", "Loonie", "#fbbf24", 60], [200, "$2", "Toonie", "#e5e7eb", 66]];
+const k5Cents = c => c < 100 ? c + "¢" : "$" + (c / 100).toFixed(2);
+const k5MoneySay = c => c < 100 ? `${c} cents` : `${Math.floor(c / 100)} dollar${c >= 200 ? "s" : ""}` + (c % 100 ? ` and ${c % 100} cents` : "");
+const k5Tot = () => k5.coins.reduce((a, b) => a + b, 0);
+function k5MoneyDraw(){ const set = K5_COINS.slice(0, [2, 4, 5][k5.lv]);
+  $("k5-coinbar").innerHTML = set.map(c => `<button type="button" class="k5-coin" data-c="${c[0]}" style="--s:${c[4]}px;--bg:${c[3]}" aria-label="Add a ${c[2]}, ${c[1]}"><b>${c[1]}</b><small>${c[2]}</small></button>`).join("");
+  $("k5-tray").innerHTML = k5.coins.length ? k5.coins.map(c => { const k = K5_COINS.find(x => x[0] === c); return `<i class="k5-coin mini" data-c="${c}" style="--s:${Math.round(k[4] * 0.72)}px;--bg:${k[3]}">${k[1]}</i>`; }).join("") : `<span class="k5-tipline">Tap coins to drop them in the tray</span>`;
+  $("k5-mtot").textContent = k5Cents(k5Tot()); }
+function k5MoneyCheck(){ if(k5.mny == null) return; const tot = k5Tot();
+  if(tot === k5.mny){ const t = k5.mny; k5.mny = null; $("k5-mnyfb").textContent = `🎉 Yes! ${k5Cents(t)}!`; k5Say(`Yes! ${k5MoneySay(t)}!`); k5Win(20, $("k5-tray")); }
+  else $("k5-mnyfb").textContent = tot > k5.mny ? "Oops, that's too much! Tap Undo or Clear. 🙂" : `🎯 Make ${k5Cents(k5.mny)}. You have ${k5Cents(tot)}.`; }
+function k5ShopNew(){ const it = k5Pick([["🍎", "an apple"], ["🍪", "a cookie"], ["🎈", "a balloon"], ["✏️", "a pencil"], ["🧃", "a juice"], ["🍦", "an ice cream"], ["📒", "a notebook"], ["🧸", "a teddy bear"]]);
+  const price = k5.lv === 0 ? 5 * k5Rand(1, 9) : k5.lv === 1 ? 5 * k5Rand(7, 59) : 5 * k5Rand(20, 199), pays = k5.lv === 0 ? [50] : k5.lv === 1 ? [100, 200, 500, 1000] : [500, 1000, 2000], pay = pays.find(p => p > price) || 2000;
+  k5.shop = {price, pay, change: pay - price}; const unit = k5.lv === 0 ? "in cents" : "in dollars, like 2.35";
+  $("k5-shopq").textContent = `${it[0]} ${it[1]} costs ${k5Cents(price)}. You pay ${k5Cents(pay)}. How much change? (${unit})`; $("k5-shopans").value = ""; $("k5-shopfb").textContent = ""; k5Say(`${it[1]} costs ${k5MoneySay(price)}. You pay ${k5MoneySay(pay)}. How much change do you get?`); }
+function k5ShopCheck(){ if(!k5.shop){ $("k5-shopfb").textContent = "Tap “New customer” first!"; return; } const v = parseFloat(String($("k5-shopans").value).replace(/[$¢\s]/g, "")), want = k5.lv === 0 ? k5.shop.change : k5.shop.change / 100;
+  if(isNaN(v)){ $("k5-shopfb").textContent = "Type a number first!"; return; }
+  if(Math.abs(v - want) < 0.001){ const c = k5.shop.change; k5.shop = null; $("k5-shopfb").textContent = `🎉 Yes! Your change is ${k5Cents(c)}!`; k5Say(`Yes! Your change is ${k5MoneySay(c)}!`); k5Win(20, $("k5-shopq")); }
+  else $("k5-shopfb").textContent = `Not yet. Subtract the price from what you paid: ${k5Cents(k5.shop.pay)} − ${k5Cents(k5.shop.price)}. 💪`; }
+// ---------- 📐 shapes ----------
+const K5_SH = [["Circle", 0, "A circle is perfectly round: no sides and no corners.", "Which shape is perfectly round, with no corners?"], ["Triangle", 3, "Tri means three. It has 3 sides and 3 corners.", "Which shape has 3 sides?"], ["Square", 4, "4 equal sides and 4 square corners.", "Which shape has 4 equal sides?"], ["Rectangle", 4, "4 sides: 2 long and 2 short, with 4 square corners.", "Which shape has 4 sides, 2 long and 2 short?"], ["Pentagon", 5, "Penta means five. It has 5 sides and 5 corners.", "Which shape has 5 sides?"], ["Hexagon", 6, "Hexa means six. Honeycomb cells are hexagons! 🐝", "Which shape has 6 sides?"], ["Octagon", 8, "Octo means eight. A stop sign is an octagon! 🛑", "Which shape has 8 sides?"]];
+function k5ShapeDraw(){ const n = [4, 6, 7][k5.lv]; if(k5.shp >= n) k5.shp = 1; const s = K5_SH[k5.shp], hue = k5.shp * 47 + 10, fill = `hsl(${hue},85%,62%)`, stroke = `hsl(${hue},70%,35%)`; let g = "", pts = [];
+  if(s[0] === "Circle") g = `<circle cx="100" cy="100" r="72" fill="${fill}" stroke="${stroke}" stroke-width="5"/>`;
+  else { if(s[0] === "Rectangle") pts = [[32, 62], [168, 62], [168, 138], [32, 138]]; else { const nn = s[1], a0 = nn % 2 === 0 ? -90 + 180 / nn : -90; pts = Array.from({length: nn}, (_, i) => { const a = (a0 + i * 360 / nn) * Math.PI / 180; return [100 + 74 * Math.cos(a), 104 + 74 * Math.sin(a)]; }); }
+    g = `<polygon points="${pts.map(p => p.map(v => v.toFixed(1)).join(",")).join(" ")}" fill="${fill}" stroke="${stroke}" stroke-width="5" stroke-linejoin="round"/>` + pts.map((p, i) => `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="10" fill="#fff" stroke="${stroke}" stroke-width="3"/><text x="${p[0].toFixed(1)}" y="${(p[1] + 5).toFixed(1)}" text-anchor="middle" font-size="13" font-weight="800" fill="${stroke}" font-family="Fredoka,system-ui,sans-serif">${i + 1}</text>`).join(""); }
+  $("k5-shsvg").innerHTML = g;
+  $("k5-shchips").innerHTML = K5_SH.slice(0, n).map((x, i) => `<button type="button" data-sh="${i}" aria-pressed="${i === k5.shp}">${x[0]}</button>`).join("");
+  let extra = ""; if(k5.lv >= 2 && s[1] >= 3){ extra = s[0] === "Square" || s[0] === "Rectangle" ? " Every corner is 90°, and the 4 angles add up to 360°." : ` The angles add up to ${(s[1] - 2) * 180}°. In a regular ${s[0].toLowerCase()}, each angle is ${Math.round((s[1] - 2) * 180 / s[1])}°.`; }
+  $("k5-shinfo").innerHTML = `<b>${s[0]}</b> · ${s[1]} side${s[1] === 1 ? "" : "s"} · ${s[1]} corner${s[1] === 1 ? "" : "s"}<br>${s[2]}${extra}`; }
+function k5ShapePick(i){ if(k5.shpq != null){ if(i === k5.shpq){ k5.shpq = null; k5.shp = i; k5ShapeDraw(); $("k5-shfb").textContent = `🎉 Yes! It's a ${K5_SH[i][0].toLowerCase()}!`; k5Say(`Yes! It is a ${K5_SH[i][0]}!`); k5Win(15, $("k5-shsvg")); } else { $("k5-shfb").textContent = `That's a ${K5_SH[i][0].toLowerCase()}. Try another one!`; k5.shp = i; const q = k5.shpq; k5ShapeDraw(); k5.shpq = q; } return; } k5.shp = i; k5ShapeDraw(); k5Say(`${K5_SH[i][0]}. ${K5_SH[i][2]}`); }
+function k5GridStats(){ let a = 0, p = 0; const g = k5.grid; for(let r = 0; r < 8; r++) for(let c = 0; c < 10; c++) if(g[r * 10 + c]){ a++; [[-1, 0], [1, 0], [0, -1], [0, 1]].forEach(([dr, dc]) => { const rr = r + dr, cc = c + dc; if(rr < 0 || rr > 7 || cc < 0 || cc > 9 || !g[rr * 10 + cc]) p++; }); } return {a, p}; }
+function k5GridDraw(){ $("k5-grid").innerHTML = k5.grid.map((v, i) => `<button type="button" data-g="${i}" class="${v ? "on" : ""}" aria-label="Square ${i + 1}" aria-pressed="${!!v}"></button>`).join(""); const s = k5GridStats(); $("k5-gstat").textContent = `Area ${s.a} · Perimeter ${s.p}`; }
+const K5_GP = [[12, 14], [12, 16], [16, 16], [16, 20], [9, 12], [10, 14], [8, 12], [18, 18], [20, 18], [15, 16]];
+function k5Angle(a){ return a === 180 ? "straight" : a === 90 ? "right" : a < 90 ? "acute" : "obtuse"; }
+function k5AngleDraw(){ const a = k5.ang, r = a * Math.PI / 180, x2 = 100 + 85 * Math.cos(r), y2 = 115 - 85 * Math.sin(r), ax = 100 + 34 * Math.cos(r), ay = 115 - 34 * Math.sin(r);
+  $("k5-angsvg").innerHTML = `<path d="M100 115 L134 115 A34 34 0 0 0 ${ax.toFixed(1)} ${ay.toFixed(1)} Z" fill="rgba(236,72,153,.28)"/>` + (a === 90 ? `<path d="M100 115 L100 94 L121 94 L121 115" fill="none" stroke="#16a34a" stroke-width="3"/>` : "")
+    + `<line x1="15" y1="115" x2="185" y2="115" stroke="#4338ca" stroke-width="6" stroke-linecap="round"/><line x1="100" y1="115" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="#ec4899" stroke-width="6" stroke-linecap="round"/><circle cx="100" cy="115" r="7" fill="#f59e0b"/>`;
+  $("k5-angtxt").textContent = `${a}° · ${k5Angle(a)}`; $("k5-angr").value = a; }
+// ---------- 🎹 music ----------
+const K5_KEYS = ["C", "D", "E", "F", "G", "A", "B", "C"], K5_HZ = [261.63, 293.66, 329.63, 349.23, 392, 440, 493.88, 523.25], K5_BK = [[277.18, 0], [311.13, 1], [369.99, 3], [415.3, 4], [466.16, 5]];
+const K5_SONGS = [["⭐ Twinkle Twinkle", [0, 0, 4, 4, 5, 5, 4, 3, 3, 2, 2, 1, 1, 0]], ["🐑 Mary's Lamb", [2, 1, 0, 1, 2, 2, 2, 1, 1, 1, 2, 4, 4]], ["😊 Ode to Joy", [2, 2, 3, 4, 4, 3, 2, 1, 0, 0, 1, 2, 2, 1, 1]]];
+function k5Piano(hz){ try { const A = window.AudioContext || window.webkitAudioContext; if(!A) return; k5.audio = k5.audio || new A(); const c = k5.audio; if(c.state === "suspended") c.resume(); const t = c.currentTime;
+    [[hz, "triangle", 0.2], [hz * 2, "sine", 0.05]].forEach(([f, ty, v]) => { const o = c.createOscillator(), g = c.createGain(); o.type = ty; o.frequency.value = f; g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(v, t + 0.015); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.9); o.connect(g); g.connect(c.destination); o.start(t); o.stop(t + 0.95); }); } catch(e){} }
+function k5PianoDraw(){ $("k5-piano").innerHTML = K5_KEYS.map((n, i) => `<button type="button" class="k5-wk" data-k="${i}" style="--h:${i * 45}" aria-label="Note ${n}">${n}</button>`).join("") + K5_BK.map((b, j) => `<button type="button" class="k5-bk" data-b="${j}" style="left:calc(${(b[1] + 1) * 12.5}% - 5.5%)" aria-label="Sharp note"></button>`).join("");
+  $("k5-songs").innerHTML = K5_SONGS.map((s, i) => `<button type="button" data-s="${i}" aria-pressed="${!!(k5.sng && k5.sng.i === i)}">${s[0]}</button>`).join(""); k5SongMark(); }
+function k5SongSeq(i){ const q = K5_SONGS[i][1]; return k5.lv === 0 ? q.slice(0, 7) : q; }
+function k5SongMark(){ document.querySelectorAll("#k5-piano .k5-wk").forEach(b => b.classList.toggle("next", !!k5.sng && +b.dataset.k === k5SongSeq(k5.sng.i)[k5.sng.p])); }
+function k5Flash(el){ if(!el) return; el.classList.add("hit"); setTimeout(() => el.classList.remove("hit"), 220); }
+function k5Key(i, el){ k5Piano(K5_HZ[i]); k5Flash(el);
+  if(k5.sng){ const seq = k5SongSeq(k5.sng.i); if(i === seq[k5.sng.p]){ k5.sng.p++; if(k5.sng.p >= seq.length){ const nm = K5_SONGS[k5.sng.i][0]; k5.sng = null; k5SongMark(); document.querySelectorAll("#k5-songs [data-s]").forEach(b => b.setAttribute("aria-pressed", "false")); $("k5-sgfb").textContent = `🎉 You played ${nm}!`; k5Say("Wonderful! You played the whole song!"); k5Win(25, $("k5-piano")); } else { $("k5-sgfb").textContent = `🎵 ${k5.sng.p} of ${seq.length}`; k5SongMark(); } } else $("k5-sgfb").textContent = "Try the glowing pink key! 🎯"; } }
+function k5SongListen(){ k5.sgT.forEach(clearTimeout); k5.sgT = []; const i = k5.sng ? k5.sng.i : 0; if(!k5.sng){ k5.sng = {i, p: 0}; k5PianoDraw(); } const seq = k5SongSeq(i); seq.forEach((n, j) => k5.sgT.push(setTimeout(() => { k5Piano(K5_HZ[n]); k5Flash(document.querySelector(`#k5-piano [data-k="${n}"]`)); }, j * 480))); }
+// ---------- 🐾 animals ----------
+const K5_HAB = {Ocean: "🌊", Forest: "🌳", Desert: "🏜️", Polar: "❄️", Savanna: "🌾"};
+const K5_AN = [["🐋", "Whale", "Ocean", "carnivore", "Whales are mammals that breathe air through a blowhole."], ["🐙", "Octopus", "Ocean", "carnivore", "An octopus has three hearts and eight arms."], ["🦈", "Shark", "Ocean", "carnivore", "Sharks have lived on Earth for hundreds of millions of years."],
+  ["🐧", "Penguin", "Polar", "carnivore", "Penguins can't fly, but they are brilliant swimmers."], ["🦭", "Seal", "Polar", "carnivore", "Seals have thick blubber to stay warm in icy water."], ["🐻‍❄️", "Polar bear", "Polar", "carnivore", "Polar bears have black skin under their white-looking fur."],
+  ["🐪", "Camel", "Desert", "herbivore", "A camel stores fat in its hump to use as energy."], ["🦂", "Scorpion", "Desert", "carnivore", "Scorpions glow under ultraviolet light."],
+  ["🐺", "Wolf", "Forest", "carnivore", "Wolves live and hunt in family groups called packs."], ["🦌", "Deer", "Forest", "herbivore", "Male deer grow brand-new antlers every year."], ["🦉", "Owl", "Forest", "carnivore", "Owls can turn their heads almost all the way around."], ["🐿️", "Squirrel", "Forest", "omnivore", "Squirrels bury nuts and forget some, so new trees grow!"], ["🐻", "Brown bear", "Forest", "omnivore", "Bears eat berries, fish and plants, so they are omnivores."],
+  ["🦁", "Lion", "Savanna", "carnivore", "Lions live in family groups called prides."], ["🐘", "Elephant", "Savanna", "herbivore", "An elephant's trunk can pick up a tiny peanut or a heavy log."], ["🦒", "Giraffe", "Savanna", "herbivore", "A giraffe has just seven neck bones, the same as you!"], ["🦓", "Zebra", "Savanna", "herbivore", "Every zebra has its own special stripe pattern."]];
+function k5AnimalNext(){ const habs = k5.lv === 0 ? ["Ocean", "Forest", "Polar"] : Object.keys(K5_HAB), pool = K5_AN.filter(a => habs.includes(a[2])); let a = k5Pick(pool); if(k5.anm && pool.length > 1) while(a === k5.anm.a) a = k5Pick(pool);
+  const diet = k5.lv === 2 && Math.random() < 0.5, opts = diet ? ["herbivore", "carnivore", "omnivore"] : habs; k5.anm = {a, diet, opts};
+  $("k5-anemo").textContent = a[0]; $("k5-anq").textContent = diet ? `What does the ${a[1].toLowerCase()} eat?` : `Where does the ${a[1].toLowerCase()} live?`; $("k5-anfb").textContent = diet ? "Herbivores eat plants, carnivores eat meat, omnivores eat both." : "";
+  $("k5-anopts").innerHTML = opts.map(o => `<button type="button" data-o="${o}" style="font-size:18px">${diet ? ({herbivore: "🌿", carnivore: "🥩", omnivore: "🍽️"})[o] : K5_HAB[o]} ${o[0].toUpperCase() + o.slice(1)}</button>`).join(""); k5Say($("k5-anq").textContent); }
+function k5AnimalPick(b){ const m = k5.anm; if(!m) return; const want = m.diet ? m.a[3] : m.a[2];
+  if(b.dataset.o === want){ k5.anm = null; b.classList.add("ok"); k5.ans++; $("k5-anscore").textContent = `Score: ${k5.ans}`; $("k5-anfb").textContent = `🎉 Yes! ${m.a[4]}`; k5Say(`Yes! ${m.a[4]}`); k5Win(15, b); setTimeout(k5AnimalNext, 3200); }
+  else { b.classList.add("no"); $("k5-anfb").textContent = m.diet ? "Not quite. Think about its teeth and what it hunts or munches!" : `Hmm, not quite. Hint: ${m.a[4]}`; } }
+// ---------- wiring ----------
+function k5yInit(){
+  $("k5-coinbar").onclick = e => { const b = e.target.closest("[data-c]"); if(!b || k5.coins.length >= 30) return; k5.coins.push(+b.dataset.c); k5Blip(); k5MoneyDraw(); k5MoneyCheck(); };
+  $("k5-mundo").onclick = () => { k5.coins.pop(); k5MoneyDraw(); k5MoneyCheck(); }; $("k5-mclr").onclick = () => { k5.coins = []; k5MoneyDraw(); if(k5.mny != null) $("k5-mnyfb").textContent = `🎯 Make ${k5Cents(k5.mny)}`; };
+  $("k5-msayt").onclick = () => k5Say(k5MoneySay(k5Tot()));
+  $("k5-mchal").onclick = () => { const lo = [10, 30, 105][k5.lv], hi = [50, 300, 595][k5.lv]; k5.mny = 5 * Math.round(k5Rand(lo, hi) / 5); k5.coins = []; k5MoneyDraw(); $("k5-mnyfb").textContent = `🎯 Make ${k5Cents(k5.mny)}`; k5Say(`Can you make ${k5MoneySay(k5.mny)}?`); };
+  $("k5-shopnew").onclick = k5ShopNew; $("k5-shopck").onclick = k5ShopCheck; $("k5-shopans").onkeydown = e => { if(e.key === "Enter") k5ShopCheck(); };
+  $("k5-shchips").onclick = e => { const b = e.target.closest("[data-sh]"); if(b) k5ShapePick(+b.dataset.sh); };
+  $("k5-shsay").onclick = () => { const s = K5_SH[k5.shp]; k5Say(`${s[0]}. ${s[2]}`); };
+  $("k5-shq").onclick = () => { const n = [4, 6, 7][k5.lv]; k5.shpq = k5Rand(0, n - 1); $("k5-shfb").textContent = `🎯 ${K5_SH[k5.shpq][3]} Tap its name!`; k5Say(K5_SH[k5.shpq][3]); };
+  $("k5-grid").onclick = e => { const b = e.target.closest("[data-g]"); if(!b) return; const i = +b.dataset.g; k5.grid[i] = k5.grid[i] ? 0 : 1; k5Blip(); k5GridDraw(); };
+  $("k5-gclr").onclick = () => { k5.grid.fill(0); k5GridDraw(); };
+  $("k5-gq").onclick = () => { if(k5.lv === 2){ const [a, p] = k5Pick(K5_GP); k5.gq = {a, p}; } else k5.gq = {a: k5.lv === 0 ? k5Rand(3, 8) : k5Rand(6, 16), p: null}; k5.grid.fill(0); k5GridDraw(); $("k5-gfb").textContent = k5.gq.p ? `🎯 Build a shape with area ${k5.gq.a} and perimeter ${k5.gq.p}!` : `🎯 Colour exactly ${k5.gq.a} squares, then tap Check!`; k5Say($("k5-gfb").textContent.replace("🎯 ", "")); };
+  $("k5-gck").onclick = () => { if(!k5.gq){ $("k5-gfb").textContent = "Tap “Grid challenge” first!"; return; } const s = k5GridStats(), q = k5.gq;
+    if(s.a === q.a && (q.p == null || s.p === q.p)){ k5.gq = null; $("k5-gfb").textContent = `🎉 Perfect! Area ${s.a}${q.p ? ` and perimeter ${s.p}` : ""}!`; k5Say("Perfect! You built it!"); k5Win(20, $("k5-grid")); }
+    else $("k5-gfb").textContent = s.a !== q.a ? `You have ${s.a} squares. You need ${q.a}.` : `Area is right! Perimeter is ${s.p}, but you need ${q.p}. Try moving squares around the edge!`; };
+  $("k5-angr").oninput = e => { let v = +e.target.value; if(Math.abs(v - 90) <= 2) v = 90; if(v >= 178) v = 180; k5.ang = v; k5AngleDraw(); };
+  $("k5-angq").onclick = () => { if(k5.lv === 2){ const d = k5Pick([30, 45, 60, 120, 135, 150]); k5.angq = {d}; $("k5-angfb").textContent = `🎯 Make a ${d}° angle!`; } else { const t = k5Pick(["acute", "right", "obtuse"]); k5.angq = {t}; $("k5-angfb").textContent = `🎯 Make ${t === "acute" ? "an acute (smaller than a right angle)" : t === "right" ? "a right angle (a perfect corner)" : "an obtuse (bigger than a right angle)"} angle!`; } k5Say($("k5-angfb").textContent.replace("🎯 ", "")); };
+  $("k5-angck").onclick = () => { const q = k5.angq; if(!q){ $("k5-angfb").textContent = "Tap “Angle challenge” first!"; return; } const ok = q.d != null ? Math.abs(k5.ang - q.d) <= 3 : k5Angle(k5.ang) === q.t;
+    if(ok){ k5.angq = null; $("k5-angfb").textContent = `🎉 Yes! ${k5.ang}° is ${k5Angle(k5.ang) === "acute" || k5Angle(k5.ang) === "obtuse" ? "an" : "a"} ${k5Angle(k5.ang)} angle!`; k5Say("Yes! You made it!"); k5Win(20, $("k5-angsvg")); } else $("k5-angfb").textContent = q.d != null ? `You made ${k5.ang}°. Try ${k5.ang < q.d ? "opening it wider" : "closing it a bit"}.` : "Not yet. Right angle = 90°. Smaller is acute, bigger is obtuse!"; };
+  $("k5-piano").onpointerdown = e => { const w = e.target.closest("[data-k]"), bk = e.target.closest("[data-b]"); if(bk){ k5Piano(K5_BK[+bk.dataset.b][0]); k5Flash(bk); } else if(w) k5Key(+w.dataset.k, w); };
+  $("k5-songs").onclick = e => { const b = e.target.closest("[data-s]"); if(!b) return; k5.sgT.forEach(clearTimeout); k5.sng = {i: +b.dataset.s, p: 0}; k5PianoDraw(); $("k5-sgfb").textContent = `🎵 ${K5_SONGS[k5.sng.i][0]}: tap the glowing pink key!`; };
+  $("k5-sglisten").onclick = k5SongListen;
+  $("k5-hl").onclick = () => { const a = k5Rand(0, 7); let b = k5Rand(0, 7); while(b === a) b = k5Rand(0, 7); k5.hl = {a, b}; $("k5-hlfb").textContent = "Listen carefully… 👂"; k5Piano(K5_HZ[a]); setTimeout(() => k5Piano(K5_HZ[b]), 700); };
+  [1, 2].forEach(n => $("k5-hl" + n).onclick = () => { const h = k5.hl; if(!h){ $("k5-hlfb").textContent = "Tap “Play two notes” first!"; return; } const right = (h.b > h.a ? 2 : 1) === n;
+    if(right){ k5.hl = null; $("k5-hlfb").textContent = `🎉 Yes! Note ${n} was higher!`; k5Say("Yes! Great listening!"); k5Win(15, $("k5-hl")); } else { $("k5-hlfb").textContent = "Not quite. Listen again!"; k5Piano(K5_HZ[h.a]); setTimeout(() => k5Piano(K5_HZ[h.b]), 700); } });
+  $("k5-anopts").onclick = e => { const b = e.target.closest("[data-o]"); if(b) k5AnimalPick(b); }; $("k5-anskip").onclick = k5AnimalNext; }
+function k5yRefresh(){ k5.coins = []; k5.mny = null; k5.shop = null; k5.shpq = null; k5.gq = null; k5.angq = null; k5.sng = null; k5.hl = null; k5.anm = null; k5MoneyDraw(); k5ShapeDraw(); k5GridDraw(); k5AngleDraw(); k5PianoDraw(); if(k5.tab === "animals") k5AnimalNext(); }
 // ---------- upgrade wiring ----------
 function k5xInit(){ if(k5.wired) return; k5.wired = true;
   document.querySelectorAll("#k5 [data-lv]").forEach(b => { b.setAttribute("aria-pressed", String(+b.dataset.lv === k5.lv)); b.onclick = () => { k5.lv = +b.dataset.lv; document.querySelectorAll("#k5 [data-lv]").forEach(x => x.setAttribute("aria-pressed", String(x === b))); k5Save(); k5.bt = null; k5.aq = null; k5.cq = null; k5.bn = 0; k5.mq = null; k5xRefresh();
@@ -37791,8 +37971,8 @@ function k5xInit(){ if(k5.wired) return; k5.wired = true;
   const ack = () => { if(!k5.aq){ $("k5-afb").textContent = "Tap “Multiplication challenge” first!"; return; } const v = parseInt($("k5-aans").value, 10), [r, c] = k5.aq;
     if(v === r * c){ k5.aq = null; $("k5-afb").textContent = `🎉 Yes! ${r} × ${c} = ${r * c}!`; k5Say(`Yes! ${r} times ${c} equals ${r * c}!`); k5ArrDraw(); k5Win(20, $("k5-arr")); } else $("k5-afb").textContent = isNaN(v) ? "Type a number first!" : "Not yet. Count the dots in each row, then add the rows. You can do it! 💪"; };
   $("k5-ack").onclick = ack; $("k5-aans").onkeydown = e => { if(e.key === "Enter") ack(); };
-  k5ClockWire(); k5MatterWire(); k5xRefresh(); }
-function k5xRefresh(){ k5BuildDraw(); k5ArrDraw(); k5ClockDraw(); if($("k5-solar").dataset.built && k5.pi !== -2) k5Planet(k5.pi, true); k5MatterUpdate(true); if(k5.tab === "stickers") k5Stickers(); }
+  k5ClockWire(); k5MatterWire(); k5yInit(); k5xRefresh(); }
+function k5xRefresh(){ k5BuildDraw(); k5ArrDraw(); k5ClockDraw(); if($("k5-solar").dataset.built && k5.pi !== -2) k5Planet(k5.pi, true); k5MatterUpdate(true); try { k5yRefresh(); } catch(e){ console.warn("k5y", e); } if(k5.tab === "stickers") k5Stickers(); }
 // ---------- set up ----------
 function k5Init(){ if(!$("k5")) return; if(k5.inited){ k5Score(); if(k5.tab === "trace") requestAnimationFrame(k5TraceDraw); if(k5.tab === "matter") k5MatterStart(); return; } k5.inited = true; k5Load(); k5Score();
   document.querySelectorAll("[data-k5]").forEach(b => b.onclick = () => k5Tab(b.dataset.k5));
