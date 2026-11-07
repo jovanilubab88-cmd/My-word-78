@@ -7,9 +7,11 @@ const reply = (statusCode, body) => ({ statusCode, headers: { "Content-Type": "a
 
 exports.handler = async function (event) {
   if (event.httpMethod !== "POST") return reply(405, { error: "Method Not Allowed" });
-  const secret = process.env.PREFILL_TOKEN || "";
+  // ignore spaces and quote marks around the password (easy to paste into Netlify by accident)
+  const tidy = v => String(v || "").trim().replace(/^["'“”‘’]+|["'“”‘’]+$/g, "").trim();
+  const secret = tidy(process.env.PREFILL_TOKEN);
   let body; try { body = JSON.parse(event.body || "{}"); } catch (e) { return reply(400, { error: "Invalid JSON" }); }
-  const given = String(body.token || "");
+  const given = tidy(body.token);
   if (!secret || secret.length < 8) return reply(503, { error: "Add PREFILL_TOKEN (at least 8 characters) in Netlify's environment variables first." });
   if (given.length !== secret.length || !crypto.timingSafeEqual(Buffer.from(given), Buffer.from(secret))) return reply(403, { error: "Wrong admin password." });
   const items = (Array.isArray(body.items) ? body.items : []).slice(0, 12);
