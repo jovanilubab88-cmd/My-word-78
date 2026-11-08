@@ -33447,6 +33447,7 @@ $("mp-say").onclick = () => {
 document.addEventListener("keydown", e => {
   if($("view-math").hidden || e.metaKey || e.ctrlKey || e.altKey) return;
   if(document.activeElement && document.activeElement.closest && document.activeElement.closest(".overlay")) return;
+  if($("view-math").classList.contains("adv") || /^(INPUT|TEXTAREA|SELECT)$/.test((e.target || {}).tagName || "") || (e.target && e.target.isContentEditable)) return;   // typing in the tutor box etc.
   if(/^\d$/.test(e.key)){ e.preventDefault(); mpKey(e.key); }
   else if(e.key === "-"){ e.preventDefault(); mpKey("−"); }
   else if(e.key === "Backspace"){ e.preventDefault(); mpKey("⌫"); }
