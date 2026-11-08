@@ -3244,8 +3244,9 @@ window.MWB_TRIAL_DAYS = 14;
           <label class="vt-tog"><input type="checkbox" id="vt-o-t"> Tangent at x = <input type="number" id="vt-ta" value="1" step="any"></label>
           <label class="vt-tog"><input type="checkbox" id="vt-o-a"> Area from <input type="number" id="vt-aa" value="0" step="any"> to <input type="number" id="vt-ab" value="2" step="any"></label>
         </div>
+        <div class="vt-row vt-zoom" id="vt-zoom"><button type="button" class="btn alt vt-sm" id="vt-zin" aria-label="Zoom in">🔍＋ Zoom in</button><button type="button" class="btn alt vt-sm" id="vt-zout" aria-label="Zoom out">🔍－ Zoom out</button><button type="button" class="btn alt vt-sm" id="vt-zreset" aria-label="Reset the graph view">↺ Reset</button></div>
         <div class="vt-cw"><canvas id="vt-cv" aria-label="Graph"></canvas><div class="vt-trace" id="vt-trace" hidden></div></div>
-        <div class="vt-row"><button type="button" class="btn alt vt-sm" id="vt-launch" hidden>🚀 Launch</button><p class="vt-tip" id="vt-gtip">Drag across the graph to read values. With Tangent on, tap to move the tangent point.</p></div>
+        <div class="vt-row"><button type="button" class="btn alt vt-sm" id="vt-launch" hidden>🚀 Launch</button><p class="vt-tip" id="vt-gtip">Zoom with the buttons, the mouse wheel or two fingers. Drag the graph to move it. Tap to read a value (with Tangent on, tap moves the tangent point).</p></div>
         <div class="vt-analysis" id="vt-analysis"></div>
       </div>
       <div class="vt-card vt-log">
@@ -36672,7 +36673,7 @@ try { __diag("script-end"); } catch(e){}
 .vt-fx input{flex:1;min-width:0;font:inherit;font-size:17px;padding:7px 10px;border-radius:10px;border:2px solid var(--line);background:var(--paper);color:var(--ink)}
 .vt-opts{margin:8px 0;font-size:14.5px}.vt-opts input[type=number]{width:62px;font:inherit;padding:4px 6px;border-radius:8px;border:2px solid var(--line);background:var(--paper);color:var(--ink)}
 .vt-tog{display:inline-flex;align-items:center;gap:5px;padding:4px 8px;border:2px solid var(--line);border-radius:10px}
-.vt-cw{position:relative;border:3px solid var(--line);border-radius:14px;overflow:hidden;background:#fff;touch-action:pan-y}
+.vt-cw{position:relative;border:3px solid var(--line);border-radius:14px;overflow:hidden;background:#fff;touch-action:none;cursor:grab}.vt-zoom{gap:8px;flex-wrap:wrap;margin:4px 0}.vt-studio.special .vt-zoom{display:none}
 #vt-cv{display:block;width:100%;height:300px}
 .vt-trace{position:absolute;top:8px;left:8px;background:rgba(15,23,42,.88);color:#fff;font-size:13px;padding:5px 8px;border-radius:8px;pointer-events:none;font-variant-numeric:tabular-nums}
 .vt-tip{margin:6px 0;font-size:13px;color:var(--muted);flex:1}
@@ -37215,7 +37216,7 @@ function vtGraphFrom(S){ const g = S.graph; vt.anim = null; $("vt-launch").hidde
   if(g.bars){ vt.g = {bars: g.bars}; $("vt-fx").value = "data: " + g.bars.map(VTM.num).join(", "); vtPlot(); return; }
   const fns = (g.fns || []).slice(0, 3); if(!fns.length) return; $("vt-fx").value = fns.join(", ");
   let xmin = g.xmin, xmax = g.xmax; if(xmin == null || xmax == null || !(xmax > xmin)){ const c = g.tangent != null ? g.tangent : g.marks && g.marks.length ? (Math.min(...g.marks) + Math.max(...g.marks)) / 2 : 0, w = g.marks && g.marks.length > 1 ? Math.max(5, (Math.max(...g.marks) - Math.min(...g.marks)) * 0.8) : 5; xmin = c - w; xmax = c + w; }
-  $("vt-xmin").value = +(+xmin).toFixed(3); $("vt-xmax").value = +(+xmax).toFixed(3);
+  $("vt-xmin").value = +(+xmin).toFixed(3); $("vt-xmax").value = +(+xmax).toFixed(3); vtHome = [+(+xmin).toFixed(3), +(+xmax).toFixed(3)];
   $("vt-o-d").checked = !!g.deriv && g.tangent == null; $("vt-o-t").checked = g.tangent != null; if(g.tangent != null) $("vt-ta").value = +g.tangent.toFixed(4);
   $("vt-o-a").checked = !!g.area; if(g.area){ $("vt-aa").value = g.area[0]; $("vt-ab").value = g.area[1]; }
   vt.g = {marks: g.marks || [], hole: g.hole, point: g.point}; vtPlot(); }
@@ -37258,6 +37259,25 @@ function vtPlot(){ const st = $("vt-studio"); if(!st || $("vt").hidden) return; 
     const y0 = f0(0); an.unshift(["Function", "y = " + F[0].s]); if(isFinite(y0)) an.push(["y-intercept", VTM.dec(y0, 4)]); an.push(["x-intercepts", rs.length ? rs.map(r => VTM.dec(r, 4)).join(", ") : "none in view"]); if(ext.length) an.push(["Turning points", ext.map(e => `${e.k} (${VTM.dec(e.x, 3)}, ${VTM.dec(e.y, 3)})`).join("; ")]); if($("vt-o-d").checked) an.push(["f′(x)", VTM.str(d0)]);
     if(err) an.push(["Note", err]); }
   $("vt-analysis").innerHTML = an.map(([k, v]) => `<div><b>${esc(k)}</b>${vtMath(String(v))}</div>`).join(""); }
+// ---- graph zoom / pan ----
+function vtRange(){ let a = +$("vt-xmin").value, b = +$("vt-xmax").value; if(!(b > a)){ a = -5; b = 5; } return [a, b]; }
+function vtSetRange(a, b){ if(!(b - a > 1e-6) || b - a > 1e7) return; const f = v => +(+v).toPrecision(9); $("vt-xmin").value = f(a); $("vt-xmax").value = f(b); vtPlot(); }
+function vtZoom(f, cx){ const [a, b] = vtRange(), c = cx == null ? (a + b) / 2 : cx; vtSetRange(c + (a - c) * f, c + (b - c) * f); }
+let vtHome = null;
+function vtZoomInit(cv){ const ptrs = new Map(); let pan = null, pinch = null; const W = () => cv.getBoundingClientRect(); const worldX = px => { const [a, b] = vtRange(); return a + (b - a) * px / W().width; };
+  $("vt-zin").onclick = () => vtZoom(1 / 1.5); $("vt-zout").onclick = () => vtZoom(1.5);
+  $("vt-zreset").onclick = () => { const h = vtHome || [-5, 5]; vtSetRange(h[0], h[1]); };
+  cv.addEventListener("wheel", e => { if(!vt.view) return; e.preventDefault(); const px = e.clientX - W().left; vtZoom(e.deltaY > 0 ? 1.18 : 1 / 1.18, worldX(px)); }, {passive: false});
+  cv.addEventListener("pointerdown", e => { try { cv.setPointerCapture(e.pointerId); } catch(_){} ptrs.set(e.pointerId, {x: e.clientX, y: e.clientY});
+    if(ptrs.size === 2){ const [p, q] = [...ptrs.values()], mid = (p.x + q.x) / 2 - W().left, [a, b] = vtRange(); pinch = {d: Math.hypot(p.x - q.x, p.y - q.y) || 1, w: b - a, xm: worldX(mid)}; pan = null; }
+    else if(ptrs.size === 1){ const [a, b] = vtRange(); pan = {x0: e.clientX, a, b, moved: false}; } cv.style.cursor = "grabbing"; });
+  cv.addEventListener("pointermove", e => { if(ptrs.has(e.pointerId)) ptrs.set(e.pointerId, {x: e.clientX, y: e.clientY});
+    if(pinch && ptrs.size >= 2){ const [p, q] = [...ptrs.values()], d = Math.hypot(p.x - q.x, p.y - q.y) || 1, mid = (p.x + q.x) / 2 - W().left, nw = pinch.w * pinch.d / d, f = mid / W().width; vtSetRange(pinch.xm - f * nw, pinch.xm + (1 - f) * nw); return; }
+    if(pan){ const dx = e.clientX - pan.x0; if(Math.abs(dx) > 5) pan.moved = true; if(pan.moved){ const sh = -dx / W().width * (pan.b - pan.a); $("vt-trace").hidden = true; vtSetRange(pan.a + sh, pan.b + sh); } else if(e.pointerType !== "mouse") vtTrace(e); return; }
+    vtTrace(e); });
+  const up = e => { const was = pan; ptrs.delete(e.pointerId); if(ptrs.size < 2) pinch = null; if(ptrs.size === 0){ if(was && !was.moved) vtTrace(e, true); pan = null; cv.style.cursor = "grab"; } };
+  cv.addEventListener("pointerup", up); cv.addEventListener("pointercancel", e => { ptrs.delete(e.pointerId); pan = null; pinch = null; cv.style.cursor = "grab"; });
+  cv.addEventListener("pointerleave", () => { if(!ptrs.size){ $("vt-trace").hidden = true; vtPlot(); } }); }
 function vtTrace(e, tap){ const V = vt.view, tr = $("vt-trace"); if(!V){ tr.hidden = true; return; } const r = $("vt-cv").getBoundingClientRect(), px = e.clientX - r.left, xv = V.xmin + (V.xmax - V.xmin) * px / r.width;
   if(tap && $("vt-o-t").checked){ $("vt-ta").value = +xv.toFixed(3); vtPlot(); return; } const yv = V.F[0].f(xv), m = V.fd(xv); if(!isFinite(yv)){ tr.hidden = true; return; }
   vtPlot(); const x = $("vt-cv").getContext("2d"); x.strokeStyle = "rgba(100,116,139,.6)"; x.lineWidth = 1; x.setLineDash([4, 4]); x.beginPath(); x.moveTo(px, 0); x.lineTo(px, V.h); x.stroke(); x.setLineDash([]); x.beginPath(); x.arc(px, V.Y(yv), 5, 0, 7); x.fillStyle = VT_COL[0]; x.fill();
@@ -37336,10 +37356,10 @@ function vtInit(){ if(!$("vt")) return; requestAnimationFrame(() => vtPlot()); i
   $("vt-hands").checked = vt.hands; $("vt-hands").onchange = e => { vt.hands = e.target.checked; vtSaveSet(); if(vt.hands && !vt.listening && !vtIsSpeaking()) vtMicStart(); if(!vt.hands) vtMicStop(); vtState(); };
   $("vt-copy").onclick = async () => { const t = vt.log.map(m => `[${m.t}] ${m.who === "me" ? "You" : "Tutor"}: ${m.text}`).join("\n"); try { await navigator.clipboard.writeText(t); $("vt-copy").textContent = "✅ Copied"; setTimeout(() => { $("vt-copy").textContent = "📋 Copy"; }, 1500); } catch(e){ const ta = document.createElement("textarea"); ta.value = t; document.body.appendChild(ta); ta.select(); try { document.execCommand("copy"); } catch(_){} ta.remove(); } };
   $("vt-clear").onclick = () => { vt.log = []; vtLogRender(); };
-  ["vt-plot"].forEach(id => $(id).onclick = () => { vt.g = {marks: []}; $("vt-launch").hidden = true; vtPlot(); });
+  ["vt-plot"].forEach(id => $(id).onclick = () => { vtHome = vtRange(); vt.g = {marks: []}; $("vt-launch").hidden = true; vtPlot(); });
   $("vt-fx").onkeydown = e => { if(e.key === "Enter"){ vt.g = {marks: []}; $("vt-launch").hidden = true; vtPlot(); } };
   ["vt-xmin", "vt-xmax", "vt-ta", "vt-aa", "vt-ab", "vt-o-d", "vt-o-t", "vt-o-a"].forEach(id => $(id).addEventListener("change", () => vtPlot()));
-  const cv = $("vt-cv"); cv.addEventListener("pointermove", e => vtTrace(e)); cv.addEventListener("pointerdown", e => vtTrace(e, true)); cv.addEventListener("pointerleave", () => { $("vt-trace").hidden = true; vtPlot(); });
+  const cv = $("vt-cv"); vtZoomInit(cv);
   $("vt-launch").onclick = vtLaunch; window.addEventListener("resize", () => { if(!$("vt").hidden) vtPlot(); });
   vtFileSetup(); setInterval(vtState, 300); vtLogRender(); vt.g = {marks: []}; vtPlot(); }
 </script>
