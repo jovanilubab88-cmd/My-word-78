@@ -37090,12 +37090,19 @@ function vtState(){ const el = $("vt"); if(!el) return; const sp = vtIsSpeaking(
   // hands-free: when the tutor finishes talking, listen again
   if(vt.hands && vt.wasSpeaking && !sp && !vt.listening && !vt.busy && !$("vt").hidden && !$("view-math").hidden){ vt.wasSpeaking = false; setTimeout(() => { if(vt.hands && !vtIsSpeaking() && !vt.listening) vtMicStart(); }, 500); }
   if(!sp && !vt.hands) vt.wasSpeaking = false; }
+function vtMicHelp(code){ const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  if(code === "audio-capture") return "🎤 I can't find a microphone. Check that one is connected, or type your question instead.";
+  if(code === "service-not-allowed") return ios ? "🎤 Voice typing is switched off on this iPad. Open Settings → General → Keyboard → turn on Enable Dictation (and in Settings → Siri turn on Siri). Then come back and tap the mic. Or type your question." : "🎤 Your browser's speech service is turned off. Turn on voice typing in your device settings, or type your question.";
+  return ios ? "🎤 Safari is blocking the microphone. Tap AA in the address bar → Website Settings → Microphone → Allow, then reload and tap the mic. Or type your question." : "🎤 The microphone is blocked. Click the lock icon in the address bar → allow Microphone, then reload. Or type your question."; }
 function vtMicOK(){ return !!(window.SpeechRecognition || window.webkitSpeechRecognition); }
 function vtMicStart(){ if(vt.listening) return; if(!vtMicOK()){ $("vt-live").textContent = "🎤 Voice input doesn't work in this browser — type your question instead (Chrome, Edge and Safari support it)."; return; }
+  if(!vt.gum && navigator.mediaDevices && navigator.mediaDevices.getUserMedia){   // Safari/iPad: ask for the microphone first, then listen
+    $("vt-live").textContent = "🎤 Tap Allow if your browser asks to use the microphone…";
+    navigator.mediaDevices.getUserMedia({audio: true}).then(st => { st.getTracks().forEach(t => t.stop()); vt.gum = true; vtMicStart(); }).catch(err => { vt.listening = false; vt.hands = false; try { $("vt-hands").checked = false; } catch(_){} $("vt-live").textContent = vtMicHelp(err && err.name === "NotFoundError" ? "audio-capture" : "not-allowed"); vtState(); }); return; }
   try { stopAll(); } catch(e){}
   const R = new (window.SpeechRecognition || window.webkitSpeechRecognition)(); R.lang = "en-US"; R.interimResults = true; R.maxAlternatives = 1; R.continuous = false; vt.rec = R; let final = "";
   R.onresult = e => { let t = ""; for(let i = e.resultIndex; i < e.results.length; i++){ t += e.results[i][0].transcript; if(e.results[i].isFinal) final += e.results[i][0].transcript; } $("vt-live").textContent = "🗣️ " + (final || t); };
-  R.onerror = e => { vt.listening = false; $("vt-live").textContent = e.error === "not-allowed" || e.error === "service-not-allowed" ? "🎤 The microphone isn't allowed here. Allow it in your browser settings, or type your question instead." : e.error === "no-speech" ? "I didn't hear anything — tap the mic and try again." : "The microphone stopped. Tap it to try again."; if(e.error === "not-allowed") { vt.hands = false; $("vt-hands").checked = false; } vtState(); };
+  R.onerror = e => { vt.listening = false; $("vt-live").textContent = e.error === "not-allowed" || e.error === "service-not-allowed" || e.error === "audio-capture" ? vtMicHelp(e.error) : e.error === "no-speech" ? "I didn't hear anything — tap the mic and try again." : "The microphone stopped. Tap it to try again."; if(e.error === "not-allowed" || e.error === "service-not-allowed") { vt.hands = false; $("vt-hands").checked = false; } vtState(); };
   R.onend = () => { vt.listening = false; vtState(); const t = final.trim(); if(t) vtHeard(t, true); else if(vt.hands && !vtIsSpeaking() && !vt.busy) setTimeout(() => { if(vt.hands && !vt.listening && !vtIsSpeaking()) vtMicStart(); }, 900); };
   try { R.start(); vt.listening = true; $("vt-live").textContent = "🎙️ Listening… ask your question."; } catch(e){ vt.listening = false; }
   vtState(); }
