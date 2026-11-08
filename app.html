@@ -53,7 +53,7 @@ body{
 h1,h2,.word,.tile b,.tab,.btn,.chip,.letter{font-family:"Fredoka","Arial Rounded MT Bold","Trebuchet MS",system-ui,sans-serif}
 button{font:inherit;color:inherit;cursor:pointer}
 :focus-visible{outline:4px solid var(--berry);outline-offset:3px}
-.wrap{max-width:900px;margin:0 auto;padding:16px 16px 110px}
+.wrap{max-width:none;margin:0 auto;padding:16px clamp(16px,3vw,48px) 110px}
 
 header{display:flex;align-items:center;gap:12px;margin:8px 0 14px}
 header h1{font-size:clamp(28px,7vw,40px);margin:0;letter-spacing:-.5px}
@@ -37344,7 +37344,7 @@ function vtInit(){ if(!$("vt")) return; requestAnimationFrame(() => vtPlot()); i
 </script>
 <style>
 /* ===== 🌟 K–5 Learning Studio (Sounds Lab) ===== */
-.k5{max-width:620px;margin:10px auto 14px;background:var(--paper);border:3px solid var(--line);border-radius:24px;padding:12px;box-shadow:0 5px 0 var(--line)}
+.k5{max-width:none;margin:10px auto 14px;background:var(--paper);border:3px solid var(--line);border-radius:24px;padding:12px;box-shadow:0 5px 0 var(--line)}
 .k5-top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
 .k5-title{margin:0;font-size:20px}
 .k5-score{display:flex;gap:6px;flex-wrap:wrap}.k5-score span{font-weight:700;font-size:14px;padding:4px 10px;border-radius:999px;border:2px solid var(--line);background:#fef9c3;color:#713f12}
@@ -37451,7 +37451,8 @@ function vtInit(){ if(!$("vt")) return; requestAnimationFrame(() => vtPlot()); i
 .k5-tabs button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--c)}
 .k5-tabs button[aria-selected="true"]{background:var(--c);color:#fff;border-color:var(--c);transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.25)}
 .k5-tabs [data-k5=trace]{--c:#f59e0b}.k5-tabs [data-k5=blend]{--c:#8b5cf6}.k5-tabs [data-k5=sight]{--c:#ec4899}.k5-tabs [data-k5=math]{--c:#10b981}.k5-tabs [data-k5=build]{--c:#16a34a}.k5-tabs [data-k5=clock]{--c:#ef4444}.k5-tabs [data-k5=sci]{--c:#0ea5e9}.k5-tabs [data-k5=space]{--c:#4f46e5}.k5-tabs [data-k5=matter]{--c:#06b6d4}.k5-tabs [data-k5=sparky]{--c:#d97706}.k5-tabs [data-k5=stickers]{--c:#db2777}
-.k5-pane:not([hidden]){animation:k5In .35s ease-out}@keyframes k5In{from{opacity:0;transform:translateY(10px)}}
+.k5-pane:not([hidden]){animation:k5In .35s ease-out}
+@media (min-width:900px){.k5-pane:not([hidden]){display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:14px;align-items:start}.k5-pane>.k5-fb,.k5-pane>.k5-row{grid-column:1/-1}}@keyframes k5In{from{opacity:0;transform:translateY(10px)}}
 .k5-btn:active,.k5-big:active{transform:translateY(3px);box-shadow:0 0 0 var(--line)}
 .k5-num{width:92px;font:inherit;font-size:22px;font-weight:700;text-align:center;padding:6px;border-radius:12px;border:3px solid var(--line);background:var(--paper);color:var(--ink)}
 .k5-tipline{margin:0;text-align:center;font-size:13.5px;color:var(--muted);font-weight:600}
