@@ -37911,9 +37911,17 @@ const K5_PR = (() => {
   const P = {
     mercury: { f(x, y, z){ const n = fbm(x * 3, y * 3, z * 3, 6), m = fbm(x * 9 + 5, y * 9, z * 9, 3); let v = .42 + n * .5 + (m - .5) * .18; const c = [v * 168, v * 160, v * 152]; return c; }, craters: 90, spec: 0 },
     venus: { f(x, y, z){ const w = fbm(x * 2 + 3, y * 4, z * 2, 3) * 3, n = fbm(x * 3 + w, y * 6 + w, z * 3 + w, 5); return ramp([[0, C("#c99a52")], [.4, C("#e3bf80")], [.7, C("#f2dca8")], [1, C("#f8ecc8")]], n * 1.4 - .15); }, spec: 0, atm: [255, 220, 150], rim: .5 },
-    earth: { f(x, y, z, la){ const e = fbm(x * 1.7 + 9, y * 1.7, z * 1.7, 6), ice = Math.abs(la) > .84 + (fbm(x * 8, y * 8, z * 8, 3) - .5) * .12; if(ice) return [244, 248, 252];
-      if(e < .52){ const d = (.52 - e) * 4.5; return mix([22, 92, 190], [6, 30, 96], Math.min(1, d)); }
-      const t = (e - .52) / .28, dry = fbm(x * 3 + 20, y * 3, z * 3, 3); let c = ramp([[0, C("#d8c98a")], [.12, C("#4f9a3f")], [.45, C("#2f7a35")], [.7, C("#7a6a45")], [1, C("#ece7de")]], t + (Math.abs(la) < .35 ? (dry - .5) * -0.25 : 0)); if(Math.abs(la) < .3 && dry > .55) c = mix(c, [205, 175, 105], .55); return c; }, land: z => 0, cloud: true, atm: [120, 180, 255], rim: 1, spec: 1 },
+    earth: { f(x, y, z, la, lo, ti, tj){ const E = earthMask(), k = tj * E.W + ti, land = E.m[k], soft = E.bl[k], n1 = fbm(x * 4 + 20, y * 4, z * 4, 5), n2 = fbm(x * 9 + 3, y * 9, z * 9, 4), alat = Math.abs(la);
+      if(land < .5){ const sh = Math.max(0, Math.min(1, (soft - .02) * 2.2)); let c = mix([8, 38, 112], [20, 84, 176], .45 + n2 * .25); c = mix(c, [52, 150, 190], sh * .85); return c; }
+      if(alat > .93 || (alat > .6 && soft > .98 && lo > 5 && false)) return [246, 249, 252];
+      // land: vegetation by latitude, deserts in dry belts, mountains, ice caps
+      const el = n1, st = (a, b, v) => { const t = Math.max(0, Math.min(1, (v - a) / (b - a))); return t * t * (3 - 2 * t); }, la2 = alat + (n2 - .5) * .14;
+      let c = ramp([[0, C("#18622a")], [.16, C("#2a7d30")], [.3, C("#5f8a3a")], [.46, C("#46783a")], [.62, C("#356a3e")], [.76, C("#788a70")], [.94, C("#c8cec8")]], la2 * 1.06);
+      const dw = st(.12, .22, alat) * (1 - st(.4, .54, alat)), desert = dw * Math.max(0, Math.min(1, (fbm(x * 2.2 + 31, y * 2.2, z * 2.2, 4) - .42) * 4));
+      c = mix(c, [208, 176, 112], desert * .92);
+      if(el > .6) c = mix(c, [118, 98, 78], Math.min(1, (el - .6) * 4)); if(el > .72) c = mix(c, [245, 245, 245], Math.min(1, (el - .72) * 5));
+      if(alat > .78 && soft > .9 && (lo > 4.9 || lo < 2.3) && y < 0) c = mix(c, [246, 249, 252], .5);
+      return c; }, cloud: true, atm: [120, 180, 255], rim: 1, spec: 1 },
     mars: { f(x, y, z, la){ const n = fbm(x * 2.5, y * 2.5, z * 2.5, 6), d = fbm(x * 5 + 7, y * 5, z * 5, 4); let c = ramp([[0, C("#6e2f1c")], [.35, C("#b5532f")], [.65, C("#d9824f")], [1, C("#ebb27a")]], n * 1.25 - .1); if(d > .6) c = mix(c, [70, 36, 28], (d - .6) * 1.6); const cap = .86 + (fbm(x * 6, y * 6, z * 6, 3) - .5) * .1; if(Math.abs(la) > cap) c = mix(c, [246, 244, 240], .92); return c; }, craters: 30, atm: [255, 170, 120], rim: .35 },
     jupiter: { f(x, y, z, la, lo){ const t = fbm(x * 3, y * 12, z * 3, 5), w = (t - .5) * .12; let c = ramp(jup, (la * .5 + .5 + w) % 1); const fine = fbm(x * 14, y * 40, z * 14, 3); c = mix(c, c.map(v => v * .85), (fine - .5) * .8 + .2);
       const dl = Math.atan2(Math.sin(lo - 1.2), Math.cos(lo - 1.2)), dx = dl / .26, dy = (la + .3) / .09, r = dx * dx + dy * dy; if(r < 1) c = mix(c, [168, 62, 40], Math.min(1, (1 - r) * 2.2)); else if(r < 1.8) c = mix(c, [240, 225, 205], (1.8 - r) * .25); return c; }, atm: [255, 215, 170], rim: .35 },
@@ -37921,10 +37929,38 @@ const K5_PR = (() => {
     uranus: { f(x, y, z, la){ const t = fbm(x * 2, y * 10, z * 2, 3), c = mix(C("#7fd0d6"), C("#bdeff0"), .5 + (la * .6) * .3 + (t - .5) * .25); return c; }, atm: [170, 240, 245], rim: .6, ring: 2 },
     neptune: { f(x, y, z, la, lo){ const t = fbm(x * 3, y * 9, z * 3, 5); let c = ramp(nep, (la * .5 + .5 + (t - .5) * .18) % 1); const dl = Math.atan2(Math.sin(lo - 2), Math.cos(lo - 2)), dx = dl / .22, dy = (la + .35) / .1, r = dx * dx + dy * dy; if(r < 1) c = mix(c, [10, 22, 80], Math.min(1, (1 - r) * 1.6)); const s = fbm(x * 4 + 11, y * 30, z * 4, 3); if(s > .62) c = mix(c, [225, 235, 255], (s - .62) * 2.2); return c; }, atm: [120, 160, 255], rim: .6 }
   };
+
+  // ---- real continent outlines (lon,lat) for Earth ----
+  const EARTH_POLY = [
+    [[-168,66],[-156,71],[-141,69.5],[-128,70],[-115,68],[-100,68],[-95,68],[-85,69],[-82,66],[-90,64],[-94,59],[-92,57],[-82,55],[-79,52],[-78,58],[-77,62],[-70,61],[-65,60],[-62,56],[-56,52],[-60,47],[-66,45],[-70,43],[-74,40],[-76,35],[-81,31],[-80,26],[-83,29],[-85,30],[-90,29.5],[-94,29],[-97,26],[-97,22],[-95,19],[-91,19],[-90,21],[-87,21],[-88,16],[-84,15],[-83,10],[-80,8.5],[-84,8],[-86,11],[-90,13],[-95,16],[-100,17],[-105,20],[-110,24],[-114,31],[-117,32],[-121,35],[-124,40],[-124,47],[-128,51],[-134,58],[-140,60],[-150,60],[-155,58],[-164,55],[-160,59],[-165,62]],
+    [[-77,8],[-72,12],[-65,10],[-60,8],[-52,5],[-50,0],[-44,-2],[-35,-5],[-35,-9],[-39,-14],[-40,-20],[-44,-23],[-48,-26],[-53,-34],[-58,-35],[-57,-38],[-62,-39],[-65,-42],[-67,-46],[-69,-51],[-68,-54],[-72,-53],[-75,-47],[-73,-40],[-71,-30],[-70,-18],[-76,-14],[-81,-6],[-80,-2],[-78,2]],
+    [[-17,21],[-16,28],[-10,30],[-6,36],[10,37],[11,33],[20,31],[32,31],[34,28],[38,20],[43,12],[51,12],[48,5],[40,-3],[40,-10],[35,-20],[33,-26],[28,-33],[20,-35],[18,-32],[14,-23],[12,-15],[13,-6],[9,-1],[9,4],[5,6],[-4,5],[-8,4],[-13,8],[-17,14]],
+    [[-9,37],[-9,43],[-2,43.5],[-4,48],[2,51],[8,54],[9,57],[12,56],[10,59],[5,60],[5,62],[12,66],[18,70],[26,71],[32,70],[40,68],[44,67],[55,68],[60,70],[70,73],[80,73],[100,77],[113,74],[130,71],[142,72],[160,70],[170,70],[180,68],[180,65],[170,60],[163,58],[160,53],[156,51],[156,57],[150,59],[142,59],[137,54],[141,52],[140,48],[132,43],[129,41],[127,39],[129,35],[126,35],[125,39],[121,40],[122,37],[119,37],[122,31],[120,26],[115,22],[110,21],[108,16],[106,10],[105,9],[100,13],[99,8],[103,1],[101,3],[98,8],[98,16],[94,17],[92,22],[88,22],[80,15],[77,8],[73,17],[72,21],[67,25],[62,25],[57,26],[56,27],[50,30],[48,29],[51,25],[56,25],[59,22],[52,16],[43,13],[39,22],[35,28],[34,31],[36,36],[30,36],[28,37],[26,40],[23,40],[23,37],[19,42],[14,45],[12,44],[18,40],[16,38],[12,41],[9,44],[5,43],[3,43],[0,39],[-2,37],[-6,36]],
+    [[114,-22],[122,-18],[130,-12],[137,-12],[136,-15],[142,-11],[146,-19],[153,-26],[151,-34],[147,-39],[141,-38],[135,-34],[129,-32],[116,-35],[114,-27]],
+    [[-73,78],[-60,82],[-30,83],[-20,76],[-22,70],[-40,65],[-44,60],[-52,64],[-55,70]],
+    [[-5,50],[1,51],[2,53],[-2,56],[-4,58],[-6,56],[-3,54]], [[-10,52],[-6,52],[-6,55],[-10,54]],
+    [[130,32],[136,34],[141,37],[142,41],[141,45],[139,40],[135,36]],
+    [[95,5],[98,4],[106,-6],[104,-5],[100,-1]], [[109,1],[117,7],[119,1],[116,-4],[110,-3]], [[105,-6],[114,-7],[114,-8.5],[106,-7]],
+    [[131,-1],[141,-3],[150,-10],[142,-9],[138,-8]], [[44,-25],[47,-25],[50,-15],[49,-12],[44,-17]],
+    [[172,-34],[178,-38],[175,-42],[172,-41]], [[170,-46],[174,-41],[173,-42],[167,-45]],
+    [[-85,22],[-77,20],[-74,20],[-81,23]], [[-24,65],[-14,65],[-15,64],[-22,63.5]], [[120,18],[122,14],[126,7],[122,7],[120,14]],
+    [[-90,76],[-70,80],[-62,82],[-80,83],[-95,80]], [[-120,72],[-100,73],[-85,70],[-100,68],[-118,69]], [[-80,73],[-65,68],[-62,66],[-75,64],[-90,68]]];
+  const EARTH_WATER = [[[28,41],[41,41.5],[40,46],[30,46]], [[47,37],[54,37],[54,42],[50,47],[47,45]], [[-92,48],[-84,47],[-83,45],[-88,43],[-92,46]]];
+  function inPoly(poly, x, y){ let c = false; for(let i = 0, j = poly.length - 1; i < poly.length; j = i++){ const a = poly[i], b = poly[j]; if((a[1] > y) !== (b[1] > y) && x < (b[0] - a[0]) * (y - a[1]) / (b[1] - a[1]) + a[0]) c = !c; } return c; }
+  let EM = null;
+  function earthMask(){ if(EM) return EM; const W = 512, Hh = 256, m = new Float32Array(W * Hh), bb = EARTH_POLY.map(p => [Math.min(...p.map(q => q[0])) - 8, Math.max(...p.map(q => q[0])) + 8, Math.min(...p.map(q => q[1])) - 8, Math.max(...p.map(q => q[1])) + 8]), wb = EARTH_WATER.map(p => [Math.min(...p.map(q => q[0])) - 8, Math.max(...p.map(q => q[0])) + 8, Math.min(...p.map(q => q[1])) - 8, Math.max(...p.map(q => q[1])) + 8]);
+    for(let j = 0; j < Hh; j++){ const la = 90 - (j + .5) / Hh * 180, cr = Math.cos(la * Math.PI / 180), cy = Math.sin(la * Math.PI / 180); for(let i = 0; i < W; i++){ const lo0 = (i + .5) / W * 360 - 180, lr = lo0 * Math.PI / 180, x = cr * Math.cos(lr), z = cr * Math.sin(lr);
+      const lo = lo0 + (fbm(x * 6 + 1, cy * 6, z * 6, 4) - .5) * 9, lt = la + (fbm(x * 6 + 8, cy * 6 + 3, z * 6, 4) - .5) * 7; let v = la < -70 + (fbm(x * 5, cy * 5, z * 5, 3) - .5) * 6 ? 1 : 0;
+      if(!v) for(let k = 0; k < EARTH_POLY.length; k++){ const b = bb[k]; if(lo < b[0] || lo > b[1] || lt < b[2] || lt > b[3]) continue; if(inPoly(EARTH_POLY[k], lo, lt)){ v = 1; break; } }
+      if(v) for(let k = 0; k < EARTH_WATER.length; k++){ const b = wb[k]; if(lo > b[0] && lo < b[1] && lt > b[2] && lt < b[3] && inPoly(EARTH_WATER[k], lo, lt)){ v = 0; break; } }
+      m[j * W + i] = v; } }
+    // soft version (blur) for shallow water + coastal colour
+    const bl = new Float32Array(W * Hh), R = 4; for(let j = 0; j < Hh; j++) for(let i = 0; i < W; i++){ let sum = 0, n = 0; for(let dj = -R; dj <= R; dj += 2) for(let di = -R; di <= R; di += 2){ const jj = Math.max(0, Math.min(Hh - 1, j + dj)), ii = (i + di + W) % W; sum += m[jj * W + ii]; n++; } bl[j * W + i] = sum / n; }
+    return EM = {m, bl, W}; }
   const KEY = ["mercury", "venus", "earth", "mars", "jupiter", "saturn", "uranus", "neptune"], cache = {};
   function tex(key){ if(cache[key]) return cache[key]; const W = 512, Hh = 256, cv = document.createElement("canvas"); cv.width = W; cv.height = Hh; const cx = cv.getContext("2d"), im = cx.createImageData(W, Hh), d = im.data, P0 = P[key], cl = P0.cloud ? new Float32Array(W * Hh) : null;
-    for(let j = 0; j < Hh; j++){ const la = Math.asin(1 - 2 * (j + .5) / Hh), cy = Math.sin(la), cr = Math.cos(la); for(let i = 0; i < W; i++){ const lo = (i + .5) / W * Math.PI * 2, x = cr * Math.cos(lo), z = cr * Math.sin(lo), c = P0.f(x, cy, z, cy, lo), k = (j * W + i) * 4; d[k] = c[0]; d[k + 1] = c[1]; d[k + 2] = c[2]; d[k + 3] = 255;
-      if(cl){ const a = fbm(x * 2.4 + 40, cy * 2.8, z * 2.4, 6), s = fbm(x * 6 + 4, cy * 7, z * 6, 3); cl[j * W + i] = Math.max(0, Math.min(1, (a - .46) * 3.2 + (s - .5) * .3)); } } }
+    for(let j = 0; j < Hh; j++){ const la = (.5 - (j + .5) / Hh) * Math.PI, cy = Math.sin(la), cr = Math.cos(la); for(let i = 0; i < W; i++){ const lo = (i + .5) / W * Math.PI * 2, x = cr * Math.cos(lo), z = cr * Math.sin(lo), c = P0.f(x, cy, z, cy, lo, i, j), k = (j * W + i) * 4; d[k] = c[0]; d[k + 1] = c[1]; d[k + 2] = c[2]; d[k + 3] = 255;
+      if(cl){ const a = fbm(x * 2.4 + 40, cy * 2.8, z * 2.4, 6), s = fbm(x * 6 + 4, cy * 7, z * 6, 3); cl[j * W + i] = Math.max(0, Math.min(1, (a - .53) * 3.4 + (s - .5) * .3)); } } }
     cx.putImageData(im, 0, 0);
     if(P0.craters){ let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647; for(let n = 0; n < P0.craters; n++){ const x = rnd() * W, y = (.12 + rnd() * .76) * Hh, r = (2 + Math.pow(rnd(), 2.4) * 16) * (P0.craters > 50 ? 1 : .8), sq = 1 / Math.max(.35, Math.cos((y / Hh - .5) * Math.PI));
       for(const ox of [0, -W, W]){ cx.save(); cx.translate(x + ox, y); cx.scale(sq, 1); let g = cx.createRadialGradient(0, 0, r * .2, 0, 0, r * 1.15); g.addColorStop(0, "rgba(30,28,26,.38)"); g.addColorStop(.78, "rgba(30,28,26,.25)"); g.addColorStop(.88, "rgba(235,230,222,.5)"); g.addColorStop(1, "rgba(235,230,222,0)"); cx.fillStyle = g; cx.beginPath(); cx.arc(0, 0, r * 1.15, 0, 7); cx.fill(); cx.restore(); } } }
@@ -37939,14 +37975,14 @@ const K5_PR = (() => {
   // mount: canvas inside container, returns stop()
   function mount(host, idx, d, tilt){ const key = KEY[idx], P0 = P[key], t = tex(key), hasRing = !!P0.ring, dpr = Math.min(2, window.devicePixelRatio || 1), size = d * (hasRing ? 2.45 : 1.18), cv = document.createElement("canvas"); cv.className = "k5-pl-cv"; cv.width = cv.height = Math.round(size * dpr); cv.style.width = cv.style.height = size + "px"; host.appendChild(cv);
     const ctx = cv.getContext("2d"), N = Math.round(Math.min(380, d * dpr)), sph = document.createElement("canvas"); sph.width = sph.height = N; const sx = sph.getContext("2d"), img = sx.createImageData(N, N), out = img.data, px = [0, 0, 0];
-    const L = [-.52, -.4, .75], ln = Math.hypot(...L); L[0] /= ln; L[1] /= ln; L[2] /= ln; let rot = 0, last = 0, alive = true, still = window.matchMedia && matchMedia("(prefers-reduced-motion:reduce)").matches; const spin = [.05, -.03, .09, .09, .26, .23, .12, .15][idx], at = P0.atm || [150, 190, 255], rim = P0.rim || .3;
+    const L = [-.52, -.4, .75], ln = Math.hypot(...L); L[0] /= ln; L[1] /= ln; L[2] /= ln; let rot = idx === 2 ? 2.7 : 0, last = 0, alive = true, still = window.matchMedia && matchMedia("(prefers-reduced-motion:reduce)").matches; const spin = [-.05, .03, -.09, -.09, -.26, -.23, -.12, -.15][idx], at = P0.atm || [150, 190, 255], rim = P0.rim || .3;
     const ax = tilt || 0, ca = Math.cos(ax), sa = Math.sin(ax);
     function frame(ts){ if(!alive) return; if(!cv.isConnected){ alive = false; return; } const dt = last ? Math.min(.05, (ts - last) / 1000) : 0; last = ts; if(!still) rot += dt * spin;
       for(let j = 0; j < N; j++){ const ny = (j + .5) / N * 2 - 1; for(let i = 0; i < N; i++){ const nx = (i + .5) / N * 2 - 1, r2 = nx * nx + ny * ny, k = (j * N + i) * 4; if(r2 >= 1){ out[k + 3] = 0; continue; } const nz = Math.sqrt(1 - r2), sy = -ny * ca + nz * sa, sz = ny * sa + nz * ca, lat = Math.asin(Math.max(-1, Math.min(1, sy))), lon = Math.atan2(nx, sz) + rot, u = lon / (Math.PI * 2) + 1, v = .5 - lat / Math.PI;
-        sample(t, u, v, px); if(t.cl){ const c = cloudAt(t, u * 1.0 - rot * .08 / (Math.PI * 2), v); px[0] = px[0] * (1 - c * .9) + 252 * c * .9; px[1] = px[1] * (1 - c * .9) + 252 * c * .9; px[2] = px[2] * (1 - c * .9) + 255 * c * .9; }
+        sample(t, u, v, px); if(t.cl){ const c = cloudAt(t, u * 1.0 - rot * .08 / (Math.PI * 2), v); px[0] = px[0] * (1 - c * .72) + 252 * c * .72; px[1] = px[1] * (1 - c * .72) + 252 * c * .72; px[2] = px[2] * (1 - c * .72) + 255 * c * .72; }
         const dif = nx * L[0] + ny * L[1] + nz * L[2], lit = Math.max(0, dif), sh = .035 + .965 * Math.pow(Math.min(1, lit * 1.08), .85) , limb = .55 + .45 * Math.pow(nz, .45), rm = Math.pow(1 - nz, 3) * rim * (.25 + .75 * lit);
         let rr = px[0] * sh * limb + at[0] * rm * .55, gg = px[1] * sh * limb + at[1] * rm * .55, bb = px[2] * sh * limb + at[2] * rm * .55;
-        if(P0.spec){ const h = [L[0], L[1], L[2] + 1], hl = Math.hypot(...h), s = Math.max(0, (nx * h[0] + ny * h[1] + nz * h[2]) / hl); if(px[2] > px[1] * 1.6 && px[2] > px[0] * 2 && !(t.cl && cloudAt(t, u, v) > .3)) { const sp = Math.pow(s, 60) * .5; rr += 255 * sp; gg += 255 * sp; bb += 255 * sp; } }
+        if(P0.spec){ const h = [L[0], L[1], L[2] + 1], hl = Math.hypot(...h), sd = Math.max(0, (nx * h[0] + ny * h[1] + nz * h[2]) / hl), oc = Math.max(0, Math.min(1, (px[2] - px[1] * 1.15 - 10) / 50)) * (t.cl ? 1 - Math.min(1, cloudAt(t, u, v) * 1.5) : 1), sp = Math.pow(sd, 70) * .45 * oc; rr += 255 * sp; gg += 255 * sp; bb += 255 * sp; }
         out[k] = rr > 255 ? 255 : rr; out[k + 1] = gg > 255 ? 255 : gg; out[k + 2] = bb > 255 ? 255 : bb; const e = (1 - r2) * N * .5; out[k + 3] = e < 1.2 ? 255 * Math.max(0, e / 1.2) : 255; } }
       sx.putImageData(img, 0, 0); ctx.clearRect(0, 0, cv.width, cv.height); const cw = cv.width, R = d * dpr / 2; ctx.save(); ctx.translate(cw / 2, cw / 2);
       if(hasRing) ringBands(ctx, R, P0.ring, true); ctx.imageSmoothingQuality = "high"; ctx.drawImage(sph, -R, -R, R * 2, R * 2);
