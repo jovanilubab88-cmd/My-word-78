@@ -3207,8 +3207,13 @@ window.MWB_TRIAL_DAYS = 14;
       <button class="mp-mode" data-mpmode="alg" aria-pressed="false">🔤 Algebra<small>Find the missing <i>x</i></small></button>
       <button class="mp-mode" data-mpmode="trig" aria-pressed="false">📐 Trig Lab<small>Unit circle, graphs, equations</small></button>
     </div>
-    <div class="vt" id="vt" hidden>
-      <div class="vt-hub">
+    <div class="vt" id="vt" data-tab="tutor" hidden>
+      <div class="vt-tabs" role="tablist" aria-label="Advanced Math sections">
+        <button type="button" role="tab" data-vtab="tutor" aria-selected="true"><span aria-hidden="true">🧑‍🏫</span> Tutor</button>
+        <button type="button" role="tab" data-vtab="graph" aria-selected="false"><span aria-hidden="true">📈</span> Graphing<i class="vt-tabdot" id="vt-gdot" hidden aria-label="new graph"></i></button>
+        <button type="button" role="tab" data-vtab="video" aria-selected="false"><span aria-hidden="true">📺</span> Videos</button>
+      </div>
+      <div class="vt-hub" data-vsec="tutor">
         <div class="vt-hubtop"><span id="vt-who"></span><span class="vt-status" id="vt-status">Mic ready</span></div>
         <div class="vt-wave" id="vt-wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
         <div class="vt-microw">
@@ -3221,7 +3226,7 @@ window.MWB_TRIAL_DAYS = 14;
           <div class="vt-chips"><span>“Next step”</span><span>“Explain step 2”</span><span>“Give me a hint”</span><span>“Repeat that”</span><span>“My answer is 13”</span><span>“Why is that true?”</span><span>“Read slower”</span><span>“Show the graph”</span><span>“Stop”</span><span>“New problem”</span></div>
         </details>
       </div>
-      <div class="vt-card">
+      <div class="vt-card" data-vsec="tutor">
         <div class="vt-row2">
           <label class="vt-lab">Subject <select id="vt-subj"></select></label>
           <label class="vt-lab">Level <select id="vt-level"></select></label>
@@ -3238,8 +3243,8 @@ window.MWB_TRIAL_DAYS = 14;
         <div class="vt-row"><button type="button" class="btn" id="vt-go">🚀 Ask the tutor</button></div>
         <details class="vt-samples"><summary>📚 Try a sample problem</summary><div id="vt-samples"></div></details>
       </div>
-      <div class="vt-card vt-sol" id="vt-sol" hidden></div>
-      <div class="vt-card vt-yt" id="vt-yt">
+      <div class="vt-card vt-sol" id="vt-sol" data-vsec="tutor" hidden></div>
+      <div class="vt-card vt-yt" id="vt-yt" data-vsec="video">
         <h3 class="vt-h">📺 Video helper</h3>
         <p class="vt-tip">Paste a YouTube link to a lesson. The tutor writes a summary and explains the questions in the video.</p>
         <div class="vt-row vt-ytrow"><input id="vt-yturl" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="Paste a YouTube link here" aria-label="YouTube link"><button type="button" class="btn alt vt-sm" id="vt-ytpaste">📋 Paste</button><button type="button" class="btn" id="vt-ytgo">✨ Summarize</button></div>
@@ -3249,8 +3254,9 @@ window.MWB_TRIAL_DAYS = 14;
         <p class="vt-ytmsg" id="vt-ytmsg" aria-live="polite"></p>
         <div class="vt-ytout" id="vt-ytout" hidden></div>
       </div>
-      <div class="vt-card vt-studio" id="vt-studio">
+      <div class="vt-card vt-studio" id="vt-studio" data-vsec="graph">
         <h3 class="vt-h">📈 Graph studio</h3>
+        <p class="vt-tip">Type any function and tap Plot. Use commas to draw more than one, e.g. <b>x^2, 2x + 1</b>.</p>
         <div class="vt-row vt-fxrow"><label class="vt-fx">y = <input id="vt-fx" value="3x^2 - 5x + 2" autocomplete="off" spellcheck="false" aria-label="Function to graph (use commas for more than one)"></label><button type="button" class="btn alt vt-sm" id="vt-plot">Plot</button></div>
         <div class="vt-row vt-opts">
           <label>x from <input type="number" id="vt-xmin" value="-5" step="any"></label><label>to <input type="number" id="vt-xmax" value="5" step="any"></label>
@@ -3263,7 +3269,7 @@ window.MWB_TRIAL_DAYS = 14;
         <div class="vt-row"><button type="button" class="btn alt vt-sm" id="vt-launch" hidden>🚀 Launch</button><p class="vt-tip" id="vt-gtip">Zoom with the buttons, the mouse wheel or two fingers. Drag the graph to move it. Tap to read a value (with Tangent on, tap moves the tangent point).</p></div>
         <div class="vt-analysis" id="vt-analysis"></div>
       </div>
-      <div class="vt-card vt-log">
+      <div class="vt-card vt-log" data-vsec="tutor">
         <div class="vt-loghead"><h3 class="vt-h">💬 Conversation</h3><span><button type="button" class="btn alt vt-sm" id="vt-copy">📋 Copy</button> <button type="button" class="btn alt vt-sm" id="vt-clear">🗑️ Clear</button></span></div>
         <div class="vt-logbody" id="vt-log"><p class="vt-empty">No conversation yet. Ask a question to get started!</p></div>
       </div>
@@ -36664,6 +36670,14 @@ try { __diag("script-end"); } catch(e){}
 .vt-calcans{margin-top:8px;padding:8px 10px;border-radius:10px;background:#dcfce7;color:#14532d;font-weight:700;font-size:18px;overflow-wrap:anywhere}
 .vt-calcmore{margin:6px 0 0;font-size:14px;color:#64748b}
 .vt-exh{margin:14px 0 2px;font-size:16px;color:#4f46e5}
+/* Advanced Math sections (Tutor / Graphing / Videos) */
+.vt-tabs{display:flex;gap:8px;flex-wrap:wrap}
+.vt-tabs button{flex:1 1 120px;position:relative;font:inherit;font-size:17px;font-weight:800;padding:11px 12px;border-radius:16px;border:3px solid var(--line);background:#fff;color:#1b2a4a;cursor:pointer;box-shadow:0 4px 0 var(--line);min-height:48px}
+.vt-tabs button[aria-selected="true"]{background:var(--sun);color:#1b2a4a;transform:translateY(2px);box-shadow:0 2px 0 var(--line)}
+.vt-tabdot{position:absolute;top:6px;right:8px;width:12px;height:12px;border-radius:50%;background:#dc2626;border:2px solid #fff}
+.vt[data-tab="tutor"] [data-vsec]:not([data-vsec="tutor"]),.vt[data-tab="graph"] [data-vsec]:not([data-vsec="graph"]),.vt[data-tab="video"] [data-vsec]:not([data-vsec="video"]){display:none!important}
+.vt[data-tab="graph"] .vt-cw canvas{min-height:min(60vh,520px)}
+
 /* 📺 Video helper */
 .vt-ytrow{gap:8px;flex-wrap:wrap}.vt-ytrow input{flex:1 1 240px;min-width:0;font:inherit;font-size:16px;padding:10px 12px;border:3px solid var(--line);border-radius:12px;background:#fff;color:#0f172a}
 .vt-yttr{margin-top:8px}.vt-yttr summary{cursor:pointer;font-weight:700;color:#4f46e5}.vt-yttr textarea{width:100%;font:inherit;font-size:15px;padding:8px 10px;border:3px solid var(--line);border-radius:12px;background:#fff;color:#0f172a}
@@ -37180,7 +37194,7 @@ Use 3 to 7 steps. Double-check all arithmetic.`;
 function vtAIErr(e){ const c = e && e.code; return c === "limit" ? (e.message || "Please log in to use the AI.") : c === "rate_limited" ? "Lots of questions right now — wait a minute and try again." : c === "not_granted" ? "The AI isn't allowed here yet." : c === "unavailable" ? (e.message || "The AI isn't available right now.") : "The AI couldn't answer right now. Please try again."; }
 // ---------- solving ----------
 async function vtSolve(q){
-  q = String(q || "").trim(); if(!q || vt.busy) return; vt.busy = true; $("vt-go").disabled = true; vtState(); try { stopAll(); } catch(e){}
+  q = String(q || "").trim(); if(!q || vt.busy) return; if($("vt").dataset.tab !== "tutor") vtTab("tutor"); vt.busy = true; $("vt-go").disabled = true; vtState(); try { stopAll(); } catch(e){}
   try {
     const S = VTS.solve(q);
     if(S && S.err){ vtLog("bot", S.err); vtSay(S.err); return; }
@@ -37204,7 +37218,7 @@ function vtShow(S, keep){ vt.sol = S; if(!keep){ vt.step = 0; vt.shown = vt.guid
   box.innerHTML = `<div class="vt-solhead"><div><span class="vt-badge${S.ai ? " ai" : ""}">${S.ai ? "🤖 AI answer — double-check important numbers" : "✅ Checked by the calculator"}</span><h3>${vtMath(S.title)}</h3></div><button type="button" class="btn alt vt-sm" id="vt-sayans">🔊</button></div>
     <div class="vt-answer">${S.kind === "ai" && !/\d/.test(S.answer) ? "Key idea" : "Answer"}: ${vtMath(S.answer)}</div>${S.overview ? `<p class="vt-over">${vtMath(S.overview)}</p>` : ""}
     ${calcBox}<h4 class="vt-exh">📝 Step-by-step explanation</h4>
-    <div class="vt-solbar"><label class="vt-tog"><input type="checkbox" id="vt-guided"${vt.guided ? " checked" : ""}> 👣 One step at a time</label><button type="button" class="btn alt vt-sm" id="vt-readall">▶ Read all steps</button></div>
+    <div class="vt-solbar"><label class="vt-tog"><input type="checkbox" id="vt-guided"${vt.guided ? " checked" : ""}> 👣 One step at a time</label><button type="button" class="btn alt vt-sm" id="vt-readall">▶ Read all steps</button>${S.graph ? `<button type="button" class="btn alt vt-sm" id="vt-seegraph">📈 See the graph</button>` : ""}</div>
     <ol class="vt-steps">${steps}</ol>
     ${nxt ? `<div class="vt-guide"><p>🤔 <b>Your turn first:</b> ${vtMath(nxt.hint || "What do you think comes next?")}</p><button type="button" class="btn vt-sm" id="vt-next">Show step ${vt.shown + 1} of ${S.steps.length} ▶</button></div>` : ""}
     <div class="vt-mine"><b>✍️ Check my answer</b><div class="vt-row" style="margin-top:6px"><input id="vt-mine" placeholder="${S.check ? "e.g. " + (S.check.length > 1 ? "x = 2 and x = −1" : "13") : "Type your answer"}" autocomplete="off"><button type="button" class="btn vt-sm" id="vt-chk">Check</button></div><p class="vt-mineres" id="vt-mineres" aria-live="polite"></p></div>
@@ -37213,7 +37227,7 @@ function vtShow(S, keep){ vt.sol = S; if(!keep){ vt.step = 0; vt.shown = vt.guid
   if($("vt-calcsay")) $("vt-calcsay").onclick = () => vtSay(S.steps.filter((x, i) => x.math && i < vt.shown).map(x => x.math).join(". ") + (vt.shown >= S.steps.length ? `. So the answer is ${S.answer}` : ""));
   $("vt-guided").onchange = e => { vt.guided = e.target.checked; vtSaveSet(); vt.shown = vt.guided ? Math.max(1, vt.step + 1) : 99; vtShow(S, true); };
   $("vt-readall").onclick = () => vtSay(S.steps.map((s, i) => `Step ${i + 1}. ${s.title}. ${s.math}. ${s.why}`).join(" "));
-  if($("vt-next")) $("vt-next").onclick = () => vtGoStep(vt.shown);
+  if($("vt-next")) $("vt-next").onclick = () => vtGoStep(vt.shown); if($("vt-seegraph")) $("vt-seegraph").onclick = () => vtTab("graph");
   box.querySelectorAll(".vt-step").forEach(li => li.onclick = e => { if(e.target.closest("button")) return; vtGoStep(+li.dataset.i); });
   box.querySelectorAll("[data-say]").forEach(b => b.onclick = () => vtGoStep(+b.dataset.say));
   box.querySelectorAll("[data-hint]").forEach(b => b.onclick = () => vtHint(+b.dataset.hint));
@@ -37255,7 +37269,9 @@ function vtHeard(text, voice){ text = String(text).trim(); if(!text) return; con
   if(/\b(read|talk|speak) (faster|quicker)\b|^faster$/.test(t)){ vt.pace = Math.min(1.6, +(vt.pace + 0.15).toFixed(2)); vtSaveSet(); vtSay("Okay, I'll speak faster."); return; }
   if(/\b(read|talk|speak) slower\b|^slower$|slow down/.test(t)){ vt.pace = Math.max(0.6, +(vt.pace - 0.15).toFixed(2)); vtSaveSet(); vtSay("Okay, I'll slow down."); return; }
   if(/^(new problem|start over|clear( it)?|reset)$/.test(t)){ vt.sol = null; $("vt-sol").hidden = true; $("vt-in").value = ""; vtSay("Okay! What's the next problem?"); return; }
-  if(/\b(show|open|see) (me )?(the )?graph\b/.test(t)){ $("vt-studio").scrollIntoView({behavior: "smooth", block: "start"}); vtSay("Here's the graph."); return; }
+  if(/\b(show|open|see) (me )?(the )?graph(ing)?\b/.test(t)){ vtTab("graph"); vtSay("Here's the graph."); return; }
+  if(/\b(go )?back to (the )?tutor\b|^(open |show )?(the )?tutor$/.test(t)){ vtTab("tutor"); return; }
+  if(/\b(open|show|go to) (the )?videos?( helper)?\b/.test(t)){ vtTab("video"); return; }
   if(S){ const sm = t.match(/\b(?:explain|read|go to|show|what is|what's) (?:me )?step (\d+|one|two|three|four|five|six|seven|eight)\b/) || t.match(/\b(first|second|third|fourth|fifth|last) step\b/);
     if(sm){ const k = VT_NUMW[sm[1]] || +sm[1]; vtGoStep(Math.min(S.steps.length, k) - 1); return; }
     if(/^(next( step)?|go on|continue|keep going|what'?s next)\b/.test(t)){ if(vt.step + 1 < S.steps.length || vt.shown <= vt.step) vtGoStep(Math.min(S.steps.length - 1, vt.shown < S.steps.length ? vt.shown : vt.step + 1)); else vtSay("That was the last step! Try checking your own answer."); return; }
@@ -37266,8 +37282,10 @@ function vtHeard(text, voice){ text = String(text).trim(); if(!text) return; con
   $("vt-in").value = text; vtSolve(text); }
 // ---------- graph studio ----------
 const VT_COL = ["#2563eb", "#e11d48", "#16a34a"];
+function vtTab(t){ const el = $("vt"); if(!el) return; el.dataset.tab = t; el.querySelectorAll("[data-vtab]").forEach(b => b.setAttribute("aria-selected", String(b.dataset.vtab === t))); if(t === "graph"){ $("vt-gdot").hidden = true; requestAnimationFrame(() => { try { vtPlot(); } catch(e){} }); } try { $("vt").scrollIntoView({block: "start", behavior: "smooth"}); } catch(e){} }
 function vtGraphFrom(S){ const g = S.graph; vt.anim = null; $("vt-launch").hidden = true;
   if(!g){ return; }
+  if($("vt").dataset.tab !== "graph") $("vt-gdot").hidden = false;
   if(g.proj){ vt.g = {proj: g.proj}; $("vt-fx").value = `projectile ${VTM.num(g.proj.v0)} m/s at ${VTM.num(g.proj.th)}°`; $("vt-launch").hidden = false; vtPlot(); return; }
   if(g.bars){ vt.g = {bars: g.bars}; $("vt-fx").value = "data: " + g.bars.map(VTM.num).join(", "); vtPlot(); return; }
   const fns = (g.fns || []).slice(0, 3); if(!fns.length) return; $("vt-fx").value = fns.join(", ");
@@ -37449,7 +37467,7 @@ function vtYtRender(v, j, has){ const box = $("vt-ytout"), L = a => Array.isArra
   box.scrollIntoView({behavior: "smooth", block: "nearest"}); }
 function vtYtInit(){ $("vt-ytgo").onclick = vtYtGo; $("vt-yturl").onkeydown = e => { if(e.key === "Enter") vtYtGo(); };
   $("vt-ytpaste").onclick = async () => { try { const t = await navigator.clipboard.readText(); if(t){ $("vt-yturl").value = t.trim(); $("vt-yturl").focus(); } } catch(e){ $("vt-yturl").focus(); vtYtMsg("Tap and hold in the box, then choose Paste."); } }; }
-function vtInit(){ if(!$("vt")) return; requestAnimationFrame(() => vtPlot()); if(vt.inited) return; vt.inited = true; vtLoad(); try { vtYtInit(); } catch(e){}
+function vtInit(){ if(!$("vt")) return; requestAnimationFrame(() => vtPlot()); if(vt.inited) return; vt.inited = true; vtLoad(); try { vtYtInit(); } catch(e){} $("vt").querySelectorAll("[data-vtab]").forEach(b => b.onclick = () => vtTab(b.dataset.vtab));
   $("vt-subj").innerHTML = VT_SUBJECTS.map(s => `<option${s === vt.subject ? " selected" : ""}>${s}</option>`).join(""); $("vt-level").innerHTML = VT_LEVELS.map(([k, n]) => `<option value="${k}"${k === vt.level ? " selected" : ""}>${n}</option>`).join("");
   $("vt-subj").onchange = e => { vt.subject = e.target.value; vtSaveSet(); }; $("vt-level").onchange = e => { vt.level = e.target.value; vtSaveSet(); };
   const pers = () => { $("vt-personas").innerHTML = VT_PERSONAS.map(p => `<button type="button" class="vt-persona" data-p="${p.id}" aria-pressed="${p === vt.persona}"><b>${p.name}</b><small>${p.desc}</small></button>`).join(""); $("vt-who").textContent = "Tutor: " + vt.persona.name;
