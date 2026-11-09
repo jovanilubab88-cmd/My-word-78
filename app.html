@@ -3239,6 +3239,16 @@ window.MWB_TRIAL_DAYS = 14;
         <details class="vt-samples"><summary>📚 Try a sample problem</summary><div id="vt-samples"></div></details>
       </div>
       <div class="vt-card vt-sol" id="vt-sol" hidden></div>
+      <div class="vt-card vt-yt" id="vt-yt">
+        <h3 class="vt-h">📺 Video helper</h3>
+        <p class="vt-tip">Paste a YouTube link to a lesson. The tutor writes a summary and explains the questions in the video.</p>
+        <div class="vt-row vt-ytrow"><input id="vt-yturl" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="Paste a YouTube link here" aria-label="YouTube link"><button type="button" class="btn alt vt-sm" id="vt-ytpaste">📋 Paste</button><button type="button" class="btn" id="vt-ytgo">✨ Summarize</button></div>
+        <details class="vt-yttr" id="vt-yttr"><summary>📝 Video can't be read? Paste its transcript instead</summary>
+          <p class="vt-tip">On YouTube, open the video description, tap <b>Show transcript</b>, copy the words and paste them here.</p>
+          <textarea id="vt-yttext" rows="4" placeholder="Paste the video's transcript here" aria-label="Video transcript"></textarea></details>
+        <p class="vt-ytmsg" id="vt-ytmsg" aria-live="polite"></p>
+        <div class="vt-ytout" id="vt-ytout" hidden></div>
+      </div>
       <div class="vt-card vt-studio" id="vt-studio">
         <h3 class="vt-h">📈 Graph studio</h3>
         <div class="vt-row vt-fxrow"><label class="vt-fx">y = <input id="vt-fx" value="3x^2 - 5x + 2" autocomplete="off" spellcheck="false" aria-label="Function to graph (use commas for more than one)"></label><button type="button" class="btn alt vt-sm" id="vt-plot">Plot</button></div>
@@ -36654,6 +36664,24 @@ try { __diag("script-end"); } catch(e){}
 .vt-calcans{margin-top:8px;padding:8px 10px;border-radius:10px;background:#dcfce7;color:#14532d;font-weight:700;font-size:18px;overflow-wrap:anywhere}
 .vt-calcmore{margin:6px 0 0;font-size:14px;color:#64748b}
 .vt-exh{margin:14px 0 2px;font-size:16px;color:#4f46e5}
+/* 📺 Video helper */
+.vt-ytrow{gap:8px;flex-wrap:wrap}.vt-ytrow input{flex:1 1 240px;min-width:0;font:inherit;font-size:16px;padding:10px 12px;border:3px solid var(--line);border-radius:12px;background:#fff;color:#0f172a}
+.vt-yttr{margin-top:8px}.vt-yttr summary{cursor:pointer;font-weight:700;color:#4f46e5}.vt-yttr textarea{width:100%;font:inherit;font-size:15px;padding:8px 10px;border:3px solid var(--line);border-radius:12px;background:#fff;color:#0f172a}
+.vt-ytmsg{margin:8px 0 0;font-weight:600;min-height:1em}.vt-ytmsg.err{color:#b91c1c}
+.vt-ytout{margin-top:10px;display:flex;flex-direction:column;gap:12px}
+.vt-ythead{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.vt-ythead img{width:150px;aspect-ratio:16/9;object-fit:cover;border-radius:10px;border:3px solid var(--line);flex:none}
+.vt-ythead h4{margin:0;font-size:18px;overflow-wrap:anywhere}.vt-ythead small{display:block;color:#475569;margin-top:2px}.vt-ythead a{font-weight:700;color:#4f46e5}
+.vt-ytsec h4{margin:0 0 6px;font-size:16px;color:#4f46e5;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.vt-ytsec p{margin:0;line-height:1.55}.vt-ytsec ul{margin:0;padding-left:20px;line-height:1.55}
+.vt-ytnote{padding:8px 10px;border-left:5px solid #f59e0b;background:#fffbeb;color:#78350f;border-radius:8px;font-size:14.5px}
+.vt-ytq{border:3px solid var(--line);border-radius:14px;padding:10px 12px;background:#fff;color:#0f172a;margin-bottom:8px}
+.vt-ytq>b{display:block;color:#1e3a8a;margin-bottom:4px;overflow-wrap:anywhere}.vt-ytq .vt-calc{margin:8px 0}.vt-ytq .vt-ytans{margin-top:6px;font-weight:700;color:#14532d}
+.vt-ytq .vt-row{margin-top:8px}
+.vt-ytprac details{border:3px dashed #4f46e5;border-radius:12px;padding:8px 10px;background:#eef2ff;color:#1e1b4b;margin-bottom:6px}.vt-ytprac summary{cursor:pointer;font-weight:700}
+.vt-ytwords span{display:inline-block;margin:0 6px 6px 0;padding:5px 10px;border-radius:12px;background:#f1f5ff;border:2px solid #c7d2fe;color:#1e1b4b;font-size:14.5px}
+.vt-ytask{display:flex;gap:8px;flex-wrap:wrap}.vt-ytask input{flex:1 1 220px;min-width:0;font:inherit;font-size:16px;padding:10px 12px;border:3px solid var(--line);border-radius:12px;background:#fff;color:#0f172a}
+.vt-ytreply{margin-top:8px;padding:10px 12px;border-radius:12px;background:#f0fdf4;border:3px solid #16a34a;color:#14532d;line-height:1.55;white-space:pre-wrap}
+
 .vt-solbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin:6px 0}
 .vt-steps{list-style:none;padding:0;margin:8px 0;display:flex;flex-direction:column;gap:8px}
 .vt-step{border:3px solid var(--line);border-radius:14px;padding:10px 12px;background:var(--paper);cursor:pointer}
@@ -37369,7 +37397,59 @@ function vtFileSetup(){ const pickF = e => { const f = e.target.files && e.targe
   // computers have no camera button: "Take a photo" simply opens the picker there
   if(!/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) && !(navigator.maxTouchPoints > 1)) $("vt-camlab").lastChild.textContent = "📷 Add a photo"; }
 // ---------- set up ----------
-function vtInit(){ if(!$("vt")) return; requestAnimationFrame(() => vtPlot()); if(vt.inited) return; vt.inited = true; vtLoad();
+// ---------- 📺 Video helper (YouTube link -> summary + explained questions) ----------
+const vtY = {busy: false, v: null, text: "", sum: null};
+const vtYtId = u => { const m = String(u || "").match(/(?:youtu\.be\/|[?&]v=|\/shorts\/|\/embed\/|\/live\/)([\w-]{11})/); return m ? m[1] : ""; };
+function vtYtMsg(t, err){ const p = $("vt-ytmsg"); p.textContent = t || ""; p.classList.toggle("err", !!err); }
+function vtYtFit(t, n){ t = String(t || "").replace(/\s+/g, " ").trim(); if(t.length <= n) return t; const k = 5, len = Math.floor(n / k) - 4, step = (t.length - len) / (k - 1); let out = []; for(let i = 0; i < k; i++) out.push(t.substr(Math.round(i * step), len)); return out.join(" … "); }
+async function vtYtGo(){ if(vtY.busy) return; const url = $("vt-yturl").value.trim(), pasted = $("vt-yttext").value.trim(), id = vtYtId(url);
+  if(!id && pasted.length < 80){ vtYtMsg("Paste a YouTube link first (it looks like youtube.com/watch?v=… or youtu.be/…).", true); return; }
+  if(!vtAI()){ vtYtMsg("The video helper needs the AI. On the website, log in first.", true); return; }
+  vtY.busy = true; $("vt-ytgo").disabled = true; $("vt-ytout").hidden = true; let v = {id, title: "", author: "", description: "", transcript: ""};
+  try {
+    if(pasted.length >= 80) v.transcript = pasted.slice(0, 24000);
+    if(id && typeof IS_NETLIFY !== "undefined" && IS_NETLIFY){ vtYtMsg("📺 Opening the video…");
+      try { const r = await fetch("/.netlify/functions/yt", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({url})}); if(r.status === 401 || r.status === 402){ let m = ""; try { m = (await r.json()).message || ""; } catch(e){} throw {stop: m || "Please log in to use the video helper."}; }
+        if(r.ok){ const d = await r.json(); v.title = d.title || ""; v.author = d.author || ""; v.description = d.description || ""; if(!v.transcript) v.transcript = d.transcript || ""; } } catch(e){ if(e && e.stop) throw e; } }
+    if(!v.transcript && !v.title){ $("vt-yttr").open = true; throw {stop: (typeof IS_NETLIFY !== "undefined" && IS_NETLIFY) ? "I couldn't read that video. Open “Paste its transcript instead” below and paste the transcript, then tap Summarize." : "Inside Claude I can't open YouTube. Paste the video's transcript below and tap Summarize — or use the website, where links work."}; }
+    vtY.v = v; vtY.text = v.transcript; const has = v.transcript.length >= 80;
+    vtYtMsg(has ? "✨ Reading the video and writing your summary…" : "✨ I couldn't get this video's captions, so I'm writing a preview from its title and description…");
+    const src = has ? `Transcript (may be auto-captions with mistakes — fix obvious mis-heard maths words):\n"""${vtYtFit(v.transcript, 9000)}"""` : `No transcript is available. Description: """${vtYtFit(v.description, 1400)}"""`;
+    const prompt = `${vtBasePrompt()}
+A student pasted a YouTube video and wants a summary and the questions explained.
+Video title: "${v.title || "unknown"}"${v.author ? `. Channel: ${v.author}` : ""}.
+${src}
+Reply with ONLY JSON in exactly this shape:
+{"summary": "4-6 clear sentences on what the video teaches", "keyIdeas": ["4 to 6 short key points"], "questions": [{"question": "a question or problem worked or asked in the video", "calc": "ONLY the calculation, one line per step, lines separated by \\n (empty string if there is none)", "explain": "2-4 sentences explaining how and why", "answer": "the final answer in one line"}], "practice": [{"q": "a new similar practice question", "a": "its answer", "why": "one sentence why"}], "words": [{"term": "a key word from the video", "meaning": "simple meaning"}], "note": ""}
+Use up to 5 questions, exactly 3 practice questions and up to 5 words. Only use what the video really covers — do not invent things it did not say.${has ? "" : ' Because there is no transcript, base everything on the title and description, keep "questions" to typical questions on this exact topic, and set "note" to one sentence saying this is a preview from the title, not the full video.'} Double-check all arithmetic.`;
+    const j = await sampler.json(prompt); if(!j || !j.summary) throw {code: "failed"};
+    vtY.sum = j; vtYtRender(v, j, has); vtYtMsg(""); vtLog("bot", `📺 Video summary — ${v.title || "your video"}: ${j.summary}`);
+  } catch(e){ vtYtMsg(e && e.stop ? e.stop : vtAIErr(e), true); }
+  finally { vtY.busy = false; $("vt-ytgo").disabled = false; } }
+function vtYtRender(v, j, has){ const box = $("vt-ytout"), L = a => Array.isArray(a) ? a : [], qs = L(j.questions).slice(0, 5), pr = L(j.practice).slice(0, 3), ws = L(j.words).slice(0, 5), ki = L(j.keyIdeas).slice(0, 6), link = v.id ? `https://www.youtube.com/watch?v=${v.id}` : "";
+  const calc = c => { const lines = String(c || "").split(/\n+/).map(x => x.trim()).filter(Boolean); return lines.length ? `<div class="vt-calc"><div class="vt-calch"><b>🧮 Calculation only</b></div>${lines.map((x, i) => `<div class="vt-calcl"><span aria-hidden="true">${i + 1}</span><div>${vtMath(x)}</div></div>`).join("")}</div>` : ""; };
+  box.innerHTML = `<div class="vt-ythead">${v.id ? `<img src="https://i.ytimg.com/vi/${v.id}/mqdefault.jpg" alt="" onerror="this.remove()">` : ""}<div><h4>${esc(v.title || "Your video")}</h4>${v.author ? `<small>${esc(v.author)}</small>` : ""}${link ? `<a href="${link}" target="_blank" rel="noopener">▶ Open on YouTube</a>` : ""}</div></div>
+    ${!has || j.note ? `<div class="vt-ytnote">⚠️ ${esc(j.note || "This is a preview from the video's title, not the full video.")} ${has ? "" : "For a full summary, paste the transcript below the link box."}</div>` : ""}
+    <div class="vt-ytsec"><h4><span>📝 Summary</span><button type="button" class="btn alt vt-sm" id="vt-ytsay" aria-label="Read the summary">🔊 Hear it</button></h4><p>${vtMath(j.summary)}</p></div>
+    ${ki.length ? `<div class="vt-ytsec"><h4>💡 Key ideas</h4><ul>${ki.map(k => `<li>${vtMath(k)}</li>`).join("")}</ul></div>` : ""}
+    ${qs.length ? `<div class="vt-ytsec"><h4>❓ Questions ${has ? "from the video" : "on this topic"}, explained</h4>${qs.map((q, i) => `<div class="vt-ytq"><b>${i + 1}. ${vtMath(q.question)}</b>${calc(q.calc)}${q.explain ? `<p>${vtMath(q.explain)}</p>` : ""}${q.answer ? `<div class="vt-ytans">✅ Answer: ${vtMath(q.answer)}</div>` : ""}<div class="vt-row"><button type="button" class="btn alt vt-sm" data-ytsay="${i}" aria-label="Read question ${i + 1}">🔊</button><button type="button" class="btn alt vt-sm" data-ytsolve="${i}">🚀 Full steps from the tutor</button></div></div>`).join("")}</div>` : ""}
+    ${pr.length ? `<div class="vt-ytsec vt-ytprac"><h4>✏️ Try these yourself</h4>${pr.map(p => `<details><summary>${vtMath(p.q)}</summary><p><b>Answer:</b> ${vtMath(p.a)}${p.why ? ` — ${vtMath(p.why)}` : ""}</p></details>`).join("")}</div>` : ""}
+    ${ws.length ? `<div class="vt-ytsec vt-ytwords"><h4>📖 Words to know</h4>${ws.map(w => `<span><b>${esc(w.term)}</b>: ${esc(w.meaning)}</span>`).join("")}</div>` : ""}
+    <div class="vt-ytsec"><h4>🙋 Ask about this video</h4><div class="vt-ytask"><input id="vt-ytq" placeholder="e.g. Why did they flip the fraction?" autocomplete="off" aria-label="Your question about the video"><button type="button" class="btn vt-sm" id="vt-ytaskgo">Ask</button></div><div class="vt-ytreply" id="vt-ytreply" hidden aria-live="polite"></div></div>`;
+  box.hidden = false;
+  $("vt-ytsay").onclick = () => vtSay(`${j.summary} ${ki.length ? "Key ideas. " + ki.join(". ") : ""}`);
+  box.querySelectorAll("[data-ytsay]").forEach(b => b.onclick = () => { const q = qs[+b.dataset.ytsay]; vtSay(`${q.question}. ${q.explain || ""} ${q.answer ? "The answer is " + q.answer : ""}`); });
+  box.querySelectorAll("[data-ytsolve]").forEach(b => b.onclick = () => { const q = String(qs[+b.dataset.ytsolve].question || ""); $("vt-in").value = q; vtLog("me", "📺 " + q); vtSolve(q); $("vt-sol").scrollIntoView({behavior: "smooth", block: "start"}); });
+  const ask = async () => { const q = $("vt-ytq").value.trim(), out = $("vt-ytreply"); if(!q || vtY.busy) return; vtY.busy = true; $("vt-ytaskgo").disabled = true; out.hidden = false; out.textContent = "🤔 Thinking…";
+    try { const ctx = vtY.text.length >= 80 ? `Transcript: """${vtYtFit(vtY.text, 8200)}"""` : `Summary of the video: ${j.summary} Key ideas: ${ki.join("; ")}`;
+      const r = await sampler(`${vtBasePrompt()}\nThe student is watching the YouTube video "${v.title || "a maths lesson"}". ${ctx}\nThe student asks about the video: "${q.slice(0, 300)}"\nAnswer in 2 to 5 short sentences, using what the video says. If the video does not cover it, say so and then explain it yourself.`);
+      const t = String((r && r.text) || r || "").trim(); out.textContent = t; vtLog("me", "📺 " + q); vtLog("bot", t); vtSay(t); }
+    catch(e){ out.textContent = vtAIErr(e); } finally { vtY.busy = false; $("vt-ytaskgo").disabled = false; } };
+  $("vt-ytaskgo").onclick = ask; $("vt-ytq").onkeydown = e => { if(e.key === "Enter") ask(); };
+  box.scrollIntoView({behavior: "smooth", block: "nearest"}); }
+function vtYtInit(){ $("vt-ytgo").onclick = vtYtGo; $("vt-yturl").onkeydown = e => { if(e.key === "Enter") vtYtGo(); };
+  $("vt-ytpaste").onclick = async () => { try { const t = await navigator.clipboard.readText(); if(t){ $("vt-yturl").value = t.trim(); $("vt-yturl").focus(); } } catch(e){ $("vt-yturl").focus(); vtYtMsg("Tap and hold in the box, then choose Paste."); } }; }
+function vtInit(){ if(!$("vt")) return; requestAnimationFrame(() => vtPlot()); if(vt.inited) return; vt.inited = true; vtLoad(); try { vtYtInit(); } catch(e){}
   $("vt-subj").innerHTML = VT_SUBJECTS.map(s => `<option${s === vt.subject ? " selected" : ""}>${s}</option>`).join(""); $("vt-level").innerHTML = VT_LEVELS.map(([k, n]) => `<option value="${k}"${k === vt.level ? " selected" : ""}>${n}</option>`).join("");
   $("vt-subj").onchange = e => { vt.subject = e.target.value; vtSaveSet(); }; $("vt-level").onchange = e => { vt.level = e.target.value; vtSaveSet(); };
   const pers = () => { $("vt-personas").innerHTML = VT_PERSONAS.map(p => `<button type="button" class="vt-persona" data-p="${p.id}" aria-pressed="${p === vt.persona}"><b>${p.name}</b><small>${p.desc}</small></button>`).join(""); $("vt-who").textContent = "Tutor: " + vt.persona.name;
