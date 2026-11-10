@@ -845,6 +845,21 @@ body.sr-full .sr-askfab{bottom:calc(16px + env(safe-area-inset-bottom,0px))}
 .sr-graph{margin:8px 0;background:#fff;border:2px solid var(--line);border-radius:14px;padding:6px;overflow:hidden;max-width:100%}.sr-graph canvas{display:block;max-width:100%}
 .sr-gkey{display:flex;flex-direction:column;gap:3px;font-size:12.5px;color:#334155;padding:4px 4px 2px}.sr-gkey span{display:block}.sr-gkey i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px}.sr-gkey small{color:#64748b}
 .sr-calc{font-size:20px;font-weight:800;font-family:"Fredoka",system-ui,sans-serif;margin:0}.sr-msg a{color:#2563eb;overflow-wrap:anywhere}
+/* Ask tab: answers on a sheet of lined paper, in large print */
+.sr-asksz{display:flex;gap:6px;align-items:center;justify-content:flex-end;font:700 13px "Fredoka",system-ui,sans-serif;color:var(--muted);margin-top:6px}
+.sr-asksz button{font:800 15px "Fredoka",system-ui,sans-serif;min-width:44px;min-height:36px;border-radius:10px;border:2px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
+#sr-chat{--asz:1;font-size:calc(21px * var(--asz));line-height:1.7;color:#1f2937;gap:1.7em;max-height:70vh;padding:1.7em 22px 1.7em 60px;border:2.5px solid var(--line);border-radius:6px 18px 18px 6px;box-shadow:0 4px 0 var(--line);
+  background:linear-gradient(90deg,transparent 42px,rgba(239,68,68,.5) 42px,rgba(239,68,68,.5) 44px,transparent 44px),repeating-linear-gradient(180deg,transparent 0,transparent calc(1.7em - 1px),rgba(59,130,246,.2) calc(1.7em - 1px),rgba(59,130,246,.2) 1.7em),#fffdf3;background-attachment:local,local,local}
+#sr-chat:empty{display:none}
+#sr-chat .sr-msg{max-width:100%;align-self:stretch;padding:0;border:0;border-radius:0;background:none;font-size:inherit;line-height:1.7;color:#1f2937;font-family:Georgia,"Iowan Old Style","Times New Roman",serif}
+#sr-chat .sr-msg.me{font-family:"Fredoka",system-ui,sans-serif;font-weight:700;color:#1e3a8a}
+#sr-chat .sr-msg.me::before{content:"Q: ";color:#dc2626;font-weight:800}
+#sr-chat .sr-msg.me{background:linear-gradient(transparent 58%,#fde68a 58%,#fde68a 92%,transparent 92%);-webkit-box-decoration-break:clone;box-decoration-break:clone;display:inline;align-self:flex-start}
+#sr-chat .sr-msg blockquote{font-size:.9em;margin:0;padding:0 12px;border-left:4px solid #8b5cf6;background:rgba(139,92,246,.07)}
+#sr-chat .sr-msg a{color:#1d4ed8}#sr-chat .sr-mini{font-size:14px;padding:6px 12px;background:#fff;color:#1b2a4a;border-color:#1b2a4a}
+#sr-chat .sr-msgt{margin-top:.5em}
+@media (max-width:520px){#sr-chat{padding:1.7em 14px 1.7em 40px;font-size:calc(19px * var(--asz));background:linear-gradient(90deg,transparent 28px,rgba(239,68,68,.5) 28px,rgba(239,68,68,.5) 30px,transparent 30px),repeating-linear-gradient(180deg,transparent 0,transparent calc(1.7em - 1px),rgba(59,130,246,.2) calc(1.7em - 1px),rgba(59,130,246,.2) 1.7em),#fffdf3;background-attachment:local,local,local}}
+
 .sr-mini.sr-more{border-color:#8b5cf6;color:#7c3aed;font-weight:800}
 .sr-askfab{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(98px + env(safe-area-inset-bottom,0px));z-index:40;font:inherit;font-weight:800;font-size:17px;padding:12px 18px;border-radius:999px;border:3px solid var(--line);background:var(--berry);color:#fff;box-shadow:0 6px 18px rgba(0,0,0,.25);cursor:pointer}
 .sr-chsel{display:flex;align-items:center;gap:8px;font-weight:700;flex-wrap:wrap}.sr-chsel select{font:inherit;font-size:15px;padding:6px 8px;border:2.5px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);max-width:100%;min-width:0}
@@ -2198,6 +2213,7 @@ window.MWB_TRIAL_DAYS = 14;
         <div id="sr-t-ask" hidden>
           <p class="sr-note" style="text-align:left">Ask anything about this document. Answers come only from the document and show the paragraphs they used — tap ¶ to jump there.</p>
           <div class="sr-chips" id="sr-sugg"><button type="button" class="sr-chip" data-q="What is this document about?">What is it about?</button><button type="button" class="sr-chip" data-q="Explain the main idea in simple words.">Explain simply</button><button type="button" class="sr-chip" data-q="What are the key terms and what do they mean?">Key terms</button><button type="button" class="sr-chip" data-q="Summarize this chapter.">Summarize this chapter</button><button type="button" class="sr-chip" data-q="Explain this chapter in detail, step by step.">Explain chapter in detail</button><button type="button" class="sr-chip" data-web="1" data-q="Give me a detailed summary of this chapter, and add helpful information from the internet.">🌐 Detailed summary + internet</button><button type="button" class="sr-chip" data-q="Graph y = x^2 - 4 and y = 2x + 1 from -6 to 6">📈 Try a graph</button><button type="button" class="sr-chip" data-quiz="1">🧠 Quiz me</button><button type="button" class="sr-chip" data-q="What are the most important facts or numbers?">Important facts</button></div>
+          <div class="sr-asksz" role="group" aria-label="Answer text size"><span>Text size</span><button type="button" data-asksz="-1" aria-label="Smaller text">A−</button><button type="button" data-asksz="1" aria-label="Bigger text">A+</button></div>
           <div class="sr-chat" id="sr-chat" aria-live="polite"></div>
           <div class="sr-askrow" id="sr-askrow"><textarea id="sr-askin" rows="2" maxlength="400" placeholder="Ask about the document, calculate (15% of 240) or graph (graph y = x^2)…"></textarea><button type="button" class="btn" id="sr-askgo">Ask</button></div>
         </div>
@@ -35307,6 +35323,7 @@ function openReader(){ SR.userOpened = true; window.__storeWanted = true; if(win
   document.querySelectorAll("[data-qzsz]").forEach(b => b.onclick = () => { SR.set.qzSize = Math.max(0.85, Math.min(1.6, Math.round(((+SR.set.qzSize || 1) + 0.1 * +b.dataset.qzsz) * 100) / 100)); srSave(); srQuizView(); });
   document.querySelectorAll("[data-qzl]").forEach(b => b.onclick = () => { SR.qzLevel = b.dataset.qzl; try { SR.set.qzLevel = SR.qzLevel; srSave(); } catch(e){} srQuizSetup(); });
   $("sr-qzweb").onclick = () => { SR.qzWeb = !SR.qzWeb; try { SR.set.qzWeb = SR.qzWeb; srSave(); } catch(e){} srQuizSetup(); };
+  { const askSz = () => { const v = Math.max(0.8, Math.min(1.7, +SR.set.askSz || 1)); $("sr-chat").style.setProperty("--asz", v); }; askSz(); document.querySelectorAll("[data-asksz]").forEach(b => b.onclick = () => { SR.set.askSz = Math.max(0.8, Math.min(1.7, (+SR.set.askSz || 1) + 0.1 * +b.dataset.asksz)); askSz(); srSave(); }); }
   $("sr-qzgo").onclick = () => srQuizStart(); try { srCardsInit(); } catch(e){ console.error(e); }
   $("sr-search").addEventListener("input", e => { clearTimeout(SR.findT); SR.findT = setTimeout(() => srFind(e.target.value), 180); });
   $("sr-aisum").onclick = srAISummary;
