@@ -851,6 +851,19 @@ body.sr-full .sr-askfab{bottom:calc(16px + env(safe-area-inset-bottom,0px))}
 #sr-chat{--asz:1;font-size:calc(21px * var(--asz));line-height:1.7;color:#1f2937;gap:1.7em;max-height:70vh;padding:1.7em 22px 1.7em 60px;border:2.5px solid var(--line);border-radius:6px 18px 18px 6px;box-shadow:0 4px 0 var(--line);
   background:linear-gradient(90deg,transparent 42px,rgba(239,68,68,.5) 42px,rgba(239,68,68,.5) 44px,transparent 44px),repeating-linear-gradient(180deg,transparent 0,transparent calc(1.7em - 1px),rgba(59,130,246,.2) calc(1.7em - 1px),rgba(59,130,246,.2) 1.7em),#fffdf3;background-attachment:local,local,local}
 #sr-chat:empty{display:none}
+/* Summary tab: the same lined paper and large print */
+#sr-sumout{--asz:1;font-size:calc(21px * var(--asz));line-height:1.7;color:#1f2937;font-family:Georgia,"Iowan Old Style","Times New Roman",serif;padding:1.7em 22px 1.7em 60px;margin:8px 0;border:2.5px solid var(--line);border-radius:6px 18px 18px 6px;box-shadow:0 4px 0 var(--line);overflow-wrap:anywhere;
+  background:linear-gradient(90deg,transparent 42px,rgba(239,68,68,.5) 42px,rgba(239,68,68,.5) 44px,transparent 44px),repeating-linear-gradient(180deg,transparent 0,transparent calc(1.7em - 1px),rgba(59,130,246,.2) calc(1.7em - 1px),rgba(59,130,246,.2) 1.7em),#fffdf3}
+#sr-sumout:empty{display:none}
+#sr-sumout .sr-block{border:0;border-radius:0;background:none;padding:0;margin:0 0 1.7em;color:#1f2937}
+#sr-sumout h4{margin:0;font:800 1em/1.7 "Fredoka",system-ui,sans-serif;color:#1e3a8a;display:inline;background:linear-gradient(transparent 58%,#fde68a 58%,#fde68a 92%,transparent 92%)}
+#sr-sumout h4::after{content:"";display:block}
+#sr-sumout p,#sr-sumout li,#sr-sumout blockquote,#sr-sumout .sr-ai>div{font-size:1em;line-height:1.7;margin:0;color:#1f2937}
+#sr-sumout ul{margin:0;padding-left:1.2em}#sr-sumout blockquote{padding:0 12px;border-left:4px solid #8b5cf6;background:rgba(139,92,246,.07)}
+#sr-sumout .sr-chips{line-height:1.7}#sr-sumout .sr-chip{font-size:.72em;background:#fff;color:#1b2a4a;border-color:#1b2a4a}
+#sr-sumout .sr-note,#sr-sumout .sr-empty{font-size:.75em;color:#475569}#sr-sumout a{color:#1d4ed8}
+@media (max-width:520px){#sr-sumout{padding:1.7em 14px 1.7em 40px;font-size:calc(19px * var(--asz));background:linear-gradient(90deg,transparent 28px,rgba(239,68,68,.5) 28px,rgba(239,68,68,.5) 30px,transparent 30px),repeating-linear-gradient(180deg,transparent 0,transparent calc(1.7em - 1px),rgba(59,130,246,.2) calc(1.7em - 1px),rgba(59,130,246,.2) 1.7em),#fffdf3}}
+
 #sr-chat .sr-msg{max-width:100%;align-self:stretch;padding:0;border:0;border-radius:0;background:none;font-size:inherit;line-height:1.7;color:#1f2937;font-family:Georgia,"Iowan Old Style","Times New Roman",serif}
 #sr-chat .sr-msg.me{font-family:"Fredoka",system-ui,sans-serif;font-weight:700;color:#1e3a8a}
 #sr-chat .sr-msg.me::before{content:"Q: ";color:#dc2626;font-weight:800}
@@ -2221,6 +2234,7 @@ window.MWB_TRIAL_DAYS = 14;
           <div class="sr-ttsrow"><label class="sr-chsel">Summarize <select id="sr-sumch" aria-label="Which part to summarize"></select></label></div>
           <div class="sr-ttsrow"><button class="chip" data-srmode="brief">Brief · 3</button><button class="chip" data-srmode="standard" aria-pressed="true">Standard · 6</button><button class="chip" data-srmode="detailed">Detailed · 12</button></div>
           <div class="sr-ttsrow sr-aiopt"><select id="sr-ailevel" aria-label="Summary level"><option value="kid">Simple words</option><option value="teen" selected>Middle school</option><option value="expert">Advanced</option></select><button type="button" class="btn sr-sm" id="sr-aisum">✨ AI summary</button><button type="button" class="btn sr-sm" id="sr-webdetail">🌐 Detailed + internet</button></div>
+          <div class="sr-asksz" role="group" aria-label="Summary text size"><span>Text size</span><button type="button" data-asksz="-1" aria-label="Smaller text">A−</button><button type="button" data-asksz="1" aria-label="Bigger text">A+</button></div>
           <div id="sr-sumout"></div>
           <div class="sr-ttsrow"><button type="button" class="btn alt sr-sm" id="sr-sumread">🔊 Read summary</button><button type="button" class="btn alt sr-sm" id="sr-copy">📋 Copy summary</button><button type="button" class="btn alt sr-sm sr-sumdel" id="sr-sumdel">🗑️ Delete summary</button></div>
         </div>
@@ -35323,7 +35337,7 @@ function openReader(){ SR.userOpened = true; window.__storeWanted = true; if(win
   document.querySelectorAll("[data-qzsz]").forEach(b => b.onclick = () => { SR.set.qzSize = Math.max(0.85, Math.min(1.6, Math.round(((+SR.set.qzSize || 1) + 0.1 * +b.dataset.qzsz) * 100) / 100)); srSave(); srQuizView(); });
   document.querySelectorAll("[data-qzl]").forEach(b => b.onclick = () => { SR.qzLevel = b.dataset.qzl; try { SR.set.qzLevel = SR.qzLevel; srSave(); } catch(e){} srQuizSetup(); });
   $("sr-qzweb").onclick = () => { SR.qzWeb = !SR.qzWeb; try { SR.set.qzWeb = SR.qzWeb; srSave(); } catch(e){} srQuizSetup(); };
-  { const askSz = () => { const v = Math.max(0.8, Math.min(1.7, +SR.set.askSz || 1)); $("sr-chat").style.setProperty("--asz", v); }; askSz(); document.querySelectorAll("[data-asksz]").forEach(b => b.onclick = () => { SR.set.askSz = Math.max(0.8, Math.min(1.7, (+SR.set.askSz || 1) + 0.1 * +b.dataset.asksz)); askSz(); srSave(); }); }
+  { const askSz = () => { const v = Math.max(0.8, Math.min(1.7, +SR.set.askSz || 1)); $("sr-chat").style.setProperty("--asz", v); $("sr-sumout").style.setProperty("--asz", v); }; askSz(); document.querySelectorAll("[data-asksz]").forEach(b => b.onclick = () => { SR.set.askSz = Math.max(0.8, Math.min(1.7, (+SR.set.askSz || 1) + 0.1 * +b.dataset.asksz)); askSz(); srSave(); }); }
   $("sr-qzgo").onclick = () => srQuizStart(); try { srCardsInit(); } catch(e){ console.error(e); }
   $("sr-search").addEventListener("input", e => { clearTimeout(SR.findT); SR.findT = setTimeout(() => srFind(e.target.value), 180); });
   $("sr-aisum").onclick = srAISummary;
