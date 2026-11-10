@@ -3234,6 +3234,14 @@ window.MWB_TRIAL_DAYS = 14;
         <p class="vt-mini">Tutor style</p>
         <div class="vt-personas" id="vt-personas" role="group" aria-label="Tutor style"></div>
         <textarea id="vt-in" rows="3" placeholder="Type a problem — e.g. Find the derivative of x^3·sin(x) at x = 2"></textarea>
+        <details class="vt-mxb" id="vt-mxb"><summary>🔢 Matrix builder — fill in a grid, no brackets needed</summary>
+          <div class="vt-mxtop"><label class="vt-lab">I want to <select id="vt-mxop"><option value="mul">Multiply A × B</option><option value="add">Add A + B</option><option value="sub">Subtract A − B</option><option value="k">Multiply A by a number</option><option value="det">Find the determinant of A</option><option value="inv">Find the inverse of A</option><option value="T">Transpose A</option><option value="pow">Square A (A²)</option><option value="rref">Row reduce A (RREF)</option><option value="rank">Find the rank of A</option><option value="solve">Solve A·x = b</option><option value="eig">Find the eigenvalues of A (2×2)</option></select></label>
+            <label class="vt-lab" id="vt-mxklab" hidden>Number <input id="vt-mxk" value="2" autocomplete="off" size="4"></label></div>
+          <div class="vt-mxgrids"><div class="vt-mxone"><div class="vt-mxhead"><b>A</b> <select id="vt-mxar" aria-label="Rows of A"></select> × <select id="vt-mxac" aria-label="Columns of A"></select></div><div class="vt-mxin" id="vt-mxa"></div></div>
+            <div class="vt-mxone" id="vt-mxbwrap"><div class="vt-mxhead"><b id="vt-mxbname">B</b> <span id="vt-mxbsize"><select id="vt-mxbr" aria-label="Rows of B"></select> × <select id="vt-mxbc" aria-label="Columns of B"></select></span></div><div class="vt-mxin" id="vt-mxbg"></div></div></div>
+          <p class="vt-tip">Whole numbers, decimals or fractions like 1/2. Empty boxes count as 0. You can also type a matrix yourself: [[1,2],[3,4]]</p>
+          <div class="vt-row"><button type="button" class="btn vt-sm" id="vt-mxgo">🧮 Solve step by step</button><span class="vt-ytmsg err" id="vt-mxmsg" aria-live="polite"></span></div>
+        </details>
         <div class="vt-addrow">
           <label class="vt-file" id="vt-camlab"><input type="file" id="vt-cam" accept="image/*" capture="environment">📷 Take a photo</label>
           <label class="vt-file"><input type="file" id="vt-file" accept="image/*,.pdf,.txt,.md,.docx,.rtf,.html,.htm">🖼️ Add a picture or file</label>
@@ -36670,6 +36678,18 @@ try { __diag("script-end"); } catch(e){}
 .vt-calcans{margin-top:8px;padding:8px 10px;border-radius:10px;background:#dcfce7;color:#14532d;font-weight:700;font-size:18px;overflow-wrap:anywhere}
 .vt-calcmore{margin:6px 0 0;font-size:14px;color:#64748b}
 .vt-exh{margin:14px 0 2px;font-size:16px;color:#4f46e5}
+/* matrices */
+.vt-mx{display:inline-block;vertical-align:middle;margin:3px 4px;padding:2px 5px;border-left:2.5px solid currentColor;border-right:2.5px solid currentColor;border-radius:7px;white-space:normal}
+.vt-mxg{display:inline-table;border-collapse:separate;border-spacing:10px 2px}.vt-mxr{display:table-row}.vt-mxc{display:table-cell;text-align:center;white-space:nowrap;padding:1px 2px}
+.vt-mxc.bar{padding:0;width:0;border-left:2px dashed currentColor;opacity:.6}
+.vt-math,.vt-calcl>div,.vt-answer,.vt-calcans{overflow-x:auto}
+.vt-mxb{margin:10px 0;border:3px dashed #4f46e5;border-radius:14px;padding:8px 12px;background:#eef2ff;color:#1e1b4b}.vt-mxb>summary{cursor:pointer;font-weight:800;color:#3730a3}
+.vt-mxtop{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:10px 0}.vt-mxtop select,.vt-mxtop input,.vt-mxhead select{font:inherit;font-size:16px;padding:6px 8px;border:2px solid #4f46e5;border-radius:10px;background:#fff;color:#0f172a;max-width:100%}
+.vt-mxtop .vt-lab{display:flex;flex-wrap:wrap;gap:6px;align-items:center;white-space:nowrap;min-width:0;max-width:100%}.vt-mxtop .vt-lab select{white-space:normal;min-width:0;flex:1 1 200px}
+.vt-mxgrids{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start}.vt-mxone{min-width:0;max-width:100%}.vt-mxhead{margin-bottom:6px;font-size:16px}
+.vt-mxin{display:grid;gap:5px;padding:6px 8px;border-left:3px solid #1e1b4b;border-right:3px solid #1e1b4b;border-radius:9px;width:max-content;max-width:100%;overflow-x:auto}
+.vt-mxin input{width:54px;font:inherit;font-size:16px;text-align:center;padding:7px 2px;border:2px solid #a5b4fc;border-radius:8px;background:#fff;color:#0f172a}
+
 /* Advanced Math sections (Tutor / Graphing / Videos) */
 .vt-tabs{display:flex;gap:8px;flex-wrap:wrap}
 .vt-tabs button{flex:1 1 120px;position:relative;font:inherit;font-size:17px;font-weight:800;padding:11px 12px;border-radius:16px;border:3px solid var(--line);background:#fff;color:#1b2a4a;cursor:pointer;box-shadow:0 4px 0 var(--line);min-height:48px}
@@ -36899,6 +36919,124 @@ const VTM = (() => {
 })();
 
 // ===== 🎙️ AI Voice Tutor — problem solvers (the numbers are worked out on the device, so they are always right) =====
+// ===== Matrix calculator for the Advanced Math tutor (exact fractions, step by step) =====
+const VTX = (() => {
+  const gcd = (a, b) => { a = Math.abs(a); b = Math.abs(b); while(b){ [a, b] = [b, a % b]; } return a || 1; };
+  const F = (n, d = 1) => { if(d < 0){ n = -n; d = -d; } const g = gcd(n, d); return {n: n / g, d: d / g}; };
+  const add = (a, b) => F(a.n * b.d + b.n * a.d, a.d * b.d), sub = (a, b) => F(a.n * b.d - b.n * a.d, a.d * b.d), mul = (a, b) => F(a.n * b.n, a.d * b.d), div = (a, b) => F(a.n * b.d, a.d * b.n), neg = a => F(-a.n, a.d);
+  const Z = a => a.n === 0, is1 = a => a.n === 1 && a.d === 1, val = a => a.n / a.d, ZERO = F(0), ONE = F(1);
+  const str = a => (a.n < 0 ? "−" : "") + Math.abs(a.n) + (a.d === 1 ? "" : "/" + a.d);
+  const par = a => a.n < 0 ? `(${str(a)})` : str(a);                       // negative numbers get brackets inside sums
+  const pf = s => { s = String(s).trim().replace(/[−–]/g, "-"); let m = s.match(/^(-?\d+)\s*\/\s*(-?\d+)$/); if(m){ if(+m[2] === 0) return null; return F(+m[1], +m[2]); } if(!/^-?(\d+\.?\d*|\.\d+)$/.test(s)) return null; const dp = (s.split(".")[1] || "").length; if(dp > 6) return null; const k = Math.pow(10, dp); return F(Math.round(parseFloat(s) * k), k); };
+  const tok = (A, aug) => "⟦" + A.map(r => r.map((x, j) => (aug != null && j === aug ? "|," : "") + (typeof x === "string" ? x : str(x))).join(",")).join(";") + "⟧";
+  const size = A => `${A.length}×${A[0].length}`, clone = A => A.map(r => r.slice()), T = A => A[0].map((_, j) => A.map(r => r[j]));
+  const I = n => Array.from({length: n}, (_, i) => Array.from({length: n}, (_, j) => i === j ? ONE : ZERO));
+  const sq = A => A.length === A[0].length, flat = A => A.flat().map(val), sub2 = n => String(n).split("").map(c => "₀₁₂₃₄₅₆₇₈₉"[+c]).join("");
+  const prod = (A, B) => A.map(r => B[0].map((_, j) => r.reduce((s, x, k) => add(s, mul(x, B[k][j])), ZERO)));
+  const base = (title, answer, steps, check, overview) => ({kind: "matrix", subject: "Linear Algebra", title, answer, check, steps, graph: null, overview});
+  // ---- determinant (value only) ----
+  function detVal(A){ const n = A.length; if(n === 1) return A[0][0]; if(n === 2) return sub(mul(A[0][0], A[1][1]), mul(A[0][1], A[1][0])); let s = ZERO; for(let j = 0; j < n; j++){ if(Z(A[0][j])) continue; const m = A.slice(1).map(r => r.filter((_, k) => k !== j)), t = mul(A[0][j], detVal(m)); s = j % 2 ? sub(s, t) : add(s, t); } return s; }
+  // ---- row reduction with a step for every pivot ----
+  function reduce(A0, aug, full){ const A = clone(A0), R = A.length, C = aug == null ? A[0].length : aug, steps = []; let r = 0, swaps = 0; const piv = [], scale = [];
+    for(let c = 0; c < C && r < R; c++){ let p = -1; for(let i = r; i < R; i++) if(!Z(A[i][c])){ p = i; break; } if(p < 0) continue; const ops = [];
+      if(p !== r){ [A[p], A[r]] = [A[r], A[p]]; swaps++; ops.push(`R${sub2(r + 1)} ↔ R${sub2(p + 1)}   (swap the rows)`); }
+      if(full && !is1(A[r][c])){ const k = A[r][c]; scale.push(k); A[r] = A[r].map(x => div(x, k)); ops.push(`R${sub2(r + 1)} → R${sub2(r + 1)} ÷ ${k.d !== 1 ? "(" + str(k) + ")" : par(k)}   (make the pivot 1)`); }
+      for(let i = full ? 0 : r + 1; i < R; i++){ if(i === r || Z(A[i][c])) continue; const f = div(A[i][c], A[r][c]); A[i] = A[i].map((x, j) => sub(x, mul(f, A[r][j]))); ops.push(`R${sub2(i + 1)} → R${sub2(i + 1)} ${f.n < 0 ? "+" : "−"} ${is1(F(Math.abs(f.n), f.d)) ? "" : str(F(Math.abs(f.n), f.d)) + "·"}R${sub2(r + 1)}`); }
+      piv.push(c);
+      steps.push({title: `Column ${c + 1}: ${full ? "make a leading 1 and clear the column" : "clear below the pivot"}`, math: (ops.length ? ops.join("\n") + "\n" : "(nothing to do — already clear)\n") + tok(A, aug), why: full ? `The pivot is the first non-zero number in row ${r + 1}. We turn it into 1, then add or subtract multiples of that row so every other number in column ${c + 1} becomes 0.` : `We subtract multiples of row ${r + 1} from the rows below so everything under the pivot becomes 0.`, hint: `What do you multiply row ${r + 1} by so it cancels the number in the row below?`});
+      r++; }
+    return {A, steps, rank: r, piv, swaps, scale}; }
+  // ---- operations ----
+  function opAdd(A, B, sign, ka, kb){ ka = ka || ONE; kb = kb || ONE; const s = sign < 0 ? "−" : "+", lab = `${is1(ka) ? "" : str(ka)}A ${s} ${is1(kb) ? "" : str(kb)}B`;
+    if(A.length !== B.length || A[0].length !== B[0].length) return base(`Work out ${lab}`, `Not possible — A is ${size(A)} but B is ${size(B)}`, [{title: "Check the sizes", math: `A is ${size(A)},  B is ${size(B)}`, why: "You can only add or subtract matrices that are exactly the same size, because we combine the numbers in matching positions.", hint: "How many rows and columns does each matrix have?"}], null, "Matrices must be the same size to add or subtract.");
+    const A2 = A.map(r => r.map(x => mul(ka, x))), B2 = B.map(r => r.map(x => mul(kb, x))), R = A2.map((r, i) => r.map((x, j) => sign < 0 ? sub(x, B2[i][j]) : add(x, B2[i][j]))), steps = [{title: "Check the sizes", math: `A = ${tok(A)}   B = ${tok(B)}\nBoth are ${size(A)} ✓`, why: "Same size, so we can combine them.", hint: "Are the two matrices the same size?"}];
+    if(!is1(ka) || !is1(kb)) steps.push({title: "Multiply by the numbers in front first", math: `${is1(ka) ? "" : `${str(ka)}A = ${tok(A2)}   `}${is1(kb) ? "" : `${str(kb)}B = ${tok(B2)}`}`, why: "A number in front of a matrix multiplies every entry.", hint: "What is each entry times the number in front?"});
+    steps.push({title: `${sign < 0 ? "Subtract" : "Add"} the matching entries`, math: tok(A2.map((r, i) => r.map((x, j) => `${str(x)} ${s} ${par(B2[i][j])}`))), why: `Each entry of the answer is the entry from the first matrix ${sign < 0 ? "minus" : "plus"} the entry in the same position of the second.`, hint: "What do you get for the top-left entry?"}, {title: "Simplify", math: `${lab} = ${tok(R)}`, why: "Work out each little sum.", hint: "Check one entry yourself."});
+    return base(`Work out ${lab}`, `${lab} = ${tok(R)}`, steps, flat(R), "Adding and subtracting matrices is done entry by entry."); }
+  function opScalar(k, A){ const R = A.map(r => r.map(x => mul(k, x))); return base(`Multiply the matrix by ${str(k)}`, `${str(k)}A = ${tok(R)}`, [{title: "Write the problem", math: `${str(k)} · ${tok(A)}`, why: "A number times a matrix is called scalar multiplication.", hint: "What does the number in front do?"}, {title: "Multiply every entry", math: tok(A.map(r => r.map(x => `${par(k)}·${par(x)}`))), why: `Every entry gets multiplied by ${str(k)}.`, hint: "What is the first entry times the number?"}, {title: "Simplify", math: `= ${tok(R)}`, why: "Work out each product.", hint: "Check one entry."}], flat(R), "A scalar multiplies every entry of the matrix."); }
+  function mulSteps(A, B, nA, nB){ const P = prod(A, B), steps = [{title: "Check the sizes", math: `${nA} is ${size(A)},  ${nB} is ${size(B)}\ncolumns of ${nA} = ${A[0].length},  rows of ${nB} = ${B.length} ✓   →  the answer is ${A.length}×${B[0].length}`, why: `We can multiply because the number of columns in ${nA} equals the number of rows in ${nB}. The answer has ${nA}'s rows and ${nB}'s columns.`, hint: "How many columns does the first matrix have?"}];
+    for(let i = 0; i < A.length; i++) steps.push({title: `Row ${i + 1} of the answer`, math: P[i].map((p, j) => `c${sub2(i + 1)}${sub2(j + 1)} = ${A[i].map((x, k) => `${par(x)}·${par(B[k][j])}`).join(" + ")} = ${str(p)}`).join("\n"), why: `Take row ${i + 1} of ${nA}. For each column of ${nB}: multiply the pairs in order and add them up (row times column).`, hint: `What is row ${i + 1} of ${nA} times column 1 of ${nB}?`});
+    return {P, steps}; }
+  function opMul(A, B){ if(A[0].length !== B.length) return base("Multiply the matrices", `Not possible — A has ${A[0].length} columns but B has ${B.length} rows`, [{title: "Check the sizes", math: `A is ${size(A)},  B is ${size(B)}`, why: "To multiply A × B, the number of columns in A must equal the number of rows in B. Here they are different.", hint: "Would B × A work instead?"}], null, "Matrix multiplication needs the inner sizes to match.");
+    const {P, steps} = mulSteps(A, B, "A", "B"); steps.unshift({title: "Write the problem", math: `A × B = ${tok(A)} × ${tok(B)}`, why: "Each entry of the answer comes from one row of A and one column of B.", hint: "Which row and column make the top-left entry?"}); steps.push({title: "Put the entries together", math: `A × B = ${tok(P)}`, why: "Place each result in its row and column.", hint: "Is A × B the same as B × A?"});
+    return base("Multiply the matrices", `A × B = ${tok(P)}`, steps, flat(P), "Matrix multiplication is “row times column”. The order matters: A × B is usually not B × A."); }
+  function opPow(A, n){ if(!sq(A)) return base(`Work out A^${n}`, "Not possible — only square matrices have powers", [{title: "Check the size", math: `A is ${size(A)}`, why: "To multiply A by itself, its columns must match its rows, so it has to be square.", hint: "How many rows and columns?"}], null, "");
+    let P = A; const steps = [{title: "What the power means", math: `A^${n} = ${Array(n).fill("A").join(" × ")}`, why: `A to the power ${n} means multiply ${n} copies of A together.`, hint: "What is A × A?"}];
+    for(let k = 2; k <= n; k++){ const m = mulSteps(P, A, k === 2 ? "A" : `A^${k - 1}`, "A"); m.steps.slice(1).forEach(s => { s.title = `A^${k}: ${s.title.toLowerCase()}`; steps.push(s); }); P = m.P; steps.push({title: `A^${k}`, math: `A^${k} = ${tok(P)}`, why: "Put the entries together.", hint: ""}); }
+    return base(`Work out A^${n}`, `A^${n} = ${tok(P)}`, steps, flat(P), "A power of a matrix is repeated matrix multiplication."); }
+  function opT(A){ const R = T(A); return base("Transpose the matrix", `Aᵀ = ${tok(R)}`, [{title: "Write the matrix", math: `A = ${tok(A)}   (${size(A)})`, why: "The transpose flips a matrix over its main diagonal.", hint: "What is the first row?"}, {title: "Turn rows into columns", math: A.map((r, i) => `row ${i + 1}: ${r.map(str).join(", ")}   →   column ${i + 1}`).join("\n"), why: "Row 1 becomes column 1, row 2 becomes column 2, and so on.", hint: "Where does the entry in row 1, column 2 go?"}, {title: "Result", math: `Aᵀ = ${tok(R)}   (${size(R)})`, why: `A ${size(A)} matrix becomes a ${size(R)} matrix.`, hint: "What happens if you transpose it again?"}], flat(R), "The transpose swaps rows and columns."); }
+  function detSteps(A){ const n = A.length, steps = []; let d;
+    if(n === 1){ d = A[0][0]; steps.push({title: "A 1×1 matrix", math: `det = ${str(d)}`, why: "The determinant of a single number is the number itself.", hint: ""}); }
+    else if(n === 2){ const [[a, b], [c, e]] = A; d = detVal(A); steps.push({title: "Use the 2×2 rule", math: `det ⟦a,b;c,d⟧ = ad − bc`, why: "Multiply down the main diagonal, then subtract the product of the other diagonal.", hint: "Which two numbers are on the main diagonal?"}, {title: "Put in the numbers", math: `det A = ${par(a)}·${par(e)} − ${par(b)}·${par(c)}\n= ${str(mul(a, e))} − ${par(mul(b, c))}\n= ${str(d)}`, why: "Work out each product, then subtract.", hint: "What is a times d?"}); }
+    else if(n === 3){ d = detVal(A); const mins = [0, 1, 2].map(j => A.slice(1).map(r => r.filter((_, k) => k !== j))), mv = mins.map(detVal);
+      steps.push({title: "Expand along the first row", math: `det A = ${par(A[0][0])}·det${tok(mins[0])} − ${par(A[0][1])}·det${tok(mins[1])} + ${par(A[0][2])}·det${tok(mins[2])}`, why: "For each number in row 1, cross out its row and column. What is left is a 2×2 matrix (a minor). The signs go + − +.", hint: "Which row and column do you cross out for the first number?"});
+      mins.forEach((m, j) => steps.push({title: `Small determinant ${j + 1}`, math: `det${tok(m)} = ${par(m[0][0])}·${par(m[1][1])} − ${par(m[0][1])}·${par(m[1][0])} = ${str(mv[j])}`, why: "Use the 2×2 rule: ad − bc.", hint: "What is ad − bc here?"}));
+      steps.push({title: "Combine", math: `det A = ${par(A[0][0])}·${par(mv[0])} − ${par(A[0][1])}·${par(mv[1])} + ${par(A[0][2])}·${par(mv[2])}\n= ${str(mul(A[0][0], mv[0]))} − ${par(mul(A[0][1], mv[1]))} + ${par(mul(A[0][2], mv[2]))}\n= ${str(d)}`, why: "Multiply each first-row number by its small determinant, with signs + − +, then add.", hint: "Careful with the minus in the middle."}); }
+    else { const r = reduce(A, null, false); d = detVal(A); steps.push({title: "Plan: make it triangular", math: tok(A), why: "For a big matrix, we use row operations to get zeros below the diagonal. Subtracting a multiple of one row from another does not change the determinant; swapping two rows flips its sign.", hint: "What does a triangular matrix look like?"}, ...r.steps, {title: "Multiply the diagonal", math: `det A = ${r.swaps % 2 ? "(−1) · " : ""}${r.A.map((row, i) => par(row[i])).join(" · ")} = ${str(d)}`, why: `The determinant of a triangular matrix is the product of its diagonal.${r.swaps ? ` We swapped rows ${r.swaps} time${r.swaps > 1 ? "s" : ""}, so the sign ${r.swaps % 2 ? "flips" : "stays the same"}.` : ""}`, hint: "What are the diagonal numbers?"}); }
+    return {d, steps}; }
+  function opDet(A){ if(!sq(A)) return base("Find the determinant", `Not possible — the matrix is ${size(A)}, not square`, [{title: "Check the size", math: `A = ${tok(A)} is ${size(A)}`, why: "Only square matrices (same number of rows and columns) have a determinant.", hint: "How many rows and columns?"}], null, "");
+    const {d, steps} = detSteps(A); steps.unshift({title: "Write the matrix", math: `A = ${tok(A)}`, why: `It is ${size(A)}, so it is square and has a determinant.`, hint: "Is it square?"}); steps.push({title: "What it tells us", math: `det A = ${str(d)}`, why: Z(d) ? "The determinant is 0, so this matrix has NO inverse (it is called singular)." : "The determinant is not 0, so this matrix has an inverse.", hint: "Does this matrix have an inverse?"});
+    return base("Find the determinant", `det A = ${str(d)}`, steps, [val(d)], "The determinant is one number that tells you whether a square matrix can be inverted and how it scales area or volume."); }
+  function opInv(A){ if(!sq(A)) return base("Find the inverse", `Not possible — the matrix is ${size(A)}, not square`, [{title: "Check the size", math: `A is ${size(A)}`, why: "Only square matrices can have an inverse.", hint: ""}], null, "");
+    const n = A.length, ds = detSteps(A), d = ds.d, steps = [{title: "Write the matrix", math: `A = ${tok(A)}`, why: "The inverse A⁻¹ is the matrix that gives the identity when multiplied by A.", hint: "What is the identity matrix?"}];
+    ds.steps.forEach(s => { s.title = "Determinant: " + s.title.toLowerCase(); steps.push(s); });
+    if(Z(d)){ steps.push({title: "No inverse", math: "det A = 0", why: "Dividing by the determinant is part of finding the inverse, and we cannot divide by 0. This matrix is singular.", hint: "Why can't we divide by zero?"}); return base("Find the inverse", "No inverse — the determinant is 0 (singular matrix)", steps, null, "A matrix has an inverse only when its determinant is not zero."); }
+    let R;
+    if(n === 1){ R = [[div(ONE, d)]]; steps.push({title: "Flip the number", math: `A⁻¹ = ⟦1/${par(A[0][0])}⟧ = ${tok(R)}`, why: "For a single number, the inverse is 1 divided by it.", hint: ""}); }
+    else if(n === 2){ const [[a, b], [c, e]] = A, adj = [[e, neg(b)], [neg(c), a]]; R = adj.map(r => r.map(x => div(x, d)));
+      steps.push({title: "Swap and change signs", math: `⟦a,b;c,d⟧  →  ⟦d,−b;−c,a⟧\n${tok(A)}  →  ${tok(adj)}`, why: "Swap the two numbers on the main diagonal, and change the signs of the other two.", hint: "Which two numbers swap places?"}, {title: "Divide by the determinant", math: `A⁻¹ = (1/${par(d)}) · ${tok(adj)}\n= ${tok(R)}`, why: `Every entry is divided by det A = ${str(d)}.`, hint: "What is each entry divided by the determinant?"}); }
+    else { const aug = A.map((r, i) => r.concat(I(n)[i])), red = reduce(aug, n, true); R = red.A.map(r => r.slice(n));
+      steps.push({title: "Set up [A | I]", math: tok(aug, n), why: "Write A on the left and the identity matrix on the right. We do row operations until the left side becomes the identity — then the right side is the inverse.", hint: "What goes on the right-hand side?"}, ...red.steps, {title: "Read off the inverse", math: `A⁻¹ = ${tok(R)}`, why: "The left side is now the identity, so the right side is A⁻¹.", hint: "Which half is the answer?"}); }
+    const chk = prod(A, R); steps.push({title: "Check", math: `A × A⁻¹ = ${tok(chk)} ✓`, why: "Multiplying a matrix by its inverse gives the identity matrix (1s on the diagonal, 0s elsewhere).", hint: "What should A times its inverse be?"});
+    return base("Find the inverse", `A⁻¹ = ${tok(R)}`, steps, flat(R), "The inverse undoes a matrix: A × A⁻¹ = I. It exists only when the determinant is not zero."); }
+  function opRref(A, wantRank){ const red = reduce(A, null, true), steps = [{title: "Write the matrix", math: `A = ${tok(A)}`, why: "We use three row operations: swap two rows, multiply a row by a number, and add a multiple of one row to another.", hint: "Where is the first pivot?"}, ...red.steps, {title: "Reduced row echelon form", math: `RREF = ${tok(red.A)}\nrank = ${red.rank}`, why: `Each pivot is 1 and is the only non-zero number in its column. There are ${red.rank} pivot${red.rank === 1 ? "" : "s"}, so the rank is ${red.rank}.`, hint: "How many rows are not all zeros?"}];
+    return base(wantRank ? "Find the rank" : "Row reduce the matrix (RREF)", wantRank ? `rank = ${red.rank}` : `RREF = ${tok(red.A)}`, steps, wantRank ? [red.rank] : flat(red.A), "Row reducing turns a matrix into its simplest form. The number of pivots is the rank."); }
+  function opSolve(A, b){ const n = A[0].length, aug = A.map((r, i) => r.concat([b[i]])), red = reduce(aug, n, true), vars = n <= 3 ? ["x", "y", "z"].slice(0, n) : Array.from({length: n}, (_, i) => "x" + sub2(i + 1));
+    const eq = (r, v) => r.map((c, j) => Z(c) ? "" : `${c.n < 0 ? "− " : "+ "}${is1(F(Math.abs(c.n), c.d)) ? "" : str(F(Math.abs(c.n), c.d))}${vars[j]}`).filter(Boolean).join(" ").replace(/^\+ /, "").replace(/^− /, "−") || "0";
+    const steps = [{title: "Write the equations", math: A.map((r, i) => `${eq(r)} = ${str(b[i])}`).join("\n"), why: "Each row of the matrix is one equation.", hint: "How many unknowns are there?"}, {title: "Write the augmented matrix", math: tok(aug, n), why: "Put the coefficients on the left and the answers on the right of the bar.", hint: "What goes after the bar?"}, ...red.steps];
+    const bad = red.A.some(r => r.slice(0, n).every(Z) && !Z(r[n]));
+    if(bad){ steps.push({title: "No solution", math: `${tok(red.A, n)}\n0 = ${str(red.A.find(r => r.slice(0, n).every(Z) && !Z(r[n]))[n])}  ✗`, why: "One row says 0 equals a non-zero number, which is impossible. The equations contradict each other.", hint: "Can 0 ever equal a non-zero number?"}); return base("Solve the system with matrices", "No solution (the equations contradict each other)", steps, null, "Gaussian elimination turns the system into a simple form you can read the answer from."); }
+    if(red.rank < n){ const free = vars.filter((_, j) => !red.piv.includes(j)); steps.push({title: "Infinitely many solutions", math: `${tok(red.A, n)}\n` + red.piv.map((c, i) => `${vars[c]} = ${str(red.A[i][n])}${red.A[i].slice(0, n).map((x, j) => j !== c && !Z(x) ? ` ${x.n < 0 ? "+" : "−"} ${is1(F(Math.abs(x.n), x.d)) ? "" : str(F(Math.abs(x.n), x.d))}${vars[j]}` : "").join("")}`).join("\n") + `\n${free.join(", ")} can be any number`, why: `There are fewer pivots (${red.rank}) than unknowns (${n}), so ${free.join(" and ")} ${free.length > 1 ? "are" : "is"} free to be anything.`, hint: "Which unknown has no pivot?"}); return base("Solve the system with matrices", `Infinitely many solutions (${free.join(", ")} free)`, steps, null, "When there are fewer pivots than unknowns, the system has infinitely many solutions."); }
+    const sol = red.piv.map((c, i) => red.A[i][n]); steps.push({title: "Read off the answer", math: `${tok(red.A, n)}\n` + vars.map((v, i) => `${v} = ${str(sol[i])}`).join(",   "), why: "Each row now says one unknown equals one number.", hint: "What does the first row say?"}, {title: "Check", math: A.slice(0, 3).map((r, i) => `${r.map((c, j) => `${par(c)}·${par(sol[j])}`).join(" + ")} = ${str(r.reduce((s, c, j) => add(s, mul(c, sol[j])), ZERO))} ✓`).join("\n"), why: "Put the answers back into the original equations to make sure they work.", hint: "Does it work in every equation?"});
+    return base("Solve the system with matrices", vars.map((v, i) => `${v} = ${str(sol[i])}`).join(", "), steps, sol.map(val), "Gaussian elimination: write the augmented matrix, row reduce it, then read off the answers."); }
+  function opTrace(A){ if(!sq(A)) return null; const t = A.reduce((s, r, i) => add(s, r[i]), ZERO); return base("Find the trace", `trace = ${str(t)}`, [{title: "Pick out the main diagonal", math: `A = ${tok(A)}\ndiagonal: ${A.map((r, i) => str(r[i])).join(", ")}`, why: "The main diagonal runs from the top-left to the bottom-right.", hint: "Which entries are on the diagonal?"}, {title: "Add them up", math: `trace = ${A.map((r, i) => par(r[i])).join(" + ")} = ${str(t)}`, why: "The trace is the sum of the diagonal entries.", hint: ""}], [val(t)], "The trace is the sum of the main diagonal."); }
+  function opEig(A){ if(!sq(A) || A.length !== 2) return null; const tr = add(A[0][0], A[1][1]), d = detVal(A), disc = sub(mul(tr, tr), mul(F(4), d)), dv = val(disc), steps = [{title: "Set up det(A − λI) = 0", math: `det ⟦${str(A[0][0])} − λ,${str(A[0][1])};${str(A[1][0])},${str(A[1][1])} − λ⟧ = 0`, why: "Eigenvalues are the numbers λ that make A − λI have determinant 0.", hint: "What do we subtract from the diagonal?"}, {title: "Expand", math: `(${str(A[0][0])} − λ)(${str(A[1][1])} − λ) − ${par(A[0][1])}·${par(A[1][0])} = 0\nλ^2 − ${par(tr)}λ + ${par(d)} = 0`, why: "For a 2×2 matrix this is always λ² − (trace)λ + (determinant) = 0.", hint: "What are the trace and determinant?"}];
+    let ans, check = null; const fmt = v => { const r = Math.round(v * 1e6) / 1e6; return Number.isInteger(r) ? String(r).replace("-", "−") : String(+r.toFixed(4)).replace("-", "−"); };
+    if(dv < 0){ const re = val(tr) / 2, im = Math.sqrt(-dv) / 2; ans = `λ = ${fmt(re)} ± ${fmt(im)}i (complex)`; steps.push({title: "Quadratic formula", math: `λ = (${str(tr)} ± √(${str(disc)})) / 2\n${ans}`, why: "The number under the square root is negative, so the eigenvalues are complex numbers.", hint: "What is the discriminant?"}); }
+    else { const s = Math.sqrt(dv), l1 = (val(tr) + s) / 2, l2 = (val(tr) - s) / 2; ans = Math.abs(l1 - l2) < 1e-12 ? `λ = ${fmt(l1)} (repeated)` : `λ = ${fmt(l1)} or λ = ${fmt(l2)}`; check = Math.abs(l1 - l2) < 1e-12 ? [l1] : [l1, l2]; steps.push({title: "Quadratic formula", math: `λ = (${str(tr)} ± √(${str(disc)})) / 2\n${ans}`, why: "Solve the quadratic for λ.", hint: "What is the discriminant?"}, {title: "Check", math: `sum = ${fmt(l1 + l2)} = trace ✓\nproduct = ${fmt(l1 * l2)} = determinant ✓`, why: "The eigenvalues always add up to the trace and multiply to the determinant.", hint: ""}); }
+    return base("Find the eigenvalues", ans, steps, check, "Eigenvalues are the special scaling numbers of a matrix: A·v = λ·v."); }
+  // ---- reading the question ----
+  function lit(m){ let rows; if(/^\[\s*\[/.test(m)) rows = (m.slice(1, -1).match(/\[[^\[\]]*\]/g) || []).map(r => r.slice(1, -1)); else rows = m.slice(1, -1).split(/[;\n]/); rows = rows.map(r => r.trim()).filter(r => r.length); if(!rows.length || rows.length > 6) return null;
+    const A = rows.map(r => r.split(/\s*,\s*|\s+/).filter(Boolean).map(pf)); if(A.some(r => !r.length || r.length > 7 || r.length !== A[0].length || r.some(x => x === null))) return null; return A; }
+  function matrix(q){ const L = []; let bad = false; const put = m => { const A = lit(m); if(!A){ bad = true; return m; } L.push(A); return `@${L.length - 1}@`; };
+    let r = q.replace(/\[\s*\[[^@]*?\]\s*\]/g, put).replace(/\[[^\[\]@]*\]/g, put); if(!L.length || bad) return null;
+    const kw = /matri|\bdet\b|determinant|inverse|invert|transpose|rref|row[- ]?reduc|echelon|gauss|\brank\b|\btrace\b|eigen/i.test(r); if(!kw && !L.some(A => A.length > 1)) return null;
+    const env = {}; r = r.replace(/(?<![A-Za-z])([A-Z])\s*=\s*@(\d+)@\s*[,;.]?\s*(?:and\s+)?/g, (m, n, i) => { env[n] = i; return " "; }); if(Object.keys(env).length) r = r.replace(/(?<![A-Za-z])([A-Z])(?![a-z])/g, (m, n) => env[n] != null ? `@${env[n]}@` : m);
+    const lr = r.toLowerCase(), ids = (r.match(/@(\d+)@/g) || []).map(x => +x.slice(1, -1)); if(!ids.length){ if(Object.keys(env).length === 1) ids.push(+Object.values(env)[0]); else return null; }
+    const A = L[ids[0]], B = ids.length > 1 ? L[ids[1]] : null, uniq = new Set(ids).size; if(ids.length > 2) return null;
+    const vec = M => M.length === 1 ? M[0] : M[0].length === 1 ? M.map(x => x[0]) : null, coef = s => { if(s == null || s === "") return ONE; if(s === "-" || s === "−") return F(-1); return pf(s); };
+    if(B && (/solve|\bx\s*=|=\s*@/.test(lr)) && vec(B) && vec(B).length === A.length && A.length > 1) return opSolve(A, vec(B));
+    if(!B && /solve|system/.test(lr) && A[0].length === A.length + 1 && A.length > 1) return opSolve(A.map(x => x.slice(0, -1)), A.map(x => x[x.length - 1]));
+    if(B){ const m = r.match(/(-?−?\d+(?:\.\d+)?(?:\/\d+)?|[-−])?\s*[*·×]?\s*@\d+@\s*([^@]*?)\s*(\d+(?:\.\d+)?(?:\/\d+)?)?\s*[*·×]?\s*@\d+@/), mid = m ? m[2] : "", from = /subtract\s*@\d+@\s*from/.test(lr);
+      if(/\+|\badd\b|\bsum\b/.test(mid) || (!/[-−*×·]/.test(mid) && /\badd\b|\bsum\b/.test(lr))){ const ka = coef(m && m[1]), kb = coef(m && m[3]); if(!ka || !kb) return null; return opAdd(A, B, 1, ka, kb); }
+      if(/[-−]|minus/.test(mid) || /subtract|difference/.test(lr)){ const ka = coef(m && m[1]), kb = coef(m && m[3]); if(!ka || !kb) return null; return from ? opAdd(B, A, -1) : opAdd(A, B, -1, ka, kb); }
+      return opMul(A, B); }
+    if(/\bdet\b|determinant|\|\s*@\d+@\s*\|/.test(lr)) return opDet(A);
+    if(/inverse|invert|\^\s*\(?\s*[-−]\s*1\s*\)?|⁻¹/.test(lr)) return opInv(A);
+    if(/transpose|\^\s*t\b|ᵀ/.test(lr)) return opT(A);
+    if(/eigen/.test(lr)) return opEig(A);
+    if(/\brank\b/.test(lr)) return opRref(A, true);
+    if(/rref|row[- ]?reduc|echelon|gauss/.test(lr)) return opRref(A, false);
+    if(/\btrace\b/.test(lr)) return opTrace(A);
+    const pw = r.match(/@\d+@\s*\^\s*\(?(\d)\)?/); if(pw && +pw[1] >= 2 && +pw[1] <= 5) return opPow(A, +pw[1]);
+    const sc = r.match(/(-?−?\d+(?:\.\d+)?(?:\/\d+)?)\s*[*·×]?\s*@\d+@/); if(sc){ const k = pf(sc[1]); if(k) return opScalar(k, A); }
+    if(/solve|system/.test(lr)) return null;
+    return sq(A) ? opDet(A) : opRref(A, false); }
+  const plain = s => String(s == null ? "" : s).replace(/⟦([^⟦⟧]*)⟧/g, (m, b) => "[" + b.replace(/\|,/g, "| ").replace(/,/g, ", ").replace(/;/g, "; ") + "]");
+  const spoken = s => String(s == null ? "" : s).replace(/⟦([^⟦⟧]*)⟧/g, (m, b) => " the matrix with " + b.split(";").map((r, i) => `row ${i + 1}: ${r.replace(/\|,/g, "then ").replace(/,/g, ", ")}`).join("; ") + ". ");
+  const html = h => String(h).replace(/⟦([^⟦⟧]*)⟧/g, (m, b) => `<span class="vt-mx" role="img" aria-label="matrix"><span class="vt-mxg">${b.split(";").map(r => `<span class="vt-mxr">${r.split(",").map(c => c.startsWith("|") ? `<span class="vt-mxc bar">${c.slice(1) || ""}</span>` : `<span class="vt-mxc">${c}</span>`).join("")}</span>`).join("")}</span></span>`);
+  return {matrix, plain, spoken, html};
+})();
 const VTS = (() => {
   const M = VTM, num = M.num, dec = M.dec;
   const W = {zero: 0, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10};
@@ -37102,7 +37240,7 @@ const VTS = (() => {
       steps: [{title: "Plot points", math: [-2, -1, 0, 1, 2].map(x => `(${x}, ${dec(M.ev(f, x), 3)})`).join("  "), why: "Pick some x values, work out y, and join the dots.", hint: "What is y when x = 0?"}, {title: "Key features", math: `y-intercept: ${dec(M.ev(f, 0), 4)}${rs.length ? ";  x-intercepts: " + rs.slice(0, 6).map(r => dec(r, 4)).join(", ") : ""}${P ? ";  degree " + M.deg(M.clean(P)) : ""}`, why: "Intercepts are where the curve crosses the axes. The Graph studio below also marks turning points.", hint: "Where does it cross the y-axis?"}],
       graph: {fns, marks: rs.slice(0, 6), deriv: false}, overview: "Use the Graph studio to explore: turn on the derivative, a tangent line or the area under the curve."}; }
   function solve(raw){ const q = fixWords(String(raw).replace(/^\s*(?:Q(?:uestion)?\s*)?\(?\d{1,2}\s*[.):]\s+|^\s*\(?[a-h]\)\s+/i, "")).replace(/\s+/g, " ").trim(); if(!q) return null;
-    for(const fn of [graphAsk, derivative, integral, limit, projectile, stats, system, equation, arith]){ try { const r = fn(q); if(r) return r; } catch(e){} } return null; }
+    for(const fn of [VTX.matrix, graphAsk, derivative, integral, limit, projectile, stats, system, equation, arith]){ try { const r = fn(q); if(r) return r; } catch(e){} } return null; }
   return {solve, roots, simpson, fixWords};
 })();
 
@@ -37111,7 +37249,7 @@ const VT_PERSONAS = [
   {id: "socratic", name: "🦉 Socratic Professor", desc: "Asks guiding questions so you work it out yourself.", pace: 0.95, style: "Socratic: explain briefly, then ask ONE short guiding question that helps the student think.", open: "Let's think this through together."},
   {id: "coach", name: "⚡ Energetic Coach", desc: "Upbeat, quick and full of encouragement.", pace: 1.1, style: "an upbeat, energetic coach: short punchy sentences and lots of encouragement.", open: "Awesome problem — let's crush it!"},
   {id: "patient", name: "🌿 Patient Mentor", desc: "Calm and slow, in tiny steps.", pace: 0.85, style: "a calm, patient mentor: very small steps, define every term, never rush.", open: "Let's take this slowly, one small step at a time."}];
-const VT_SUBJECTS = ["Arithmetic", "Algebra", "Geometry", "Trigonometry", "Calculus", "Statistics", "Physics", "Chemistry", "Biology"];
+const VT_SUBJECTS = ["Arithmetic", "Algebra", "Linear Algebra", "Geometry", "Trigonometry", "Calculus", "Statistics", "Physics", "Chemistry", "Biology"];
 const VT_LEVELS = [["elem", "Elementary"], ["middle", "Middle school"], ["high", "High school"], ["uni", "University"]];
 const VT_SAMPLES = [
   ["Calculus", "Chain rule derivative", "Find the derivative of f(x) = sin(x^2) + 3x^3 at x = 1"],
@@ -37119,6 +37257,10 @@ const VT_SAMPLES = [
   ["Calculus", "A famous limit", "Find the limit of sin(x)/x as x approaches 0"],
   ["Algebra", "Quadratic equation", "Solve 2x^2 - 3x - 5 = 0"],
   ["Algebra", "System of equations", "Solve 2x + 3y = 12 and x - y = 1"],
+  ["Linear Algebra", "Multiply two matrices", "[[1,2],[3,4]] * [[5,6],[7,8]]"],
+  ["Linear Algebra", "Inverse of a 3×3 matrix", "Find the inverse of [[2,1,0],[1,3,1],[0,1,2]]"],
+  ["Linear Algebra", "Determinant", "Find the determinant of [[3,1,2],[0,4,1],[2,5,6]]"],
+  ["Linear Algebra", "Solve with matrices", "Solve [[1,1,1],[0,2,5],[2,5,-1]] x = [6,-4,27]"],
   ["Algebra", "Cubic equation", "Solve x^3 - 6x^2 + 11x - 6 = 0"],
   ["Physics", "Projectile motion", "A ball is launched at 30 m/s at 45 degrees. Find the max height, time of flight and range."],
   ["Statistics", "Mean and spread", "Find the mean, median and standard deviation of 4, 8, 15, 16, 23, 42"],
@@ -37134,8 +37276,8 @@ function vtMath(s){ let h = esc(String(s || ""));
   h = h.replace(/\\frac\{([^{}]+)\}\{([^{}]+)\}/g, "($1)/($2)").replace(/\\sqrt\{([^{}]+)\}/g, "√($1)").replace(/\\(cdot|times)/g, "·").replace(/\\(left|right)/g, "").replace(/\\(alpha|beta|gamma|delta|theta|lambda|mu|pi|sigma|omega|Delta)/g, (m, g) => ({alpha: "α", beta: "β", gamma: "γ", delta: "δ", theta: "θ", lambda: "λ", mu: "μ", pi: "π", sigma: "σ", omega: "ω", Delta: "Δ"})[g]).replace(/\\/g, "").replace(/\$/g, "");
   h = h.replace(/\bsqrt\s*\(/g, "√(").replace(/\bsqrt\s+/g, "√").replace(/\*/g, "·").replace(/-&gt;/g, "→").replace(/&lt;=/g, "≤").replace(/&gt;=/g, "≥").replace(/\btheta\b/g, "θ").replace(/\bpi\b/g, "π");
   h = h.replace(/\^\(([^()]{1,40})\)/g, "<sup>$1</sup>").replace(/\^\{([^{}]{1,40})\}/g, "<sup>$1</sup>").replace(/\^(−?-?[\w.′]+)/g, "<sup>$1</sup>").replace(/_\{([^{}]{1,20})\}/g, "<sub>$1</sub>").replace(/_([A-Za-z0-9]{1,3})\b/g, "<sub>$1</sub>");
-  return h; }
-function vtSpoken(s){ return String(s || "").replace(/<[^>]+>/g, " ").replace(/\\frac\{([^{}]+)\}\{([^{}]+)\}/g, "$1 over $2").replace(/[\\$]/g, "")
+  return VTX.html(h); }
+function vtSpoken(s){ return VTX.spoken(String(s || "")).replace(/<[^>]+>/g, " ").replace(/\\frac\{([^{}]+)\}\{([^{}]+)\}/g, "$1 over $2").replace(/[\\$]/g, "")
   .replace(/f″\s*\(/g, "f double prime of (").replace(/f′\s*\(/g, "f prime of (").replace(/f'\s*\(/g, "f prime of (").replace(/\bd\/dx\b/g, "the derivative of").replace(/∫/g, "the integral of ")
   .replace(/\^2\b/g, " squared").replace(/\^3\b/g, " cubed").replace(/\^\(([^)]+)\)/g, " to the power $1").replace(/\^(-?[\w.]+)/g, " to the power $1").replace(/²/g, " squared").replace(/³/g, " cubed")
   .replace(/√\(?/g, "the square root of ").replace(/\bsqrt\(/g, "the square root of (").replace(/(\d)\s*\/\s*(\d)/g, "$1 over $2").replace(/\s[·×*]\s|·/g, " times ").replace(/\s[−-]\s/g, " minus ").replace(/(^|[\s(])[−-](?=\d|x)/g, "$1negative ").replace(/\s\+\s/g, " plus ").replace(/=/g, " equals ").replace(/≈/g, " about ").replace(/±/g, " plus or minus ").replace(/→/g, " gives ")
@@ -37167,10 +37309,11 @@ function vtMicStart(){ if(vt.listening) return; if(!vtMicOK()){ $("vt-live").tex
   vtState(); }
 function vtMicStop(){ if(vt.rec){ try { vt.rec.abort(); } catch(e){} } vt.listening = false; }
 // ---------- conversation log ----------
-function vtLog(who, text){ vt.log.push({who, text, t: new Date().toLocaleTimeString([], {hour: "numeric", minute: "2-digit"})}); if(vt.log.length > 80) vt.log.shift(); vtLogRender(); }
+function vtLog(who, text){ text = VTX.plain(text); vt.log.push({who, text, t: new Date().toLocaleTimeString([], {hour: "numeric", minute: "2-digit"})}); if(vt.log.length > 80) vt.log.shift(); vtLogRender(); }
 function vtLogRender(){ const b = $("vt-log"); if(!b) return; if(!vt.log.length){ b.innerHTML = `<p class="vt-empty">No conversation yet. Ask a question to get started!</p>`; return; }
   b.innerHTML = vt.log.map(m => `<div class="vt-msg ${m.who === "me" ? "me" : "bot"}"><small>${m.who === "me" ? "You" : "Tutor"} · ${m.t}</small>${vtMath(m.text)}</div>`).join(""); b.scrollTop = b.scrollHeight; }
 // ---------- AI ----------
+const vtSmp = Object.assign((p, o) => sampler(typeof p === "string" ? VTX.plain(p) : p, o), {json: p => sampler.json(VTX.plain(p))});
 const vtAI = () => typeof sampler !== "undefined" && sampler && sampler.json;
 const vtLevelName = () => (VT_LEVELS.find(l => l[0] === vt.level) || VT_LEVELS[2])[1];
 function vtBasePrompt(){ return `You are a ${vt.subject} tutor inside "My Word Book", a learning app for students. Speak as ${vt.persona.style} Pitch everything at a ${vtLevelName()} level. Write maths as plain text a screen can show: x^2, sqrt(x), a/b, π, ≤ — never LaTeX, never markdown, no emojis. Be accurate; if a question is unsafe or not about learning, gently steer back to schoolwork.`; }
@@ -37181,7 +37324,7 @@ A calculator has ALREADY solved it exactly. Do NOT change any maths or numbers. 
 The worked steps are:
 ${S.steps.map((s, i) => `${i + 1}. ${s.title}: ${s.math}`).join("\n")}
 Reply with ONLY JSON: {"opening": "1-2 spoken sentences introducing the solution and stating the verified answer", "overview": "2 sentences on the big idea", "hints": ["one short guiding question for each step, ${S.steps.length} in total"], "followups": ["3 short follow-up questions the student might ask next"]}`;
-  return sampler.json(prompt); }
+  return vtSmp.json(prompt); }
 async function vtAISolve(q){
   const prompt = `${vtBasePrompt()}
 Solve or explain this for the student: "${q}"
@@ -37207,7 +37350,7 @@ async function vtSolve(q){
   } catch(e){ const m = vtAIErr(e); vtLog("bot", m); vtSay(m); }
   finally { vt.busy = false; $("vt-go").disabled = false; vtState(); }
 }
-function vtDefaultFollow(S){ return ({derivative: ["Why does the chain rule work?", "What does the derivative tell us about the graph?", "Where is the slope zero?"], integral: ["Why do we add + C?", "What does the area mean in real life?", "How is integrating related to differentiating?"], limit: ["What does 0/0 mean?", "Why does L'Hôpital's rule work?", "Is the function continuous there?"], equation: ["How can I check my answers?", "What does the graph look like?", "When should I factor instead?"], system: ["What does the answer mean on the graph?", "Could there be no solution?", "Is substitution easier here?"], projectile: ["What angle gives the longest range?", "What if there were air resistance?", "Why doesn't the sideways speed change?"], stats: ["When should I use the median instead of the mean?", "What does a big standard deviation mean?", "Why divide by n − 1 for a sample?"], graph: ["What is a turning point?", "How do I find the x-intercepts?", "What does the derivative graph show?"]})[S.kind] || ["Can you explain that another way?", "Why is that true?", "Can you give me a similar problem?"]; }
+function vtDefaultFollow(S){ return ({derivative: ["Why does the chain rule work?", "What does the derivative tell us about the graph?", "Where is the slope zero?"], integral: ["Why do we add + C?", "What does the area mean in real life?", "How is integrating related to differentiating?"], limit: ["What does 0/0 mean?", "Why does L'Hôpital's rule work?", "Is the function continuous there?"], equation: ["How can I check my answers?", "What does the graph look like?", "When should I factor instead?"], system: ["What does the answer mean on the graph?", "Could there be no solution?", "Is substitution easier here?"], projectile: ["What angle gives the longest range?", "What if there were air resistance?", "Why doesn't the sideways speed change?"], stats: ["When should I use the median instead of the mean?", "What does a big standard deviation mean?", "Why divide by n − 1 for a sample?"], matrix: ["When can two matrices be multiplied?", "What does the determinant tell us?", "Why does order matter when multiplying?"], graph: ["What is a turning point?", "How do I find the x-intercepts?", "What does the derivative graph show?"]})[S.kind] || ["Can you explain that another way?", "Why is that true?", "Can you give me a similar problem?"]; }
 // ---------- solution card ----------
 function vtShow(S, keep){ vt.sol = S; if(!keep){ vt.step = 0; vt.shown = vt.guided ? 1 : 99; }
   const box = $("vt-sol"); box.hidden = false;
@@ -37239,7 +37382,7 @@ function vtGoStep(i){ const S = vt.sol; if(!S || i < 0 || i >= S.steps.length) r
   const t = `Step ${i + 1}. ${s.title}. ${s.math ? s.math + ". " : ""}${s.why}`; vtLog("bot", t); vtSay(t); }
 function vtHint(i){ const S = vt.sol; if(!S) return; i = i == null ? Math.min(vt.step, S.steps.length - 1) : i; const s = S.steps[i]; if(!s) return; const p = $("vt-sol").querySelector(`[data-h="${i}"]`); if(p) p.hidden = false; const t = s.hint ? `Hint for step ${i + 1}: ${s.hint}` : "Look carefully at what changes from one line to the next."; vtLog("bot", t); vtSay(t); }
 // ---------- checking the student's answer ----------
-function vtNumsFrom(s){ const out = []; String(s).replace(/[a-z]\s*=\s*/gi, " ").split(/\s*(?:,|;|\band\b|\bor\b|&)\s*/i).forEach(p => { p = p.trim().replace(/\s*(m|s|metres?|meters?|seconds?|units?)\s*$/i, ""); if(!p) return; try { const n = VTM.parse(VTS.fixWords(p)); if(!VTM.vars(n).size){ const v = VTM.ev(n); if(isFinite(v)) out.push(v); } } catch(e){} }); return out; }
+function vtNumsFrom(s){ const out = []; String(s).replace(/[\[\]]/g, " ").replace(/(\d)\s+(?=[-−]?\d)/g, "$1, ").replace(/[a-z]\s*=\s*/gi, " ").split(/\s*(?:,|;|\band\b|\bor\b|&)\s*/i).forEach(p => { p = p.trim().replace(/\s*(m|s|metres?|meters?|seconds?|units?)\s*$/i, ""); if(!p) return; try { const n = VTM.parse(VTS.fixWords(p)); if(!VTM.vars(n).size){ const v = VTM.ev(n); if(isFinite(v)) out.push(v); } } catch(e){} }); return out; }
 async function vtCheck(ans){ const S = vt.sol, res = $("vt-mineres"); ans = String(ans || "").trim(); if(!S || !ans) return; vtLog("me", "My answer: " + ans);
   if(S.check && S.check.length){ const mine = vtNumsFrom(ans); if(!mine.length){ res.textContent = "Type a number (or numbers), like 13 or 2, −1."; return; }
     const close = (a, b) => Math.abs(a - b) <= Math.max(1e-6, 0.006 * Math.abs(b)) || Math.abs(a - b) < 0.0051;
@@ -37250,11 +37393,11 @@ async function vtCheck(ans){ const S = vt.sol, res = $("vt-mineres"); ans = Stri
     else { const off = S.check[0] && Math.abs(mine[0] / S.check[0]); msg = "❌ Not quite. " + (off && Math.abs(off - 1) < 0.15 ? "You're very close — check your rounding." : mine[0] && S.check[0] && Math.abs(mine[0] + S.check[0]) < 1e-6 ? "Check your signs — you're off by a minus." : "Try the hint for the step you're stuck on, or tap Show step."); }
     res.textContent = msg; vtLog("bot", msg); vtSay(msg); if(/✅/.test(msg)){ try { if(typeof playChime === "function") playChime(true); } catch(e){} } return; }
   if(!vtAI()){ res.textContent = "This answer needs the AI to check it. Compare it with the answer above."; return; }
-  res.textContent = "Checking…"; try { const j = await sampler.json(`${vtBasePrompt()}\nProblem: "${S.q}". Correct answer: ${S.answer}.\nThe student answered: "${ans}".\nReply with ONLY JSON: {"correct": true or false, "feedback": "1-2 encouraging sentences; if wrong, a hint without giving the answer away"}`);
+  res.textContent = "Checking…"; try { const j = await vtSmp.json(`${vtBasePrompt()}\nProblem: "${S.q}". Correct answer: ${S.answer}.\nThe student answered: "${ans}".\nReply with ONLY JSON: {"correct": true or false, "feedback": "1-2 encouraging sentences; if wrong, a hint without giving the answer away"}`);
     const msg = (j && j.correct ? "✅ " : "❌ ") + (j && j.feedback || ""); res.textContent = msg; vtLog("bot", msg); vtSay(msg); } catch(e){ res.textContent = vtAIErr(e); } }
 // ---------- follow-up questions ----------
 async function vtFollow(q){ const S = vt.sol; if(!vtAI()){ const m = "Follow-up questions need the AI. Tap 💡 on a step for a hint, or 🔊 to hear it again."; vtLog("bot", m); vtSay(m); return; }
-  vt.busy = true; vtState(); try { const r = await sampler(`${vtBasePrompt()}
+  vt.busy = true; vtState(); try { const r = await vtSmp(`${vtBasePrompt()}
 ${S ? `We are working on: "${S.q}". Verified answer: ${S.answer}. Steps: ${S.steps.map((s, i) => `${i + 1}) ${s.title}: ${s.math}`).join("; ")}.` : ""}
 Recent chat: ${vt.log.slice(-6).map(m => (m.who === "me" ? "Student: " : "Tutor: ") + m.text).join(" | ")}
 The student now asks: "${q}"
@@ -37467,7 +37610,18 @@ function vtYtRender(v, j, has){ const box = $("vt-ytout"), L = a => Array.isArra
   box.scrollIntoView({behavior: "smooth", block: "nearest"}); }
 function vtYtInit(){ $("vt-ytgo").onclick = vtYtGo; $("vt-yturl").onkeydown = e => { if(e.key === "Enter") vtYtGo(); };
   $("vt-ytpaste").onclick = async () => { try { const t = await navigator.clipboard.readText(); if(t){ $("vt-yturl").value = t.trim(); $("vt-yturl").focus(); } } catch(e){ $("vt-yturl").focus(); vtYtMsg("Tap and hold in the box, then choose Paste."); } }; }
-function vtInit(){ if(!$("vt")) return; requestAnimationFrame(() => vtPlot()); if(vt.inited) return; vt.inited = true; vtLoad(); try { vtYtInit(); } catch(e){} $("vt").querySelectorAll("[data-vtab]").forEach(b => b.onclick = () => vtTab(b.dataset.vtab));
+// ---------- 🔢 Matrix builder ----------
+function vtMxInit(){ const sel = (id, v, max) => { $(id).innerHTML = Array.from({length: max}, (_, i) => `<option${i + 1 === v ? " selected" : ""}>${i + 1}</option>`).join(""); }; sel("vt-mxar", 2, 5); sel("vt-mxac", 2, 5); sel("vt-mxbr", 2, 5); sel("vt-mxbc", 2, 5);
+  const NUM = /^-?(\d+\.?\d*|\.\d+)(\/-?\d+)?$/;
+  const grid = (id, r, c, nm) => { const g = $(id), old = [...g.querySelectorAll("input")].reduce((o, i) => (o[i.dataset.rc] = i.value, o), {}); g.style.gridTemplateColumns = `repeat(${c}, 54px)`; let h = ""; for(let i = 0; i < r; i++) for(let j = 0; j < c; j++) h += `<input data-rc="${i},${j}" value="${esc(old[i + "," + j] || "")}" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="${nm} row ${i + 1} column ${j + 1}">`; g.innerHTML = h; };
+  const draw = () => { const op = $("vt-mxop").value, two = /^(mul|add|sub|solve)$/.test(op), ar = +$("vt-mxar").value, ac = +$("vt-mxac").value; $("vt-mxbwrap").hidden = !two; $("vt-mxklab").hidden = op !== "k"; $("vt-mxbname").textContent = op === "solve" ? "b" : "B"; $("vt-mxbsize").hidden = op === "solve";
+    grid("vt-mxa", ar, ac, "A"); if(two) grid("vt-mxbg", op === "solve" ? ar : +$("vt-mxbr").value, op === "solve" ? 1 : +$("vt-mxbc").value, op === "solve" ? "b" : "B"); $("vt-mxmsg").textContent = ""; };
+  ["vt-mxop", "vt-mxar", "vt-mxac", "vt-mxbr", "vt-mxbc"].forEach(id => $(id).onchange = draw); draw();
+  const read = id => { const g = $(id), rows = []; let bad = false; g.querySelectorAll("input").forEach(i => { const [r, c] = i.dataset.rc.split(",").map(Number), v = i.value.trim().replace(/[−–]/g, "-") || "0"; if(!NUM.test(v) || /\/-?0+$/.test(v)){ bad = true; i.style.borderColor = "#dc2626"; } else i.style.borderColor = ""; (rows[r] = rows[r] || [])[c] = v; }); return bad ? null : "[[" + rows.map(r => r.join(",")).join("],[") + "]]"; };
+  $("vt-mxgo").onclick = () => { const op = $("vt-mxop").value, A = read("vt-mxa"), B = /^(mul|add|sub|solve)$/.test(op) ? read("vt-mxbg") : "", k = $("vt-mxk").value.trim().replace(/[−–]/g, "-"); if(A === null || B === null || (op === "k" && !NUM.test(k))){ $("vt-mxmsg").textContent = "Use numbers only, like 3, −2, 0.5 or 1/2."; return; } $("vt-mxmsg").textContent = "";
+    const q = {mul: `${A} * ${B}`, add: `${A} + ${B}`, sub: `${A} - ${B}`, k: `${k} * ${A}`, det: `Find the determinant of ${A}`, inv: `Find the inverse of ${A}`, T: `Transpose of ${A}`, pow: `${A}^2`, rref: `Row reduce (rref) ${A}`, rank: `Find the rank of ${A}`, solve: `Solve ${A} x = ${B}`, eig: `Find the eigenvalues of ${A}`}[op];
+    $("vt-in").value = q; vtLog("me", q); vtSolve(q); setTimeout(() => { try { $("vt-sol").scrollIntoView({behavior: "smooth", block: "start"}); } catch(e){} }, 300); }; }
+function vtInit(){ if(!$("vt")) return; requestAnimationFrame(() => vtPlot()); if(vt.inited) return; vt.inited = true; vtLoad(); try { vtYtInit(); } catch(e){} try { vtMxInit(); } catch(e){ console.error(e); } $("vt").querySelectorAll("[data-vtab]").forEach(b => b.onclick = () => vtTab(b.dataset.vtab));
   $("vt-subj").innerHTML = VT_SUBJECTS.map(s => `<option${s === vt.subject ? " selected" : ""}>${s}</option>`).join(""); $("vt-level").innerHTML = VT_LEVELS.map(([k, n]) => `<option value="${k}"${k === vt.level ? " selected" : ""}>${n}</option>`).join("");
   $("vt-subj").onchange = e => { vt.subject = e.target.value; vtSaveSet(); }; $("vt-level").onchange = e => { vt.level = e.target.value; vtSaveSet(); };
   const pers = () => { $("vt-personas").innerHTML = VT_PERSONAS.map(p => `<button type="button" class="vt-persona" data-p="${p.id}" aria-pressed="${p === vt.persona}"><b>${p.name}</b><small>${p.desc}</small></button>`).join(""); $("vt-who").textContent = "Tutor: " + vt.persona.name;
