@@ -848,6 +848,25 @@ body.sr-full .sr-askfab{bottom:calc(16px + env(safe-area-inset-bottom,0px))}
 .sr-askfab{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(98px + env(safe-area-inset-bottom,0px));z-index:40;font:inherit;font-weight:800;font-size:17px;padding:12px 18px;border-radius:999px;border:3px solid var(--line);background:var(--berry);color:#fff;box-shadow:0 6px 18px rgba(0,0,0,.25);cursor:pointer}
 .sr-chsel{display:flex;align-items:center;gap:8px;font-weight:700;flex-wrap:wrap}.sr-chsel select{font:inherit;font-size:15px;padding:6px 8px;border:2.5px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);max-width:100%;min-width:0}
 .sr-qz{border:2.5px solid var(--line);border-radius:16px;padding:12px;background:var(--soft);margin:8px 0}
+/* 🃏 Smart Reader flashcards */
+.sr-fcdeck{display:flex;gap:8px;align-items:center;flex-wrap:wrap;border:2.5px solid var(--line);border-radius:14px;padding:8px 10px;background:var(--soft);margin:6px 0}
+.sr-fcdeck b{flex:1 1 180px;min-width:0;overflow-wrap:anywhere}.sr-fcdeck small{color:var(--muted);font-weight:700}
+.sr-fch{display:flex;justify-content:space-between;gap:8px;align-items:center;font-weight:800;margin-bottom:6px;flex-wrap:wrap}.sr-fch span:first-child{min-width:0;overflow-wrap:anywhere}
+.sr-fcbar{height:10px;border-radius:99px;background:var(--soft);border:2px solid var(--line);overflow:hidden;margin-bottom:10px}.sr-fcbar i{display:block;height:100%;background:linear-gradient(90deg,#34d399,#16a34a);transition:width .3s}
+.sr-fc{perspective:1400px;cursor:pointer;outline:none;border-radius:22px;-webkit-tap-highlight-color:transparent}
+.sr-fc:focus-visible{box-shadow:0 0 0 4px #fde047}
+.sr-fcin{display:grid;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.3,1.3,.5,1)}
+.sr-fc.flip .sr-fcin{transform:rotateY(180deg)}
+.sr-fcf{grid-area:1/1;min-height:min(46vh,300px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;padding:26px 20px 34px;border:4px solid var(--line);border-radius:22px;box-shadow:0 6px 0 var(--line);backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow-wrap:anywhere;position:relative}
+.sr-fcf.front{background:linear-gradient(160deg,#fef9c3,#fde68a);color:#1b2a4a;font-size:clamp(20px,3.2vw,28px);font-weight:800;line-height:1.3}
+.sr-fcf.back{background:linear-gradient(160deg,#dcfce7,#bbf7d0);color:#14532d;font-size:clamp(18px,2.6vw,23px);font-weight:600;line-height:1.45;transform:rotateY(180deg)}
+.sr-fcf small{position:absolute;bottom:10px;left:0;right:0;font-size:13px;font-weight:700;opacity:.65}
+.sr-fcf .tag{position:absolute;top:10px;left:14px;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;opacity:.6}
+.sr-fcf .st{position:absolute;top:8px;right:12px;font-size:20px}
+.sr-fcrow{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:12px}
+.sr-fcrow .know{background:#16a34a;color:#fff}.sr-fcrow .learn{background:#f59e0b;color:#1b2a4a}
+@media (prefers-reduced-motion:reduce){.sr-fcin{transition:none}}
+
 /* ---- quiz as a textbook page ---- */
 .sr-qzview{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:4px 0 8px}.sr-qzview .sp{flex:1}
 .sr-qzview button{min-height:40px;padding:6px 12px;border:2.5px solid var(--line);border-radius:999px;background:var(--paper);color:var(--ink);font:800 14px "Fredoka",system-ui,sans-serif;cursor:pointer}
@@ -2110,7 +2129,7 @@ window.MWB_TRIAL_DAYS = 14;
         <div class="sr-top"><div><b id="sr-title"></b><small id="sr-meta"></small></div><button type="button" class="sr-x" id="sr-bmbtn" aria-label="Bookmark this spot" title="Bookmark this spot">🔖</button><button type="button" class="sr-x" id="sr-close" aria-label="Close the document" title="Close (your place is saved)">✕</button></div>
         <div class="sr-progw"><span class="sr-pbar"><i id="sr-prog"></i></span><small id="sr-progt">0%</small></div>
         <div class="sr-tabs" role="group" aria-label="Smart Reader tools">
-          <button type="button" class="sr-tile" data-srtab="read" aria-pressed="true" style="--c1:#38bdf8;--c2:#2563eb;--i:0"><span class="sr-tile-ico" aria-hidden="true"><span>📖</span></span><span class="sr-tile-name">Read</span></button><button type="button" class="sr-tile" data-srtab="ask" aria-pressed="false" style="--c1:#f472b6;--c2:#db2777;--i:1"><span class="sr-tile-ico" aria-hidden="true"><span>💬</span></span><span class="sr-tile-name">Ask</span></button><button type="button" class="sr-tile" data-srtab="sum" aria-pressed="false" style="--c1:#fbbf24;--c2:#ea580c;--i:2"><span class="sr-tile-ico" aria-hidden="true"><span>📝</span></span><span class="sr-tile-name">Summary</span></button><button type="button" class="sr-tile" data-srtab="quiz" aria-pressed="false" style="--c1:#a78bfa;--c2:#7c3aed;--i:3"><span class="sr-tile-ico" aria-hidden="true"><span>🧠</span></span><span class="sr-tile-name">Quiz</span></button><button type="button" class="sr-tile" data-srtab="toc" aria-pressed="false" style="--c1:#34d399;--c2:#059669;--i:4"><span class="sr-tile-ico" aria-hidden="true"><span>📑</span></span><span class="sr-tile-name">Contents</span></button><button type="button" class="sr-tile" data-srtab="find" aria-pressed="false" style="--c1:#22d3ee;--c2:#0e7490;--i:5"><span class="sr-tile-ico" aria-hidden="true"><span>🔎</span></span><span class="sr-tile-name">Search</span></button><button type="button" class="sr-tile" data-srtab="notes" aria-pressed="false" style="--c1:#fb7185;--c2:#e11d48;--i:6"><span class="sr-tile-ico" aria-hidden="true"><span>🖍️</span></span><span class="sr-tile-name">Notes</span></button><button type="button" class="sr-tile" data-srtab="info" aria-pressed="false" style="--c1:#a3e635;--c2:#4d7c0f;--i:7"><span class="sr-tile-ico" aria-hidden="true"><span>📊</span></span><span class="sr-tile-name">Insights</span></button>
+          <button type="button" class="sr-tile" data-srtab="read" aria-pressed="true" style="--c1:#38bdf8;--c2:#2563eb;--i:0"><span class="sr-tile-ico" aria-hidden="true"><span>📖</span></span><span class="sr-tile-name">Read</span></button><button type="button" class="sr-tile" data-srtab="ask" aria-pressed="false" style="--c1:#f472b6;--c2:#db2777;--i:1"><span class="sr-tile-ico" aria-hidden="true"><span>💬</span></span><span class="sr-tile-name">Ask</span></button><button type="button" class="sr-tile" data-srtab="sum" aria-pressed="false" style="--c1:#fbbf24;--c2:#ea580c;--i:2"><span class="sr-tile-ico" aria-hidden="true"><span>📝</span></span><span class="sr-tile-name">Summary</span></button><button type="button" class="sr-tile" data-srtab="quiz" aria-pressed="false" style="--c1:#a78bfa;--c2:#7c3aed;--i:3"><span class="sr-tile-ico" aria-hidden="true"><span>🧠</span></span><span class="sr-tile-name">Quiz</span></button><button type="button" class="sr-tile" data-srtab="cards" aria-pressed="false" style="--c1:#fb923c;--c2:#c2410c;--i:4"><span class="sr-tile-ico" aria-hidden="true"><span>🃏</span></span><span class="sr-tile-name">Flashcards</span></button><button type="button" class="sr-tile" data-srtab="toc" aria-pressed="false" style="--c1:#34d399;--c2:#059669;--i:4"><span class="sr-tile-ico" aria-hidden="true"><span>📑</span></span><span class="sr-tile-name">Contents</span></button><button type="button" class="sr-tile" data-srtab="find" aria-pressed="false" style="--c1:#22d3ee;--c2:#0e7490;--i:5"><span class="sr-tile-ico" aria-hidden="true"><span>🔎</span></span><span class="sr-tile-name">Search</span></button><button type="button" class="sr-tile" data-srtab="notes" aria-pressed="false" style="--c1:#fb7185;--c2:#e11d48;--i:6"><span class="sr-tile-ico" aria-hidden="true"><span>🖍️</span></span><span class="sr-tile-name">Notes</span></button><button type="button" class="sr-tile" data-srtab="info" aria-pressed="false" style="--c1:#a3e635;--c2:#4d7c0f;--i:7"><span class="sr-tile-ico" aria-hidden="true"><span>📊</span></span><span class="sr-tile-name">Insights</span></button>
         </div>
         <div id="sr-t-read">
           <div class="sr-ttsrow" id="sr-viewrow" hidden role="group" aria-label="How to show the document"><button type="button" class="chip" data-srview="book" aria-pressed="true">📖 Book view (original pages)</button><button type="button" class="chip" data-srview="text" aria-pressed="false">📄 Text view</button></div>
@@ -2203,6 +2222,17 @@ window.MWB_TRIAL_DAYS = 14;
             <div class="sr-ttsrow"><button type="button" class="btn" id="sr-qzgo">🧠 Start quiz</button></div>
           </div>
           <div id="sr-qzbox" hidden></div>
+        </div>
+        <div id="sr-t-cards" hidden>
+          <div id="sr-fcsetup">
+            <p class="sr-note" style="text-align:left">Turn a chapter into flashcards. Tap a card to flip it, then say if you knew it. Your cards are saved with this book.</p>
+            <div class="sr-ttsrow"><label class="sr-chsel">Cards from <select id="sr-fcch" aria-label="Which chapter to make flashcards from"></select></label></div>
+            <div class="sr-ttsrow" role="group" aria-label="How many cards"><b class="sr-qzlab">Cards:</b><button type="button" class="chip" data-fcn="10" aria-pressed="true">10</button><button type="button" class="chip" data-fcn="20" aria-pressed="false">20</button><button type="button" class="chip" data-fcn="30" aria-pressed="false">30</button></div>
+            <div class="sr-ttsrow"><button type="button" class="btn" id="sr-fcgo">🃏 Make flashcards</button></div>
+            <p class="sr-note" id="sr-fcmsg" aria-live="polite" style="text-align:left"></p>
+            <div id="sr-fcdecks"></div>
+          </div>
+          <div id="sr-fcbox" hidden></div>
         </div>
         <div id="sr-t-toc" hidden><div id="sr-tocl"></div></div>
         <div id="sr-t-find" hidden><input type="search" id="sr-search" class="sr-input" placeholder="Find words in the document…" aria-label="Search the document"><div id="sr-sres"></div></div>
@@ -34506,9 +34536,9 @@ function srApply(){
 }
 function srTab(t){
   SR.tab = t; document.querySelectorAll("[data-srtab]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.srtab === t)));
-  ["read", "ask", "sum", "quiz", "toc", "find", "notes", "info"].forEach(k => { $("sr-t-" + k).hidden = k !== t; });
-  $("sr-askfab").hidden = t === "ask"; setTimeout(srBookFit, 30);
-  if(t === "quiz") srQuizSetup(); else if(t === "sum") srSummary(); else if(t === "toc") srTOC(); else if(t === "notes") srNotes(); else if(t === "info") srInsights(); else if(t === "ask") setTimeout(() => $("sr-askin").focus({preventScroll: true}), 50);
+  ["read", "ask", "sum", "quiz", "cards", "toc", "find", "notes", "info"].forEach(k => { $("sr-t-" + k).hidden = k !== t; });
+  $("sr-askfab").hidden = t === "ask" || t === "cards"; setTimeout(srBookFit, 30);
+  if(t === "quiz") srQuizSetup(); else if(t === "cards") srCardsSetup(); else if(t === "sum") srSummary(); else if(t === "toc") srTOC(); else if(t === "notes") srNotes(); else if(t === "info") srInsights(); else if(t === "ask") setTimeout(() => $("sr-askin").focus({preventScroll: true}), 50);
 }
 function srProgress(){ const r = $("sr-reader"), el = $("sr-prog"); if(!SR.paras.length) return; const pct = r.classList.contains("sr-pages") ? Math.min(100, Math.round((r.scrollLeft + r.clientWidth) / Math.max(1, r.scrollWidth) * 100)) : Math.min(100, Math.round((r.scrollTop + r.clientHeight) / Math.max(1, r.scrollHeight) * 100)); el.style.width = pct + "%"; $("sr-progt").textContent = pct + "%";
   clearTimeout(SR.posT); SR.posT = setTimeout(() => { if(!SR.playing){ SR.pos = srFirstVisible(); srSaveState(); } }, 600); }
@@ -34900,6 +34930,58 @@ async function srQuizMore(){ const Z = SR.quiz; if(!Z || Z.busy || Z.ended || Z.
   if(got.length){ Z.qs = Z.qs.concat(got); Z.fails = 0; } else if(!Z.fails || Z.fails >= 3){ Z.dry = true; if(Z.qs.length) srToast(Z.web ? "Couldn't make more new questions right now." : "That's every question this part can give — turn on 🌐 internet questions to keep going."); }
   if(Z.waiting){ Z.waiting = false; srQuizRender(); } else srQuizHead(); }
 function srQuizTotal(Z){ return Z.n ? (Z.dry ? Z.qs.length : Z.n) : 0; }
+// ---------- 🃏 Flashcards from a chapter ----------
+function srCardsAll(){ try { return JSON.parse(srLS("sr-cards-" + SR.id) || "{}") || {}; } catch(e){ return {}; } }
+function srCardsPut(all){ try { srLS("sr-cards-" + SR.id, Object.keys(all).length ? JSON.stringify(all) : null); } catch(e){} }
+function srCardsSaveDeck(){ const D = SR.fc && SR.fc.deck; if(!D || SR.fc.doc !== SR.id) return; const all = srCardsAll(); if(D.cards.length) all[D.key] = {title: D.title, cards: D.cards.slice(0, 200)}; else delete all[D.key]; srCardsPut(all); }
+function srCardsSetup(){ const L = srChRanges(), sel = $("sr-fcch"); sel.closest(".sr-ttsrow").hidden = !L.length; if(L.length){ if(SR.fcDoc !== SR.id){ SR.fcCh = String(srCurCh(L)); SR.fcDoc = SR.id; } srChOptions(sel, L, SR.fcCh); }
+  if(!SR.fcN) SR.fcN = 10; document.querySelectorAll("[data-fcn]").forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.fcn === SR.fcN)));
+  const open = SR.fc && SR.fc.doc === SR.id && SR.fc.deck; $("sr-fcsetup").hidden = !!open; $("sr-fcbox").hidden = !open; if(open){ srCardsShow(); return; }
+  const all = srCardsAll(), keys = Object.keys(all);
+  $("sr-fcdecks").innerHTML = keys.length ? `<p class="sr-note" style="text-align:left;margin-bottom:2px"><b>📚 Your saved decks</b></p>` + keys.map((k, i) => { const d = all[k], kn = d.cards.filter(c => c.k).length; return `<div class="sr-fcdeck"><b>${esc(d.title)}</b><small>${d.cards.length} card${d.cards.length === 1 ? "" : "s"} · ${kn} known</small><button type="button" class="btn sr-sm" data-fcopen="${i}">▶ Study</button><button type="button" class="btn alt sr-sm" data-fcdel="${i}" aria-label="Delete the deck ${esc(d.title)}">🗑️</button></div>`; }).join("") : "";
+  $("sr-fcdecks").querySelectorAll("[data-fcopen]").forEach(b => b.onclick = () => { const k = keys[+b.dataset.fcopen]; SR.fc = {doc: SR.id, deck: {key: k, title: all[k].title, cards: all[k].cards}, i: 0, flip: false, only: false}; srCardsSetup(); });
+  $("sr-fcdecks").querySelectorAll("[data-fcdel]").forEach(b => b.onclick = () => { if(b.dataset.sure){ const a2 = srCardsAll(); delete a2[keys[+b.dataset.fcdel]]; srCardsPut(a2); srCardsSetup(); srToast("Deck deleted"); } else { b.dataset.sure = "1"; b.textContent = "Tap again to delete"; setTimeout(() => { if(b.isConnected){ delete b.dataset.sure; b.textContent = "🗑️"; } }, 3000); } }); }
+function srCardsParse(text){ let arr = []; try { const m = String(text).match(/\[[\s\S]*\]/); if(m) arr = JSON.parse(m[0]); } catch(e){ arr = [...String(text).matchAll(/\{[^{}]*\}/g)].map(m => { try { return JSON.parse(m[0]); } catch(e){ return null; } }).filter(Boolean); }
+  return (Array.isArray(arr) ? arr : []).map(c => ({f: String((c && (c.front || c.q || c.term)) || "").trim().slice(0, 220), b: String((c && (c.back || c.a || c.answer || c.definition)) || "").trim().slice(0, 420), p: Math.max(0, Math.round(+(c && c.p)) || 0), k: 0})).filter(c => c.f.length > 1 && c.b.length > 1).map(c => (c.p > SR.paras.length ? (c.p = 0, c) : c)); }
+async function srCardsBatch(C, s, e, k, have, round){ const S2 = srSummarize(SR.paras.slice(s, e), "detailed") || {idx: []}, P = srSpread(s, e, 12000, (S2.idx || []).map(i => i + s), {shift: round * 0.37}), where = C ? `the chapter "${C.title}"` : `"${SR.title}"`;
+  const task = `Make ${k} study flashcards for ${where}. Each card tests ONE important idea from the passages: a key term and its meaning, a person, place or date and why it matters, a cause and its effect, a rule or formula, or a key question and its answer. "front" = a short question or term (at most 18 words). "back" = the answer in 1 or 2 short, clear sentences (at most 40 words). Use only facts from the passages. Spread the cards over the whole ${C ? "chapter" : "document"} from beginning to end, most important ideas first, and never repeat a card from the ALREADY MADE list. Reply with ONLY a JSON array: [{"front":"","back":"","p":paragraph number or 0}]`;
+  const text = await srAI(task, `${have.length ? `ALREADY MADE (do not repeat):\n${have.slice(-60).map(c => "- " + c.f).join("\n")}\n\n` : ""}DOCUMENT PASSAGES (numbered by paragraph):\n${P.text}`, null, {json: true});
+  const seen = new Set(have.map(c => c.f.toLowerCase().replace(/[^a-z0-9]/g, ""))); return srCardsParse(text).filter(c => { const key = c.f.toLowerCase().replace(/[^a-z0-9]/g, ""); if(!key || seen.has(key)) return false; seen.add(key); return true; }).slice(0, k); }
+function srCardsOffline(s, e, n, have){ const seen = new Set(have.map(c => c.f)); return srQuizOffline(s, e, n + have.length).map(q => ({f: q.q, b: `${q.options[q.answer]} — ${String(q.why || "").replace(/^The document says:\s*/, "")}`.slice(0, 420), p: (q.p || 0) + 1, k: 0})).filter(c => !seen.has(c.f)).slice(0, n); }
+async function srCardsMake(more){ if(SR.busy || !SR.paras.length) return; const L = srChRanges(); let C, D = more && SR.fc && SR.fc.deck;
+  if(D) C = D.key === "all" ? null : L.find(c => "c:" + c.title === D.key) || null; else { const v = $("sr-fcch").value; C = L.length && v !== "all" ? L[+v] : null; SR.fcCh = v; }
+  if(D && D.key !== "all" && !C){ srToast("I can't find that chapter any more."); return; }
+  const s = C ? C.s : 0, e = C ? C.e : SR.paras.length, key = C ? "c:" + C.title : "all", all = srCardsAll(); if(!D) D = {key, title: C ? C.title : SR.title, cards: all[key] ? all[key].cards : []};
+  const want = more ? 10 : SR.fcN || 10, start = D.cards.length, msg = t => { const el = more ? $("sr-fcmore") : $("sr-fcmsg"); if(el) el.textContent = t; }, go = $("sr-fcgo");
+  SR.busy = true; go.disabled = true; msg(start && !more ? `🃏 Adding ${want} new cards to this chapter's deck…` : "🃏 Reading the chapter and writing your cards…"); let err = null, off = false;
+  try { for(let round = 0; D.cards.length - start < want && round < 5; round++){ const got = await srCardsBatch(C, s, e, Math.min(10, want - (D.cards.length - start)), D.cards, round + Math.floor(start / 10)); if(!got.length) break; D.cards = D.cards.concat(got); msg(`🃏 Made ${D.cards.length - start} of ${want} cards…`); } }
+  catch(x){ err = x; }
+  if(D.cards.length === start){ const loc = srCardsOffline(s, e, want, D.cards); if(loc.length){ D.cards = D.cards.concat(loc); off = true; } }
+  SR.busy = false; go.disabled = false;
+  if(D.cards.length === start){ msg(err ? "😕 " + srAIFail(err) : "I couldn't find enough to make cards from in this part. Try another chapter."); return; }
+  msg(""); SR.fc = {doc: SR.id, deck: D, i: more ? start : 0, flip: false, only: false}; srCardsSaveDeck(); srCardsSetup();
+  srToast(off ? `Made ${D.cards.length - start} fill-in-the-blank cards (AI wasn't available)` : `🃏 ${D.cards.length - start} new card${D.cards.length - start === 1 ? "" : "s"} ready!`); }
+function srCardsList(){ const F = SR.fc, D = F.deck; let ids = D.cards.map((_, i) => i); if(F.only){ const l = ids.filter(i => !D.cards[i].k); if(l.length) ids = l; else F.only = false; } return ids; }
+function srCardsShow(){ const F = SR.fc, D = F && F.deck, box = $("sr-fcbox"); if(!D || !box) return; if(!D.cards.length){ SR.fc = null; srCardsSaveDeck(); srCardsSetup(); return; }
+  const ids = srCardsList(); if(!ids.includes(F.i)) F.i = ids.find(i => i >= F.i) ?? ids[0]; const pos = ids.indexOf(F.i), c = D.cards[F.i], known = D.cards.filter(x => x.k).length, n = D.cards.length;
+  box.innerHTML = `<div class="sr-fch"><span>🃏 ${esc(D.title.length > 60 ? D.title.slice(0, 58) + "…" : D.title)}</span><span>Card ${pos + 1} of ${ids.length} · ✅ ${known}/${n}</span></div><div class="sr-fcbar"><i style="width:${Math.round(known / n * 100)}%"></i></div>
+    <div class="sr-fc${F.flip ? " flip" : ""}" id="sr-fccard" tabindex="0" role="button" aria-label="Flashcard. ${F.flip ? "Answer" : "Question"}: ${esc(F.flip ? c.b : c.f)}. Tap to flip."><div class="sr-fcin"><div class="sr-fcf front"><span class="tag">Question</span>${c.k ? `<span class="st" title="You know this one">✅</span>` : ""}<div>${esc(c.f)}</div><small>Tap to see the answer</small></div><div class="sr-fcf back"><span class="tag">Answer</span><div>${esc(c.b)}</div><small>Tap to flip back</small></div></div></div>
+    <div class="sr-fcrow"><button type="button" class="btn alt sr-sm" id="sr-fcprev" aria-label="Previous card">◀ Back</button><button type="button" class="btn sr-sm learn" id="sr-fclearn">🔁 Still learning</button><button type="button" class="btn sr-sm know" id="sr-fcknow">✅ I know it</button><button type="button" class="btn alt sr-sm" id="sr-fcnext" aria-label="Next card">Next ▶</button></div>
+    <div class="sr-fcrow"><button type="button" class="btn alt sr-sm" id="sr-fcsay">🔊 Read it</button><button type="button" class="btn alt sr-sm" id="sr-fcshuf">🔀 Shuffle</button><button type="button" class="chip" id="sr-fconly" aria-pressed="${!!F.only}">Only cards I'm still learning</button>${c.p ? `<button type="button" class="btn alt sr-sm" id="sr-fcsee">📖 Show in book</button>` : ""}</div>
+    <div class="sr-fcrow"><button type="button" class="btn alt sr-sm" id="sr-fcadd">➕ 10 more cards</button><button type="button" class="btn alt sr-sm" id="sr-fcrm">🗑️ Remove this card</button><button type="button" class="btn alt sr-sm" id="sr-fcclose">✕ Close deck</button></div><p class="sr-note" id="sr-fcmore" aria-live="polite"></p>`;
+  const card = $("sr-fccard"), flip = () => { F.flip = !F.flip; card.classList.toggle("flip", F.flip); card.setAttribute("aria-label", `Flashcard. ${F.flip ? "Answer" : "Question"}: ${F.flip ? c.b : c.f}. Tap to flip.`); };
+  const step = d => { const l = srCardsList(), p = l.indexOf(F.i); F.i = l[(Math.max(0, p) + d + l.length) % l.length]; F.flip = false; srCardsShow(); try { $("sr-fccard").focus({preventScroll: true}); } catch(e){} };
+  const mark = k => { c.k = k ? 1 : 0; srCardsSaveDeck(); if(k && D.cards.every(x => x.k)){ srToast("🎉 You know every card in this deck!"); F.only = false; } const l = srCardsList(); if(F.only && k){ const after = l.find(i => i > F.i); F.i = after ?? l[0]; F.flip = false; srCardsShow(); } else step(1); };
+  card.onclick = flip; card.onkeydown = e => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); flip(); } else if(e.key === "ArrowRight"){ e.preventDefault(); step(1); } else if(e.key === "ArrowLeft"){ e.preventDefault(); step(-1); } };
+  $("sr-fcprev").onclick = () => step(-1); $("sr-fcnext").onclick = () => step(1); $("sr-fcknow").onclick = () => mark(true); $("sr-fclearn").onclick = () => mark(false);
+  $("sr-fcsay").onclick = () => srSay(F.flip ? `${c.f} … ${c.b}` : c.f);
+  $("sr-fcshuf").onclick = () => { for(let i = D.cards.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [D.cards[i], D.cards[j]] = [D.cards[j], D.cards[i]]; } F.i = 0; F.flip = false; srCardsSaveDeck(); srCardsShow(); srToast("🔀 Shuffled"); };
+  $("sr-fconly").onclick = () => { if(!F.only && D.cards.every(x => x.k)){ srToast("You already know every card 🎉"); return; } F.only = !F.only; F.flip = false; srCardsShow(); };
+  if($("sr-fcsee")) $("sr-fcsee").onclick = () => srFlash(c.p - 1);
+  $("sr-fcadd").onclick = () => srCardsMake(true);
+  $("sr-fcrm").onclick = () => { D.cards.splice(F.i, 1); F.flip = false; if(F.i >= D.cards.length) F.i = 0; srCardsSaveDeck(); if(!D.cards.length){ SR.fc = null; srCardsSetup(); srToast("Deck is empty, so it was removed"); } else srCardsShow(); };
+  $("sr-fcclose").onclick = () => { try { srStop(); } catch(e){} srCardsSaveDeck(); SR.fc = null; srCardsSetup(); }; }
+function srCardsInit(){ $("sr-fcgo").onclick = () => srCardsMake(false); $("sr-fcch").onchange = e => { SR.fcCh = e.target.value; }; document.querySelectorAll("[data-fcn]").forEach(b => b.onclick = () => { SR.fcN = +b.dataset.fcn; srCardsSetup(); }); }
 async function srQuizStart(){
   if(SR.busy || !SR.paras.length) return; const L = srChRanges(), v = $("sr-qzch").value, C = L.length && v !== "all" ? L[+v] : null, s = C ? C.s : 0, e = C ? C.e : SR.paras.length, n = SR.qzN || 0;
   SR.qzCh = v; SR.busy = true; const go = $("sr-qzgo"); go.disabled = true; go.textContent = "🧠 Making your quiz…";
@@ -35224,7 +35306,7 @@ function openReader(){ SR.userOpened = true; window.__storeWanted = true; if(win
   document.querySelectorAll("[data-qzsz]").forEach(b => b.onclick = () => { SR.set.qzSize = Math.max(0.85, Math.min(1.6, Math.round(((+SR.set.qzSize || 1) + 0.1 * +b.dataset.qzsz) * 100) / 100)); srSave(); srQuizView(); });
   document.querySelectorAll("[data-qzl]").forEach(b => b.onclick = () => { SR.qzLevel = b.dataset.qzl; try { SR.set.qzLevel = SR.qzLevel; srSave(); } catch(e){} srQuizSetup(); });
   $("sr-qzweb").onclick = () => { SR.qzWeb = !SR.qzWeb; try { SR.set.qzWeb = SR.qzWeb; srSave(); } catch(e){} srQuizSetup(); };
-  $("sr-qzgo").onclick = () => srQuizStart();
+  $("sr-qzgo").onclick = () => srQuizStart(); try { srCardsInit(); } catch(e){ console.error(e); }
   $("sr-search").addEventListener("input", e => { clearTimeout(SR.findT); SR.findT = setTimeout(() => srFind(e.target.value), 180); });
   $("sr-aisum").onclick = srAISummary;
   $("sr-copy").onclick = () => { const t = srSumText(); if(!t){ srToast("There's no summary to copy."); return; } navigator.clipboard && navigator.clipboard.writeText(t).then(() => srToast("✅ Summary copied"), () => srToast("Couldn't copy")); };
