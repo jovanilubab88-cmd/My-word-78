@@ -36792,6 +36792,17 @@ try { __diag("script-end"); } catch(e){}
 .vt-calcans{margin-top:8px;padding:8px 10px;border-radius:10px;background:#dcfce7;color:#14532d;font-weight:700;font-size:18px;overflow-wrap:anywhere}
 .vt-calcmore{margin:6px 0 0;font-size:14px;color:#64748b}
 .vt-exh{margin:14px 0 2px;font-size:16px;color:#4f46e5}
+/* 💬 talk to the tutor about the answer */
+.vt-talk{margin-top:12px;padding:12px;border-radius:14px;border:3px solid #4f46e5;background:#eef2ff;color:#1e1b4b}
+.vt-talk>b{font-size:16px}.vt-talk .vt-tip{margin:4px 0 8px}
+.vt-talkchips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}.vt-talkchips button{font:inherit;font-size:14.5px;font-weight:700;padding:7px 12px;border-radius:999px;border:2px solid #4f46e5;background:#fff;color:#3730a3;cursor:pointer;min-height:38px}
+.vt-talkchips button:first-child{border-color:#dc2626;color:#b91c1c}
+.vt-talklog{display:flex;flex-direction:column;gap:6px;max-height:340px;overflow-y:auto;margin-bottom:8px}.vt-talklog:empty{display:none}
+.vt-tmsg{max-width:92%;padding:8px 12px;border-radius:14px;line-height:1.5;overflow-wrap:anywhere;font-size:16px}
+.vt-tmsg.me{align-self:flex-end;background:#4f46e5;color:#fff;border-bottom-right-radius:4px}.vt-tmsg.bot{align-self:flex-start;background:#fff;color:#0f172a;border:2px solid #c7d2fe;border-bottom-left-radius:4px}
+.vt-talkrow{gap:8px;align-items:stretch}.vt-talkrow textarea{flex:1 1 220px;min-width:0;font:inherit;font-size:16px;padding:9px 11px;border:3px solid #4f46e5;border-radius:12px;background:#fff;color:#0f172a;resize:vertical}
+.vt-badge.fixed{background:#fef3c7;color:#92400e;border-color:#f59e0b}
+
 /* matrices */
 .vt-mx{display:inline-block;vertical-align:middle;margin:3px 4px;padding:2px 5px;border-left:2.5px solid currentColor;border-right:2.5px solid currentColor;border-radius:7px;white-space:normal}
 .vt-mxg{display:inline-table;border-collapse:separate;border-spacing:10px 2px}.vt-mxr{display:table-row}.vt-mxc{display:table-cell;text-align:center;white-space:nowrap;padding:1px 2px}
@@ -37472,13 +37483,14 @@ function vtShow(S, keep){ vt.sol = S; if(!keep){ vt.step = 0; vt.shown = vt.guid
   const nxt = S.steps[vt.shown];
   const hasCalc = S.steps.some(x => x.math), allOpen = vt.shown >= S.steps.length, calcLines = S.steps.map((x, i) => x.math && i < vt.shown ? `<div class="vt-calcl"><span aria-hidden="true">${i + 1}</span><div>${vtMath(x.math)}</div></div>` : "").join("");
   const calcBox = !hasCalc ? "" : `<div class="vt-calc" id="vt-calc"><div class="vt-calch"><b>🧮 Calculation only</b><button type="button" class="btn alt vt-sm" id="vt-calcsay" aria-label="Read the calculation">🔊</button></div>${calcLines || `<p class="vt-calcmore">The working shows here as you open each step.</p>`}${allOpen ? `<div class="vt-calcans">∴ ${vtMath(S.answer)}</div>` : calcLines ? `<p class="vt-calcmore">More lines appear as you open each step.</p>` : ""}</div>`;
-  box.innerHTML = `<div class="vt-solhead"><div><span class="vt-badge${S.ai ? " ai" : ""}">${S.ai ? "🤖 AI answer — double-check important numbers" : "✅ Checked by the calculator"}</span><h3>${vtMath(S.title)}</h3></div><button type="button" class="btn alt vt-sm" id="vt-sayans">🔊</button></div>
+  box.innerHTML = `<div class="vt-solhead"><div><span class="vt-badge${S.ai ? " ai" : ""}${S.revised ? " fixed" : ""}">${S.revised === "fixed" ? "🛠️ Corrected by the tutor after your message — double-check important numbers" : S.revised && S.keptAnswer ? "✏️ Steps rewritten by the tutor — the answer was checked by the calculator" : S.revised ? "✏️ Rewritten by the tutor for you — double-check important numbers" : S.ai ? "🤖 AI answer — double-check important numbers" : "✅ Checked by the calculator"}</span><h3>${vtMath(S.title)}</h3></div><button type="button" class="btn alt vt-sm" id="vt-sayans">🔊</button></div>
     <div class="vt-answer">${S.kind === "ai" && !/\d/.test(S.answer) ? "Key idea" : "Answer"}: ${vtMath(S.answer)}</div>${S.overview ? `<p class="vt-over">${vtMath(S.overview)}</p>` : ""}
     ${calcBox}<h4 class="vt-exh">📝 Step-by-step explanation</h4>
     <div class="vt-solbar"><label class="vt-tog"><input type="checkbox" id="vt-guided"${vt.guided ? " checked" : ""}> 👣 One step at a time</label><button type="button" class="btn alt vt-sm" id="vt-readall">▶ Read all steps</button>${S.graph ? `<button type="button" class="btn alt vt-sm" id="vt-seegraph">📈 See the graph</button>` : ""}</div>
     <ol class="vt-steps">${steps}</ol>
     ${nxt ? `<div class="vt-guide"><p>🤔 <b>Your turn first:</b> ${vtMath(nxt.hint || "What do you think comes next?")}</p><button type="button" class="btn vt-sm" id="vt-next">Show step ${vt.shown + 1} of ${S.steps.length} ▶</button></div>` : ""}
     <div class="vt-mine"><b>✍️ Check my answer</b><div class="vt-row" style="margin-top:6px"><input id="vt-mine" placeholder="${S.check ? "e.g. " + (S.check.length > 1 ? "x = 2 and x = −1" : "13") : "Type your answer"}" autocomplete="off"><button type="button" class="btn vt-sm" id="vt-chk">Check</button></div><p class="vt-mineres" id="vt-mineres" aria-live="polite"></p></div>
+    ${vtTalkHTML(S)}
     ${(S.followups || []).length ? `<div class="vt-follow">${S.followups.map(f => `<button type="button" data-f="${esc(f)}">${esc(f)}</button>`).join("")}</div>` : ""}`;
   $("vt-sayans").onclick = () => vtSay(`${S.title}. The answer is ${S.answer}`);
   if($("vt-calcsay")) $("vt-calcsay").onclick = () => vtSay(S.steps.filter((x, i) => x.math && i < vt.shown).map(x => x.math).join(". ") + (vt.shown >= S.steps.length ? `. So the answer is ${S.answer}` : ""));
@@ -37489,6 +37501,7 @@ function vtShow(S, keep){ vt.sol = S; if(!keep){ vt.step = 0; vt.shown = vt.guid
   box.querySelectorAll("[data-say]").forEach(b => b.onclick = () => vtGoStep(+b.dataset.say));
   box.querySelectorAll("[data-hint]").forEach(b => b.onclick = () => vtHint(+b.dataset.hint));
   box.querySelectorAll("[data-f]").forEach(b => b.onclick = () => { vtLog("me", b.dataset.f); vtFollow(b.dataset.f); });
+  vtTalkWire(S);
   $("vt-chk").onclick = () => vtCheck($("vt-mine").value); $("vt-mine").onkeydown = e => { if(e.key === "Enter") vtCheck($("vt-mine").value); };
 }
 function vtGoStep(i){ const S = vt.sol; if(!S || i < 0 || i >= S.steps.length) return; vt.step = i; if(i >= vt.shown) vt.shown = i + 1; vtShow(S, true); const s = S.steps[i];
@@ -37510,6 +37523,46 @@ async function vtCheck(ans){ const S = vt.sol, res = $("vt-mineres"); ans = Stri
   res.textContent = "Checking…"; try { const j = await vtSmp.json(`${vtBasePrompt()}\nProblem: "${S.q}". Correct answer: ${S.answer}.\nThe student answered: "${ans}".\nReply with ONLY JSON: {"correct": true or false, "feedback": "1-2 encouraging sentences; if wrong, a hint without giving the answer away"}`);
     const msg = (j && j.correct ? "✅ " : "❌ ") + (j && j.feedback || ""); res.textContent = msg; vtLog("bot", msg); vtSay(msg); } catch(e){ res.textContent = vtAIErr(e); } }
 // ---------- follow-up questions ----------
+// ---------- 💬 Talk to the tutor about this answer (ask for changes, or say it's wrong) ----------
+const VT_TALK = [["❌ I think the answer is wrong", "I think this answer is wrong. Please work it out again carefully and check."], ["🧒 Explain it more simply", "Please explain this again in simpler words."], ["🔀 Use a different method", "Please solve it again using a different method."], ["➕ Show more steps", "Please show more steps. Don't skip any working."], ["📝 Give me a similar example", "Please give me one similar example with its answer, so I can practise."]];
+function vtTalkHTML(S){ const T = S.talk || []; return `<div class="vt-talk" id="vt-talk"><b>💬 Talk to the tutor about this answer</b><p class="vt-tip">Tell the tutor what you need, or say if you think the answer is wrong. The tutor will check it again.</p>
+  <div class="vt-talkchips">${VT_TALK.map((c, i) => `<button type="button" data-talk="${i}">${c[0]}</button>`).join("")}</div>
+  <div class="vt-talklog" id="vt-talklog" aria-live="polite">${T.map(m => `<div class="vt-tmsg ${m.who}">${m.who === "me" ? "" : `<span aria-hidden="true">${m.flag || "🧑‍🏫"}</span> `}${vtMath(m.text)}</div>`).join("")}</div>
+  <div class="vt-row vt-talkrow"><textarea id="vt-talkin" rows="2" maxlength="500" placeholder="e.g. I think step 3 is wrong because… · I got 12, why is it 14? · I meant 5x, not 5 · Explain step 2 again" aria-label="Your message to the tutor about this answer"></textarea><button type="button" class="btn vt-sm" id="vt-talkgo">Send</button></div></div>`; }
+function vtTalkWire(S){ const go = () => { const v = $("vt-talkin").value.trim(); if(v) vtTalk(v); }; $("vt-talkgo").onclick = go; $("vt-talkin").onkeydown = e => { if(e.key === "Enter" && !e.shiftKey){ e.preventDefault(); go(); } };
+  $("vt-sol").querySelectorAll("[data-talk]").forEach(b => b.onclick = () => vtTalk(VT_TALK[+b.dataset.talk][1])); const L = $("vt-talklog"); if(L) L.scrollTop = L.scrollHeight; }
+function vtTalkAdd(S, who, text, flag){ S.talk = S.talk || []; S.talk.push({who, text: String(text), flag}); if(S.talk.length > 30) S.talk.shift(); const L = $("vt-talklog"); if(L && vt.sol === S){ const d = document.createElement("div"); d.className = "vt-tmsg " + who; d.innerHTML = (who === "me" ? "" : `<span aria-hidden="true">${flag || "🧑‍🏫"}</span> `) + vtMath(text); L.appendChild(d); L.scrollTop = L.scrollHeight; } }
+async function vtTalk(msg){ const S = vt.sol; msg = String(msg || "").trim().slice(0, 500); if(!S || !msg || vt.busy) return; vtTalkAdd(S, "me", msg); vtLog("me", "💬 " + msg); if($("vt-talkin")) $("vt-talkin").value = "";
+  if(!vtAI()){ const m = "I need the AI to talk about this answer (on the website, log in first). You can still use “Check my answer”, the 💡 hints, or type the question again in a different way."; vtTalkAdd(S, "bot", m); return; }
+  vt.busy = true; vtState(); const btn = $("vt-talkgo"); if(btn){ btn.disabled = true; btn.textContent = "Checking…"; } let retry = "";
+  try {
+    const j = await vtSmp.json(`${vtBasePrompt()}
+The student is looking at this worked solution and wants to talk about it.
+Problem as typed: "${S.q}"
+Answer shown: ${S.answer}
+Steps shown: ${S.steps.map((s, i) => `${i + 1}) ${s.title}: ${s.math}${s.why ? " — " + s.why : ""}`).join(" | ").slice(0, 3500)}
+${S.ai ? "This solution was written by an AI tutor, so it MAY contain mistakes." : "This answer was computed by the app's exact calculator, so the arithmetic is reliable for the problem AS TYPED. If the student says it is wrong, the usual reason is that the problem was typed or read differently from what they meant, or they made a slip in their own working."}
+${(S.talk || []).length > 1 ? `Earlier messages about this answer: ${S.talk.slice(-7, -1).map(m => (m.who === "me" ? "Student: " : "Tutor: ") + m.text).join(" | ").slice(0, 1500)}` : ""}
+The student now says: "${msg}"
+Do what the student asks.
+- If they say the answer or a step is wrong, or give a different answer: work the problem out again yourself from the start, carefully, and compare. Be honest. If the shown answer is wrong, say exactly what was wrong and give the corrected solution. If it is right, say so kindly, show where the student's own answer went off, and explain the step they doubt.
+- If they ask for simpler words, another method, more steps or more detail: rewrite the solution that way.
+- If they mean a different problem from the one typed (a typo, a missing sign, different numbers): put the corrected problem in "retry" as one line of plain text, and nothing in "solution".
+- If they only ask a question or want an example: just answer in "reply".
+Reply with ONLY JSON in exactly this shape:
+{"reply": "2-5 short sentences said to the student", "verdict": "right" or "wrong" or "rewritten" or "none", "retry": "", "solution": null}
+When you corrected the answer or rewrote the steps, replace null with {"title": "short title", "answer": "final answer in one line", "overview": "1-2 sentences", "steps": [{"title": "", "math": "working as plain text", "why": "1-3 sentences", "hint": "a short guiding question"}]} using 3 to 8 steps. Double-check all arithmetic before you answer.`);
+    if(vt.sol !== S) return; if(!j || !j.reply) throw {code: "failed"};
+    const verdict = String(j.verdict || "none"), reply = String(j.reply).trim(), flag = verdict === "wrong" ? "🛠️" : verdict === "right" ? "✅" : "🧑‍🏫"; vtTalkAdd(S, "bot", reply, flag); vtLog("bot", reply); vtSay(reply);
+    const N = j.solution; retry = String(j.retry || "").trim();
+    if(retry && retry.toLowerCase() !== String(S.q).toLowerCase()){ /* solved below, once we are no longer busy */ }
+    else { retry = "";
+      if(!S.ai && verdict === "wrong"){ vtTalkAdd(S, "bot", "One more thing: the answer on screen was worked out by the exact calculator for the problem as it was typed, so I'm keeping it. If your problem is different (another number or sign), tell me what it should be and I'll solve that one.", "🧮"); }
+      else if(N && Array.isArray(N.steps) && N.steps.length && N.answer){ const R = {kind: "ai", ai: true, subject: S.subject, q: S.q, title: String(N.title || S.title).slice(0, 120), answer: S.ai ? String(N.answer) : S.answer, keptAnswer: !S.ai, overview: String(N.overview || ""), check: S.ai ? null : S.check, graph: S.graph || null, followups: S.followups || [], talk: S.talk, revised: verdict === "wrong" ? "fixed" : "rewritten",
+        steps: N.steps.slice(0, 8).map(s => ({title: String(s.title || ""), math: String(s.math || ""), why: String(s.why || s.explanation || ""), hint: String(s.hint || "")}))}; vtShow(R); try { $("vt-sol").scrollIntoView({behavior: "smooth", block: "start"}); } catch(e){} } }
+  } catch(e){ if(vt.sol === S) vtTalkAdd(S, "bot", vtAIErr(e)); }
+  finally { vt.busy = false; vtState(); const b2 = $("vt-talkgo"); if(b2){ b2.disabled = false; b2.textContent = "Send"; } }
+  if(retry && vt.sol === S){ const keep = S.talk; $("vt-in").value = retry; await vtSolve(retry); if(vt.sol && vt.sol !== S){ vt.sol.talk = keep; vtShow(vt.sol, true); } } }
 async function vtFollow(q){ const S = vt.sol; if(!vtAI()){ const m = "Follow-up questions need the AI. Tap 💡 on a step for a hint, or 🔊 to hear it again."; vtLog("bot", m); vtSay(m); return; }
   vt.busy = true; vtState(); try { const r = await vtSmp(`${vtBasePrompt()}
 ${S ? `We are working on: "${S.q}". Verified answer: ${S.answer}. Steps: ${S.steps.map((s, i) => `${i + 1}) ${s.title}: ${s.math}`).join("; ")}.` : ""}
