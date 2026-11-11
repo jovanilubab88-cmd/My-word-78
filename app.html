@@ -2490,8 +2490,9 @@ window.MWB_TRIAL_DAYS = 14;
       </div>
       <!-- 🪐 space -->
       <div class="k5-pane" data-pane="space" hidden>
-        <div class="k5-card"><div class="k5-row sp"><b>🪐 Solar system</b><button type="button" class="k5-btn alt" id="k5-orbit">⏸ Pause orbits</button></div>
-          <svg class="k5-solar" id="k5-solar" viewBox="-180 -180 360 360" role="img" aria-label="The solar system. Tap a planet."></svg>
+        <div class="k5-card"><div class="k5-row sp"><b>🪐 Solar system</b><span class="k5-row"><button type="button" class="k5-btn alt" id="k5-view">⬇️ Top view</button><button type="button" class="k5-btn alt" id="k5-orbit">⏸ Pause orbits</button></span></div>
+          <canvas class="k5-solar" id="k5-solar" role="img" aria-label="The solar system in 3D. Tap the Sun or a planet, or use the buttons below."></canvas>
+          <p class="k5-fb k5-solhint">👆 Tap the Sun or a planet. Drag sideways to spin the solar system.</p>
           <div class="k5-pchips" id="k5-pchips" role="group" aria-label="Pick a planet"></div>
           <div class="k5-pcard" id="k5-pinfo"><p class="k5-fb">Tap a planet to meet it!</p></div></div>
         <div class="k5-card"><b>⚖️ Your weight on other worlds</b>
@@ -37999,7 +38000,8 @@ function vtInit(){ if(!$("vt")) return; requestAnimationFrame(() => vtPlot()); i
 .k5-digi{font-size:44px;font-weight:800;font-variant-numeric:tabular-nums;text-shadow:0 3px 0 rgba(0,0,0,.28)}
 .k5-croutine{font-weight:800;font-size:16px;background:rgba(0,0,0,.28);padding:4px 12px;border-radius:12px}
 /* 🪐 space */
-.k5-solar{width:100%;max-width:440px;height:auto;margin:0 auto;display:block;border-radius:20px;background:#0b1026;touch-action:manipulation}
+.k5-solar{width:100%;max-width:820px;margin:0 auto;display:block;border-radius:20px;background:#02030b;touch-action:pan-y;cursor:grab;box-shadow:inset 0 0 0 3px rgba(255,255,255,.08)}.k5-solhint{margin:6px 0 2px;font-size:14px}.k5-pl-sun .k5-pl-cv{max-width:none}
+@media (min-width:900px){.k5-pane[data-pane="space"]>.k5-card:first-child{grid-column:1/-1}}
 .k5-solar [data-p]{cursor:pointer}
 .k5-pchips{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
 .k5-pchips button{font:inherit;font-size:13px;font-weight:800;padding:4px 10px 4px 5px;border-radius:999px;border:2px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer;display:flex;align-items:center;gap:5px}
@@ -38328,16 +38330,49 @@ const K5_PL = [
   {n: "Uranus", c: "#67e8f9", r: 148, s: 8.5, dur: 110, g: 0.92, size: "4× Earth", year: "84 Earth years", day: "17 hours", moons: "25+", temp: "−195 °C", fact: "An ice giant that spins tipped on its side, rolling around the Sun.", sci: "Uranus is tilted about 98°, so each pole gets 42 years of sunlight, then 42 years of darkness."},
   {n: "Neptune", c: "#6366f1", r: 168, s: 8.3, dur: 140, g: 1.19, size: "4× Earth", year: "165 Earth years", day: "16 hours", moons: "14+", temp: "−200 °C", fact: "Deep blue, very far away, and the windiest planet of all.", sci: "Neptune's winds can blow at about 2,000 km/h. It takes 165 Earth years to circle the Sun once."}];
 const K5_SQ = [["Which planet is the biggest?", "Jupiter", ["Mars", "Earth"]], ["Which planet is called the Red Planet?", "Mars", ["Venus", "Neptune"]], ["Which planet has famous rings?", "Saturn", ["Mercury", "Earth"]], ["Which planet is closest to the Sun?", "Mercury", ["Jupiter", "Uranus"]], ["Which planet do we live on?", "Earth", ["Venus", "Mars"]], ["Which planet is the hottest?", "Venus", ["Mercury", "Mars"]], ["Which planet is the windiest and very far away?", "Neptune", ["Saturn", "Mars"]], ["Which planet spins tipped on its side?", "Uranus", ["Jupiter", "Earth"]], ["What is at the centre of our solar system?", "The Sun", ["The Moon", "Earth"]], ["How many planets are in our solar system?", "8", ["7", "9"]]];
-function k5SpaceInit(){ if(!$("k5-solar").dataset.built){ $("k5-solar").dataset.built = "1"; let h = `<defs><radialGradient id="k5sun"><stop offset="0" stop-color="#fff7ae"/><stop offset=".6" stop-color="#fbbf24"/><stop offset="1" stop-color="#f97316"/></radialGradient></defs><rect x="-180" y="-180" width="360" height="360" fill="#0b1026"/>`;
-    for(let i = 0; i < 46; i++){ const a = (i * 137.5) * Math.PI / 180, d = 20 + (i * 53) % 160; h += `<circle cx="${(Math.cos(a) * d).toFixed(1)}" cy="${(Math.sin(a) * d).toFixed(1)}" r="${i % 5 === 0 ? 1.2 : 0.7}" fill="#fff" opacity="${0.35 + (i % 4) * 0.15}"/>`; }
-    h += `<circle r="22" fill="#fbbf24" opacity=".25"/><circle r="15" fill="url(#k5sun)" data-p="sun"/><circle r="26" fill="transparent" data-p="sun"/>`;
-    K5_PL.forEach((p, i) => { h += `<circle r="${p.r}" fill="none" stroke="#fff" stroke-opacity=".16" stroke-dasharray="2 5"/><g><animateTransform attributeName="transform" type="rotate" from="${i * 47} 0 0" to="${i * 47 + 360} 0 0" dur="${p.dur}s" repeatCount="indefinite"/>`
-      + `<circle cx="${p.r}" r="${p.s}" fill="${p.c}"/>${p.ring ? `<ellipse cx="${p.r}" rx="${p.s * 1.9}" ry="${p.s * 0.55}" fill="none" stroke="#fde68a" stroke-width="2" transform="rotate(-20 ${p.r} 0)"/>` : ""}<circle cx="${p.r}" r="${Math.max(11, p.s + 6)}" fill="transparent" data-p="${i}"><title>${p.n}</title></circle></g>`; });
-    $("k5-solar").innerHTML = h; $("k5-solar").onclick = e => { const t = e.target.closest("[data-p]"); if(t) k5Planet(t.dataset.p === "sun" ? -1 : +t.dataset.p); };
-    $("k5-pchips").innerHTML = K5_PL.map((p, i) => `<button type="button" data-pc="${i}" aria-pressed="false"><i style="background:${p.c}"></i>${p.n}</button>`).join(""); $("k5-pchips").querySelectorAll("[data-pc]").forEach(b => b.onclick = () => k5Planet(+b.dataset.pc));
-    $("k5-orbit").onclick = () => { const sv = $("k5-solar"), paused = $("k5-orbit").dataset.on === "1"; try { paused ? sv.unpauseAnimations() : sv.pauseAnimations(); } catch(e){} $("k5-orbit").dataset.on = paused ? "0" : "1"; $("k5-orbit").textContent = paused ? "⏸ Pause orbits" : "▶️ Play orbits"; };
+// ---------- ☀️🪐 the 3D solar system (canvas): tilted orbits, planets lit by a blazing Sun ----------
+const k5Sys = {t: 40, yaw: 0, tilt: 0.42, tiltTo: 0.42, view: 1, paused: false, raf: 0, last: 0, hit: [], warmI: 0, stars: null};
+const K5_VIEWS = [["🔭 Side view", 0.2], ["🪐 Tilted view", 0.42], ["⬇️ Top view", 1.25]];
+function k5SysSize(){ const cv = $("k5-solar"), w = Math.max(240, Math.min(820, cv.parentElement.clientWidth || 320)), h = Math.round(Math.max(210, Math.min(w * 0.62, (window.innerHeight || 700) * 0.62))), dpr = Math.min(2, window.devicePixelRatio || 1); if(cv._w !== w || cv._h !== h || cv._d !== dpr){ cv._w = w; cv._h = h; cv._d = dpr; cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); cv.style.height = h + "px"; k5Sys.stars = null; } }
+function k5SysStars(W, H){ const c = document.createElement("canvas"); c.width = W; c.height = H; const x = c.getContext("2d"); let g = x.createRadialGradient(W * .5, H * .5, 0, W * .5, H * .5, Math.max(W, H) * .75); g.addColorStop(0, "#141a44"); g.addColorStop(.5, "#090d28"); g.addColorStop(1, "#02030b"); x.fillStyle = g; x.fillRect(0, 0, W, H);
+  let s = 11; const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647; g = x.createRadialGradient(W * .78, H * .2, 0, W * .78, H * .2, W * .45); g.addColorStop(0, "rgba(120,80,200,.16)"); g.addColorStop(1, "rgba(120,80,200,0)"); x.fillStyle = g; x.fillRect(0, 0, W, H);
+  const n = Math.round(W * H / 2600); for(let i = 0; i < n; i++){ const r = rnd() < .08 ? 1.6 : rnd() < .3 ? 1 : .6, a = .35 + rnd() * .65; x.fillStyle = `rgba(${rnd() < .2 ? "255,236,190" : rnd() < .25 ? "190,215,255" : "255,255,255"},${a})`; x.beginPath(); x.arc(rnd() * W, rnd() * H, r * (W / 700 + .5), 0, 7); x.fill(); } return c; }
+function k5SysDraw(ts){ const S = k5Sys, cv = $("k5-solar"); S.raf = 0; if(!cv || !cv.isConnected || cv.offsetParent === null) return;   // tab hidden: stop until it is opened again
+  k5SysSize(); const ctx = cv.getContext("2d"), W = cv.width, H = cv.height, dpr = cv._d, dt = S.last ? Math.min(.05, (ts - S.last) / 1000) : 0; S.last = ts; if(!S.paused) S.t += dt; S.tilt += (S.tiltTo - S.tilt) * Math.min(1, dt * 5);
+  if(S.warmI < 8 && !S.warming){ S.warming = true; setTimeout(() => { K5_PR.warm(S.warmI); S.warmI++; S.warming = false; }, 30); }   // build the planet surfaces one at a time so the page never freezes
+  if(!S.stars) S.stars = k5SysStars(W, H); ctx.drawImage(S.stars, 0, 0);
+  const k = Math.sin(S.tilt), c = Math.cos(S.tilt), cx = W / 2, cy = H / 2 + 4 * dpr, sc = Math.min(W / 372, H / (2 * 168 * k + 64)), sunR = Math.max(9 * dpr, 15 * sc * 1.25), items = [];
+  K5_PL.forEach((p, i) => { const th = i * 0.82 + S.yaw + S.t * Math.PI * 2 / p.dur, X = p.r * Math.cos(th), Z = p.r * Math.sin(th), per = 1 + 0.16 * (Z / 168) * c, R = Math.max(3.2 * dpr, p.s * sc * 1.08 * per); items.push({i, p, th, X, Z, x: cx + X * sc, y: cy + Z * k * sc, R}); });
+  const orbit = (p, a0, a1, sel) => { ctx.beginPath(); ctx.ellipse(cx, cy, p.r * sc, Math.max(.5, p.r * k * sc), 0, a0, a1); ctx.strokeStyle = sel ? "rgba(253,224,71,.75)" : "rgba(190,205,255,.24)"; ctx.lineWidth = (sel ? 1.8 : 1) * dpr; ctx.stroke(); };
+  const planet = o => { const p = o.p, L = [-Math.cos(o.th), -Math.sin(o.th) * k, -Math.sin(o.th) * c], img = K5_PR.ready(o.i) ? K5_PR.ball(o.i, Math.ceil(o.R * 2), S.t * [.5, -.3, .9, .9, 1.6, 1.5, 1.1, 1.2][o.i], L, .36) : null, ring = o.i === 5 ? 1 : 0, sq = Math.max(.1, k * .95);
+    ctx.save(); ctx.translate(o.x, o.y); if(ring) K5_PR.rings(ctx, o.R, ring, true, sq, -.14);
+    if(img){ ctx.imageSmoothingQuality = "high"; ctx.drawImage(img, -o.R, -o.R, o.R * 2, o.R * 2); } else { ctx.fillStyle = p.c; ctx.beginPath(); ctx.arc(0, 0, o.R, 0, 7); ctx.fill(); }
+    if(ring) K5_PR.rings(ctx, o.R, ring, false, sq, -.14);
+    if(k5.pi === o.i){ ctx.strokeStyle = "#fde047"; ctx.lineWidth = 2 * dpr; ctx.setLineDash([4 * dpr, 4 * dpr]); ctx.beginPath(); ctx.arc(0, 0, o.R * (ring ? 2.5 : 1) + 5 * dpr, 0, 7); ctx.stroke(); ctx.setLineDash([]); }
+    ctx.font = `700 ${Math.round(Math.max(10, Math.min(13, W / dpr / 46)) * dpr)}px Fredoka,system-ui,sans-serif`; ctx.textAlign = "center"; ctx.textBaseline = "top"; const ty = o.R * (ring ? 1.25 : 1) + 4 * dpr; ctx.lineWidth = 3 * dpr; ctx.strokeStyle = "rgba(2,3,11,.8)"; ctx.strokeText(p.n, 0, ty); ctx.fillStyle = k5.pi === o.i ? "#fde047" : "rgba(255,255,255,.92)"; ctx.fillText(p.n, 0, ty); ctx.restore(); };
+  K5_PL.forEach((p, i) => orbit(p, Math.PI, Math.PI * 2, k5.pi === i));
+  items.filter(o => o.Z < 0).sort((a, b) => a.Z - b.Z).forEach(planet);
+  K5_PR.sunDraw(ctx, cx, cy, sunR, S.t * 1.0 + 20, "small", Math.ceil(sunR * 1.6));
+  if(k5.pi === -1){ ctx.strokeStyle = "#fde047"; ctx.lineWidth = 2 * dpr; ctx.setLineDash([4 * dpr, 4 * dpr]); ctx.beginPath(); ctx.arc(cx, cy, sunR * 1.5, 0, 7); ctx.stroke(); ctx.setLineDash([]); }
+  K5_PL.forEach((p, i) => orbit(p, 0, Math.PI, k5.pi === i));
+  items.filter(o => o.Z >= 0).sort((a, b) => a.Z - b.Z).forEach(planet);
+  S.hit = items.map(o => ({i: o.i, x: o.x / dpr, y: o.y / dpr, r: Math.max(20, o.R / dpr + 9), z: o.Z})).concat([{i: -1, x: cx / dpr, y: cy / dpr, r: Math.max(24, sunR / dpr + 8), z: 0}]);
+  if(!(S.still && S.drawn > 8)){ S.drawn = (S.drawn || 0) + 1; S.raf = requestAnimationFrame(k5SysDraw); } }
+function k5SysStart(){ const S = k5Sys; S.still = !!(window.matchMedia && matchMedia("(prefers-reduced-motion:reduce)").matches); if(S.still) S.paused = true; S.last = 0; S.drawn = 0; if(!S.raf) S.raf = requestAnimationFrame(k5SysDraw); }
+function k5SysPick(e){ const cv = $("k5-solar"), r = cv.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top; let best = null, bd = 1e9; k5Sys.hit.forEach(h => { const d = Math.hypot(h.x - x, h.y - y); if(d <= h.r && d - (h.i < 0 ? -4 : 0) < bd){ bd = d; best = h; } }); return best; }
+function k5SpaceInit(){ const cv = $("k5-solar"); if(!cv.dataset.built){ cv.dataset.built = "1";
+    let down = null; cv.addEventListener("pointerdown", e => { down = {x: e.clientX, y: e.clientY, yaw: k5Sys.yaw, moved: false}; try { cv.setPointerCapture(e.pointerId); } catch(_){} });
+    cv.addEventListener("pointermove", e => { if(down){ const dx = e.clientX - down.x; if(Math.abs(dx) > 6) down.moved = true; if(down.moved){ k5Sys.yaw = down.yaw - dx * 0.008; if(!k5Sys.raf) k5SysStart(); } } else cv.style.cursor = k5SysPick(e) ? "pointer" : "grab"; });
+    cv.addEventListener("pointerup", e => { const d = down; down = null; if(d && !d.moved){ const h = k5SysPick(e); if(h) k5Planet(h.i); } });
+    cv.addEventListener("pointercancel", () => { down = null; });
+    $("k5-pchips").innerHTML = `<button type="button" data-pc="-1" aria-pressed="false"><i style="background:radial-gradient(circle at 35% 30%,#fff7ae,#fbbf24 55%,#f97316)"></i>Sun</button>` + K5_PL.map((p, i) => `<button type="button" data-pc="${i}" aria-pressed="false"><i style="background:${p.c}"></i>${p.n}</button>`).join(""); $("k5-pchips").querySelectorAll("[data-pc]").forEach(b => b.onclick = () => k5Planet(+b.dataset.pc));
+    $("k5-orbit").onclick = () => { k5Sys.paused = !k5Sys.paused; $("k5-orbit").textContent = k5Sys.paused ? "▶️ Play orbits" : "⏸ Pause orbits"; if(!k5Sys.raf){ k5Sys.still = false; k5SysStart(); k5Sys.paused = $("k5-orbit").textContent.startsWith("▶"); } };
+    $("k5-view").onclick = () => { k5Sys.view = (k5Sys.view + 1) % K5_VIEWS.length; k5Sys.tiltTo = K5_VIEWS[k5Sys.view][1]; $("k5-view").textContent = K5_VIEWS[(k5Sys.view + 1) % K5_VIEWS.length][0]; if(!k5Sys.raf){ k5Sys.tilt = k5Sys.tiltTo; k5SysStart(); } };
+    $("k5-view").textContent = K5_VIEWS[(k5Sys.view + 1) % K5_VIEWS.length][0];
+    window.addEventListener("resize", () => { if(!k5Sys.raf && cv.offsetParent !== null) k5SysStart(); });
     $("k5-wkg").oninput = k5Weights; k5Weights(); $("k5-sqgo").onclick = k5SpaceQ; }
-}
+  if(k5Sys.paused && $("k5-orbit")) $("k5-orbit").textContent = "▶️ Play orbits";
+  k5SysStart(); }
 // ---------- 🪐 full-screen planet view ----------
 const K5_PVD = [
   {e: "☿️🌑", emo: "🌑", glow: "#9ca3af", atm: "rgba(200,200,200,.18)", spin: 90, ratio: 0.38,
@@ -38448,7 +38483,7 @@ const K5_PR = (() => {
   function sample(t, u, v, o){ let fx = u * t.W - .5, fy = v * t.H - .5; const x0 = Math.floor(fx), y0 = Math.max(0, Math.min(t.H - 1, Math.floor(fy))), y1 = Math.min(t.H - 1, y0 + 1), ax = fx - x0, ay = Math.max(0, Math.min(1, fy - Math.floor(fy))), xa = ((x0 % t.W) + t.W) % t.W, xb = (xa + 1) % t.W, d = t.data;
     for(let c = 0; c < 3; c++) o[c] = (d[(y0 * t.W + xa) * 4 + c] * (1 - ax) + d[(y0 * t.W + xb) * 4 + c] * ax) * (1 - ay) + (d[(y1 * t.W + xa) * 4 + c] * (1 - ax) + d[(y1 * t.W + xb) * 4 + c] * ax) * ay; }
   function cloudAt(t, u, v){ const x = Math.floor(((u * t.W) % t.W + t.W) % t.W), y = Math.max(0, Math.min(t.H - 1, Math.floor(v * t.H))); return t.cl[y * t.W + x]; }
-  function ringBands(ctx, R, kind, half){ ctx.save(); ctx.rotate(-.2); ctx.scale(1, .26); ctx.lineCap = "butt";
+  function ringBands(ctx, R, kind, half, sq, ro){ ctx.save(); ctx.rotate(ro == null ? -.2 : ro); ctx.scale(1, sq == null ? .26 : sq); ctx.lineCap = "butt";
     const bands = kind === 1 ? [[1.25, 1.52, "120,100,70", .22], [1.52, 1.62, "210,190,140", .62], [1.62, 1.95, "232,214,164", .88], [1.95, 2.03, "40,30,20", .05], [2.03, 2.14, "205,185,140", .7], [2.14, 2.3, "190,172,128", .5]] : [[1.7, 1.74, "190,235,240", .35], [1.8, 1.83, "190,235,240", .25]];
     let seed = 3; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
     for(const [a, b, col, al] of bands){ const steps = Math.max(2, Math.round((b - a) * 70)); for(let i = 0; i < steps; i++){ const r0 = a + (b - a) * i / steps; ctx.beginPath(); ctx.arc(0, 0, (r0 + (b - a) / steps / 2) * R, half ? Math.PI : 0, half ? Math.PI * 2 : Math.PI); ctx.strokeStyle = `rgba(${col},${al * (.55 + rnd() * .45)})`; ctx.lineWidth = (b - a) / steps * R + .6; ctx.stroke(); } } ctx.restore(); }
@@ -38470,15 +38505,61 @@ const K5_PR = (() => {
         ringBands(ctx, R, P0.ring, false); } ctx.restore();
       if(!still) requestAnimationFrame(frame); }
     requestAnimationFrame(frame); return () => { alive = false; }; }
-  return {mount};
+  // ---- small lit sphere for the 3D solar system (light comes from the Sun) ----
+  const balls = {};
+  function ready(idx){ return !!cache[KEY[idx]]; }
+  function warm(idx){ try { tex(KEY[idx]); } catch(e){} }
+  function ball(idx, N, rot, L, amb){ const key = KEY[idx], t = cache[key]; if(!t) return null; N = Math.max(10, Math.min(120, N | 0)); let b = balls[idx]; if(!b || b.N !== N){ const cv = document.createElement("canvas"); cv.width = cv.height = N; const cx = cv.getContext("2d"); b = balls[idx] = {N, cv, cx, img: cx.createImageData(N, N)}; }
+    const out = b.img.data, px = [0, 0, 0], P0 = P[key], at = P0.atm || [150, 190, 255], rim = (P0.rim || .3) * .6;
+    for(let j = 0; j < N; j++){ const ny = (j + .5) / N * 2 - 1; for(let i = 0; i < N; i++){ const nx = (i + .5) / N * 2 - 1, r2 = nx * nx + ny * ny, k = (j * N + i) * 4; if(r2 >= 1){ out[k + 3] = 0; continue; } const nz = Math.sqrt(1 - r2), lat = Math.asin(-ny), lon = Math.atan2(nx, nz) + rot, u = lon / (Math.PI * 2) + 8, v = .5 - lat / Math.PI;
+        sample(t, u, v, px); if(t.cl){ const c = cloudAt(t, u, v) * .7; px[0] = px[0] * (1 - c) + 252 * c; px[1] = px[1] * (1 - c) + 252 * c; px[2] = px[2] * (1 - c) + 255 * c; }
+        const lit = Math.max(0, (nx * L[0] + ny * L[1] + nz * L[2] + .4) / 1.4), sh = amb + (1 - amb) * Math.pow(Math.min(1, lit * 1.1), .8), limb = .6 + .4 * Math.pow(nz, .5), rm = Math.pow(1 - nz, 3) * rim * (.3 + .7 * lit);
+        const rr = px[0] * sh * limb + at[0] * rm, gg = px[1] * sh * limb + at[1] * rm, bb = px[2] * sh * limb + at[2] * rm; out[k] = rr > 255 ? 255 : rr; out[k + 1] = gg > 255 ? 255 : gg; out[k + 2] = bb > 255 ? 255 : bb; const e = (1 - r2) * N * .5; out[k + 3] = e < 1.2 ? 255 * Math.max(0, e / 1.2) : 255; } }
+    b.cx.putImageData(b.img, 0, 0); return b.cv; }
+  // ---- the blazing Sun: boiling surface, sunspots, glow, rays and flame loops ----
+  const SUNR = [[0, [110, 14, 0]], [.3, [214, 52, 0]], [.52, [255, 122, 0]], [.72, [255, 196, 40]], [.9, [255, 240, 150]], [1, [255, 255, 235]]], suns = {};
+  function sunBall(slot, N, t){ N = Math.max(12, Math.min(260, N | 0)); let b = suns[slot]; if(!b || b.N !== N){ const cv = document.createElement("canvas"); cv.width = cv.height = N; const cx = cv.getContext("2d"); b = suns[slot] = {N, cv, cx, img: cx.createImageData(N, N)}; }
+    const out = b.img.data, rot = t * .03, cr = Math.cos(rot), sr = Math.sin(rot), fine = N > 60;
+    for(let j = 0; j < N; j++){ const ny = (j + .5) / N * 2 - 1; for(let i = 0; i < N; i++){ const nx = (i + .5) / N * 2 - 1, r2 = nx * nx + ny * ny, k = (j * N + i) * 4; if(r2 >= 1){ out[k + 3] = 0; continue; } const nz = Math.sqrt(1 - r2), x = nx * cr + nz * sr, z = -nx * sr + nz * cr, y = ny;
+        const n = fbm(x * 2.6 + t * .11, y * 2.6 - t * .07, z * 2.6 + t * .05, 3), g = fine ? vn(x * 11 + t * .5, y * 11, z * 11 - t * .4) * .6 + vn(x * 24, y * 24 + t * .9, z * 24) * .4 : .5, sp = fine ? fbm(x * 1.9 + 7, y * 1.9, z * 1.9 + 3, 2) : 0;
+        let heat = .5 + (n - .5) * 1.25 + (g - .5) * .42; if(sp > .68) heat -= Math.min(.6, (sp - .68) * 4.2); const limb = .34 + .66 * Math.pow(nz, .42), c = ramp(SUNR, heat * limb + .08);
+        out[k] = c[0]; out[k + 1] = c[1]; out[k + 2] = c[2]; const e = (1 - r2) * N * .5; out[k + 3] = e < 1.4 ? 255 * Math.max(0, e / 1.4) : 255; } }
+    b.cx.putImageData(b.img, 0, 0); return b.cv; }
+  function sunDraw(ctx, cx, cy, R, t, slot, N, gk){ gk = gk || 3.4; const pulse = 1 + .035 * Math.sin(t * 2.1), rk = Math.min(1, gk / 3.4 * 1.22); ctx.save(); ctx.globalCompositeOperation = "lighter";
+    let g = ctx.createRadialGradient(cx, cy, R * .7, cx, cy, R * gk * pulse); g.addColorStop(0, "rgba(255,214,110,.75)"); g.addColorStop(.18, "rgba(255,160,40,.42)"); g.addColorStop(.45, "rgba(255,96,12,.16)"); g.addColorStop(1, "rgba(255,60,0,0)"); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, R * gk * pulse, 0, 7); ctx.fill();
+    const rays = 18; for(let i = 0; i < rays; i++){ const a = i * Math.PI * 2 / rays + t * .06 + Math.sin(t * .7 + i * 1.7) * .06, len = R * (1 + (.55 + .55 * Math.sin(t * 1.4 + i * 2.3) + (i % 3 === 0 ? .5 : 0)) * rk), w = .075 + .03 * Math.sin(t + i), x1 = cx + Math.cos(a - w) * R * .92, y1 = cy + Math.sin(a - w) * R * .92, x2 = cx + Math.cos(a + w) * R * .92, y2 = cy + Math.sin(a + w) * R * .92, tx = cx + Math.cos(a) * len, ty = cy + Math.sin(a) * len;
+      const rg = ctx.createLinearGradient(cx + Math.cos(a) * R * .9, cy + Math.sin(a) * R * .9, tx, ty); rg.addColorStop(0, "rgba(255,190,70,.5)"); rg.addColorStop(1, "rgba(255,120,20,0)"); ctx.fillStyle = rg; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(tx, ty); ctx.lineTo(x2, y2); ctx.closePath(); ctx.fill(); }
+    ctx.restore(); ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = "high"; ctx.drawImage(sunBall(slot, N, t), cx - R, cy - R, R * 2, R * 2);
+    ctx.save(); ctx.globalCompositeOperation = "lighter"; ctx.lineCap = "round"; for(let j = 0; j < 4; j++){ const b = j * 1.63 + .5 + t * .015, sp = .13 + .04 * Math.sin(t * .8 + j), h = R * (1.2 + .12 * Math.sin(t * 1.3 + j * 2)), ax = cx + Math.cos(b - sp) * R * .98, ay = cy + Math.sin(b - sp) * R * .98, bx = cx + Math.cos(b + sp) * R * .98, by = cy + Math.sin(b + sp) * R * .98; ctx.beginPath(); ctx.moveTo(ax, ay); ctx.quadraticCurveTo(cx + Math.cos(b) * h * 1.12, cy + Math.sin(b) * h * 1.12, bx, by); ctx.strokeStyle = "rgba(255,90,20,.5)"; ctx.lineWidth = Math.max(1, R * .045); ctx.stroke(); ctx.strokeStyle = "rgba(255,170,70,.4)"; ctx.lineWidth = Math.max(.5, R * .016); ctx.stroke(); }
+    g = ctx.createRadialGradient(cx, cy, R * .86, cx, cy, R * 1.14); g.addColorStop(0, "rgba(255,150,30,0)"); g.addColorStop(.5, "rgba(255,170,50,.5)"); g.addColorStop(1, "rgba(255,120,20,0)"); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, R * 1.14, 0, 7); ctx.fill(); ctx.restore(); }
+  function mountSun(host, d){ const dpr = Math.min(2, window.devicePixelRatio || 1), size = d * 2.7, cv = document.createElement("canvas"); cv.className = "k5-pl-cv"; cv.width = cv.height = Math.round(size * dpr); cv.style.width = cv.style.height = size + "px"; host.appendChild(cv); const ctx = cv.getContext("2d"), still = window.matchMedia && matchMedia("(prefers-reduced-motion:reduce)").matches, N = Math.round(Math.min(230, d * dpr * .62)); let alive = true, t0 = 0, last = -1e9;
+    function frame(ts){ if(!alive) return; if(!cv.isConnected){ alive = false; return; } if(!t0) t0 = ts; if(ts - last >= 45){ last = ts; const t = (ts - t0) / 1000 + 20; ctx.clearRect(0, 0, cv.width, cv.height); sunDraw(ctx, cv.width / 2, cv.height / 2, d * dpr / 2, t, "big", N, 2.6); } if(!still) requestAnimationFrame(frame); }
+    requestAnimationFrame(frame); return () => { alive = false; }; }
+  return {mount, ball, ready, warm, sunDraw, mountSun, rings: ringBands};
 })();
 let k5PvStop = null;
 
 function k5PvBuild(){ if($("k5-pv")) return; const d = document.createElement("div"); d.id = "k5-pv"; d.className = "k5-pv"; d.hidden = true; d.setAttribute("role", "dialog"); d.setAttribute("aria-modal", "true"); d.setAttribute("aria-label", "Planet");
   d.innerHTML = `<div class="k5-pv-top"><button type="button" class="k5-pv-back" id="k5-pvback">⬅ Back to Space</button><div class="k5-pv-nav"><button type="button" id="k5-pvprev" aria-label="Previous planet">◀ Before</button><button type="button" id="k5-pvnext" aria-label="Next planet">Next ▶</button></div></div><div class="k5-pv-main"><div class="k5-pv-stage" id="k5-pvstage"></div><div class="k5-pv-card" id="k5-pvcard"></div></div>`;
-  document.body.appendChild(d); $("k5-pvback").onclick = k5PvClose; $("k5-pvprev").onclick = () => k5PvShow((k5.pv + 7) % 8); $("k5-pvnext").onclick = () => k5PvShow((k5.pv + 1) % 8);
+  document.body.appendChild(d); $("k5-pvback").onclick = k5PvClose; $("k5-pvprev").onclick = () => { const n = k5.pv <= -1 ? 7 : k5.pv - 1; k5.pi = n; k5PvShow(n); }; $("k5-pvnext").onclick = () => { const n = k5.pv >= 7 ? -1 : k5.pv + 1; k5.pi = n; k5PvShow(n); };
   document.addEventListener("keydown", e => { if(e.key === "Escape" && !$("k5-pv").hidden) k5PvClose(); }); }
-function k5PvShow(i){ const p = K5_PL[i], v = K5_PVD[i]; k5.pv = i; const ring = v.ring === true ? "radial-gradient(circle,transparent 0 41%,#9c8654 42% 45%,#d9c48f 46% 52%,#b19a63 53% 55%,#efe0b4 56% 66%,#c9b27c 67% 69%,#e6d4a3 70% 74%,transparent 75%)" : v.ring === "faint" ? "radial-gradient(circle,transparent 0 40%,rgba(190,235,240,.55) 41% 42.5%,transparent 44% 46%,rgba(190,235,240,.4) 47% 48%,transparent 50%)" : "";
+// ---------- ☀️ the Sun in the big planet view ----------
+const K5_SUN = {fun: "The Sun is a star! It is the closest star to Earth, and it gives us all our light and warmth. ⭐", why: "The Sun is a giant ball of super hot, glowing gas. Deep inside, tiny bits of gas squeeze together and give off huge amounts of light and heat. That is why it blazes like fire. The dark patches are sunspots. They are cooler spots. The fiery loops are flames of hot gas that jump off the surface. 🔥",
+  size: "The Sun is HUGE. About 109 Earths would fit side by side across it. More than 1 million Earths could fit inside it! 🤯", far: "The Sun is about 150 million kilometres away. Its light takes about 8 minutes to reach us. A jet plane would need about 19 years to fly there! ✈️",
+  hot: "The surface is about 5,500 °C. The middle is about 15 million °C. That is hotter than anything on Earth. 🌡️", safe: "Never look straight at the Sun. It can hurt your eyes, even with sunglasses. 🕶️",
+  sci: "The Sun is mostly hydrogen and helium. In its core, hydrogen joins together to make helium. This is called nuclear fusion, and it is what makes the Sun shine. The Sun is about 4.6 billion years old."};
+function k5PvSun(){ k5.pv = -1; if(k5PvStop){ k5PvStop(); k5PvStop = null; } $("k5-pvstage").innerHTML = `<div class="k5-pl k5-pl-sun" style="--d:min(42vw,250px)"></div>`; const host = $("k5-pvstage").firstChild; k5PvStop = K5_PR.mountSun(host, host.getBoundingClientRect().width || 220);
+  const S = K5_SUN; $("k5-pvcard").innerHTML = `<h2 class="k5-pv-name"><span>☀️</span>The Sun</h2>
+    <div class="k5-pv-sec"><h4>🌟 Fun fact</h4><p>${S.fun}</p></div>
+    <div class="k5-pv-sec"><h4>🔥 Why it looks like this</h4><p>${S.why}</p></div>
+    <div class="k5-pv-sec"><h4>📏 How big is it? (Compared to Earth)</h4><p>${S.size}</p><div class="k5-pv-cmp" aria-hidden="true"><div><i style="width:3px;height:3px;background:#2f7ae0;box-shadow:none"></i>Earth</div><div><i style="width:120px;height:120px;background:radial-gradient(circle at 35% 30%,#fff7ae,#fbbf24 55%,#f97316)"></i>The Sun</div></div></div>
+    <div class="k5-pv-sec"><h4>🌡️ How hot is it?</h4><p>${S.hot}</p></div>
+    <div class="k5-pv-sec"><h4>🚀 How far away is it?</h4><p>${S.far}</p></div>
+    <div class="k5-pv-sec"><div class="k5-pv-big">⚠️ <b>Stay safe:</b> ${S.safe}</div></div>${k5.lv >= 2 ? `<div class="k5-pv-sec"><div class="k5-pv-big">🔬 <b>Big-kid fact:</b> ${S.sci}</div></div>` : ""}
+    <div class="k5-pv-btns"><button type="button" class="k5-pv-hear" id="k5-pvhear">🔊 Hear it</button><button type="button" class="k5-pv-home" id="k5-pvhome">🚀 Back to Space</button></div>`;
+  $("k5-pvhome").onclick = k5PvClose; $("k5-pvhear").onclick = () => k5Say(k5NoEmo(`The Sun. Fun fact. ${S.fun} Why it looks like this. ${S.why} How big is it? ${S.size} How hot is it? ${S.hot} How far away is it? ${S.far} Stay safe. ${S.safe}`));
+  document.querySelectorAll("#k5-pchips [data-pc]").forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.pc === -1))); $("k5-pv").scrollTop = 0; }
+function k5PvShow(i){ if(i < 0){ k5PvSun(); return; } const p = K5_PL[i], v = K5_PVD[i]; k5.pv = i; const ring = v.ring === true ? "radial-gradient(circle,transparent 0 41%,#9c8654 42% 45%,#d9c48f 46% 52%,#b19a63 53% 55%,#efe0b4 56% 66%,#c9b27c 67% 69%,#e6d4a3 70% 74%,transparent 75%)" : v.ring === "faint" ? "radial-gradient(circle,transparent 0 40%,rgba(190,235,240,.55) 41% 42.5%,transparent 44% 46%,rgba(190,235,240,.4) 47% 48%,transparent 50%)" : "";
   const big = v.small ? "min(50vw,250px)" : "";
   if(k5PvStop){ k5PvStop(); k5PvStop = null; } const dsz = (v.small ? "min(36vw,220px)" : "min(66vw,380px)"); $("k5-pvstage").innerHTML = `<div class="k5-pl" style="--glow:${v.glow};--d:${dsz}"><div class="k5-pl-ball"></div></div>`; { const host = $("k5-pvstage").firstChild; const dd = host.getBoundingClientRect().width || 300; k5PvStop = K5_PR.mount(host, i, dd, [0, 0, 0, 0, 0, .0, 0, 0][i]); }
   const px = Math.max(5, Math.round(13 * v.ratio)), big2 = k5.lv >= 2 ? `<div class="k5-pv-sec"><div class="k5-pv-big">🔬 <b>Big-kid fact:</b> ${p.sci}</div></div>` : "";
@@ -38496,7 +38577,7 @@ function k5PvOpen(i){ k5PvBuild(); k5PvShow(i); $("k5-pv").hidden = false; docum
 function k5PvClose(){ if(k5PvStop){ k5PvStop(); k5PvStop = null; } const el = $("k5-pv"); if(el) el.hidden = true; document.body.style.overflow = ""; try { stopAll(); } catch(e){} }
 
 function k5Planet(i, quiet){ k5.pi = i; $("k5-pchips").querySelectorAll("[data-pc]").forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.pc === i)));
-  if(i < 0){ $("k5-pinfo").innerHTML = `<div class="k5-pdot" style="background:radial-gradient(circle at 35% 30%,#fff7ae,#fbbf24 55%,#f97316)"></div><div><b>The Sun</b><p>The Sun is a star, a giant ball of hot glowing gas. It gives us light and warmth!</p>${k5.lv >= 1 ? `<p class="k5-sci">🔬 More than 1 million Earths could fit inside the Sun. Its surface is about 5,500 °C.</p>` : ""}</div>`; if(!quiet) k5Say("The Sun is a star, a giant ball of hot glowing gas. It gives us light and warmth!"); return; }
+  if(i < 0){ $("k5-pinfo").innerHTML = `<div class="k5-pdot" style="background:radial-gradient(circle at 35% 30%,#fff7ae,#fbbf24 55%,#f97316)"></div><div><b>The Sun</b><p>The Sun is a star, a giant ball of hot glowing gas. It gives us light and warmth!</p>${k5.lv >= 1 ? `<p class="k5-sci">🔬 More than 1 million Earths could fit inside the Sun. Its surface is about 5,500 °C.</p>` : ""}</div>`; if(!quiet) k5PvOpen(-1); return; }
   const p = K5_PL[i]; if(!k5.seen.planets.includes(i)){ k5.seen.planets.push(i); k5Badges(); k5Save(); }
   $("k5-pinfo").innerHTML = `<div class="k5-pdot" style="background:radial-gradient(circle at 35% 30%,#fff8,${p.c} 55%)"></div><div><b>${p.n}</b><p>${p.fact}</p>${k5.lv >= 1 ? `<div class="k5-pstats"><span>📏 ${p.size}</span><span>☀️ Year: ${p.year}</span><span>🔄 Day: ${p.day}</span><span>🌙 Moons: ${p.moons}</span><span>🌡️ ${p.temp}</span></div>` : `<div class="k5-pstats"><span>☀️ Year: ${p.year}</span><span>🌙 Moons: ${p.moons}</span></div>`}${k5.lv >= 2 ? `<p class="k5-sci">🔬 ${p.sci}</p>` : ""}<button type="button" class="k5-btn alt" id="k5-phear">🔊 Hear it</button></div>`;
   $("k5-phear").onclick = () => k5Say(`${p.n}. ${p.fact}`); if(!quiet) k5PvOpen(i); }
