@@ -3273,6 +3273,7 @@ window.MWB_TRIAL_DAYS = 14;
         <button type="button" role="tab" data-vtab="tutor" aria-selected="true"><span aria-hidden="true">🧑‍🏫</span> Tutor</button>
         <button type="button" role="tab" data-vtab="graph" aria-selected="false"><span aria-hidden="true">📈</span> Graphing<i class="vt-tabdot" id="vt-gdot" hidden aria-label="new graph"></i></button>
         <button type="button" role="tab" data-vtab="video" aria-selected="false"><span aria-hidden="true">📺</span> Videos</button>
+        <button type="button" role="tab" data-vtab="hist" aria-selected="false"><span aria-hidden="true">🕘</span> History</button>
       </div>
       <div class="vt-hub" data-vsec="tutor">
         <div class="vt-hubtop"><span id="vt-who"></span><span class="vt-status" id="vt-status">Mic ready</span></div>
@@ -3322,6 +3323,12 @@ window.MWB_TRIAL_DAYS = 14;
           <textarea id="vt-yttext" rows="4" placeholder="Paste the video's transcript here" aria-label="Video transcript"></textarea></details>
         <p class="vt-ytmsg" id="vt-ytmsg" aria-live="polite"></p>
         <div class="vt-ytout" id="vt-ytout" hidden></div>
+      </div>
+      <div class="vt-card vt-hist" id="vt-hist" data-vsec="hist">
+        <h3 class="vt-h">🕘 History</h3>
+        <p class="vt-tip">Your questions and their full answers are saved here for 30 days. Tap one to open it again.</p>
+        <div class="vt-row vt-histbar"><input id="vt-histq" type="search" placeholder="Search your questions…" autocomplete="off" aria-label="Search your saved questions"><span class="vt-histcount" id="vt-histcount"></span><button type="button" class="btn alt vt-sm" id="vt-histclear" hidden>🗑️ Clear all history</button></div>
+        <div id="vt-histlist"></div>
       </div>
       <div class="vt-card vt-studio" id="vt-studio" data-vsec="graph">
         <h3 class="vt-h">📈 Graph studio</h3>
@@ -36792,6 +36799,16 @@ try { __diag("script-end"); } catch(e){}
 .vt-calcans{margin-top:8px;padding:8px 10px;border-radius:10px;background:#dcfce7;color:#14532d;font-weight:700;font-size:18px;overflow-wrap:anywhere}
 .vt-calcmore{margin:6px 0 0;font-size:14px;color:#64748b}
 .vt-exh{margin:14px 0 2px;font-size:16px;color:#4f46e5}
+/* 🕘 Advanced Math history */
+.vt-histbar{gap:8px;flex-wrap:wrap;align-items:center}.vt-histbar input{flex:1 1 220px;min-width:0;font:inherit;font-size:16px;padding:10px 12px;border:3px solid var(--line);border-radius:12px;background:#fff;color:#0f172a}
+.vt-histcount{font-size:14px;font-weight:700;color:#475569}
+.vt-histday{margin:14px 0 6px;font-size:15px;color:#4f46e5;text-transform:uppercase;letter-spacing:.05em}
+.vt-histitem{display:flex;gap:8px;align-items:stretch;margin-bottom:8px}
+.vt-histopen{flex:1 1 auto;min-width:0;text-align:left;font:inherit;display:flex;flex-direction:column;gap:3px;padding:10px 12px;border-radius:14px;border:3px solid var(--line);background:#fff;color:#0f172a;cursor:pointer;box-shadow:0 3px 0 var(--line);overflow-wrap:anywhere}
+.vt-histopen:hover,.vt-histopen:focus-visible{background:#fef9c3}
+.vt-histopen b{font-size:16.5px;color:#1e3a8a}.vt-histans{font-size:15.5px;color:#14532d;font-weight:600;overflow-x:auto}.vt-histopen small{font-size:12.5px;color:#64748b;font-weight:600}
+.vt-histdel{flex:none;align-self:center}
+
 /* 💬 talk to the tutor about the answer */
 .vt-talk{margin-top:12px;padding:12px;border-radius:14px;border:3px solid #4f46e5;background:#eef2ff;color:#1e1b4b}
 .vt-talk>b{font-size:16px}.vt-talk .vt-tip{margin:4px 0 8px}
@@ -36820,7 +36837,7 @@ try { __diag("script-end"); } catch(e){}
 .vt-tabs button{flex:1 1 120px;position:relative;font:inherit;font-size:17px;font-weight:800;padding:11px 12px;border-radius:16px;border:3px solid var(--line);background:#fff;color:#1b2a4a;cursor:pointer;box-shadow:0 4px 0 var(--line);min-height:48px}
 .vt-tabs button[aria-selected="true"]{background:var(--sun);color:#1b2a4a;transform:translateY(2px);box-shadow:0 2px 0 var(--line)}
 .vt-tabdot{position:absolute;top:6px;right:8px;width:12px;height:12px;border-radius:50%;background:#dc2626;border:2px solid #fff}
-.vt[data-tab="tutor"] [data-vsec]:not([data-vsec="tutor"]),.vt[data-tab="graph"] [data-vsec]:not([data-vsec="graph"]),.vt[data-tab="video"] [data-vsec]:not([data-vsec="video"]){display:none!important}
+.vt[data-tab="tutor"] [data-vsec]:not([data-vsec="tutor"]),.vt[data-tab="graph"] [data-vsec]:not([data-vsec="graph"]),.vt[data-tab="video"] [data-vsec]:not([data-vsec="video"]),.vt[data-tab="hist"] [data-vsec]:not([data-vsec="hist"]){display:none!important}
 .vt[data-tab="graph"] .vt-cw canvas{min-height:min(60vh,520px)}
 
 /* 📺 Video helper */
@@ -37473,7 +37490,7 @@ async function vtSolve(q){
     if(!vtAI()){ const m = "I can work out derivatives, integrals, limits, equations, systems of equations, projectiles, statistics and sums on my own. For explain-style questions the AI needs to be turned on (on the website, log in first)."; vtLog("bot", m); vtSay(m); return; }
     const A = await vtAISolve(q); A.q = q; vtShow(A); vtGraphFrom(A); const open = A.opening || `Here's how to think about it. ${A.answer}`; vtLog("bot", open); vtSay(open);
   } catch(e){ const m = vtAIErr(e); vtLog("bot", m); vtSay(m); }
-  finally { vt.busy = false; $("vt-go").disabled = false; vtState(); }
+  finally { vt.busy = false; $("vt-go").disabled = false; vtState(); if(vt.sol && vt.sol.q === q) vtHistSave(vt.sol); }
 }
 function vtDefaultFollow(S){ return ({derivative: ["Why does the chain rule work?", "What does the derivative tell us about the graph?", "Where is the slope zero?"], integral: ["Why do we add + C?", "What does the area mean in real life?", "How is integrating related to differentiating?"], limit: ["What does 0/0 mean?", "Why does L'Hôpital's rule work?", "Is the function continuous there?"], equation: ["How can I check my answers?", "What does the graph look like?", "When should I factor instead?"], system: ["What does the answer mean on the graph?", "Could there be no solution?", "Is substitution easier here?"], projectile: ["What angle gives the longest range?", "What if there were air resistance?", "Why doesn't the sideways speed change?"], stats: ["When should I use the median instead of the mean?", "What does a big standard deviation mean?", "Why divide by n − 1 for a sample?"], matrix: ["When can two matrices be multiplied?", "What does the determinant tell us?", "Why does order matter when multiplying?"], graph: ["What is a turning point?", "How do I find the x-intercepts?", "What does the derivative graph show?"]})[S.kind] || ["Can you explain that another way?", "Why is that true?", "Can you give me a similar problem?"]; }
 // ---------- solution card ----------
@@ -37531,7 +37548,7 @@ function vtTalkHTML(S){ const T = S.talk || []; return `<div class="vt-talk" id=
   <div class="vt-row vt-talkrow"><textarea id="vt-talkin" rows="2" maxlength="500" placeholder="e.g. I think step 3 is wrong because… · I got 12, why is it 14? · I meant 5x, not 5 · Explain step 2 again" aria-label="Your message to the tutor about this answer"></textarea><button type="button" class="btn vt-sm" id="vt-talkgo">Send</button></div></div>`; }
 function vtTalkWire(S){ const go = () => { const v = $("vt-talkin").value.trim(); if(v) vtTalk(v); }; $("vt-talkgo").onclick = go; $("vt-talkin").onkeydown = e => { if(e.key === "Enter" && !e.shiftKey){ e.preventDefault(); go(); } };
   $("vt-sol").querySelectorAll("[data-talk]").forEach(b => b.onclick = () => vtTalk(VT_TALK[+b.dataset.talk][1])); const L = $("vt-talklog"); if(L) L.scrollTop = L.scrollHeight; }
-function vtTalkAdd(S, who, text, flag){ S.talk = S.talk || []; S.talk.push({who, text: String(text), flag}); if(S.talk.length > 30) S.talk.shift(); const L = $("vt-talklog"); if(L && vt.sol === S){ const d = document.createElement("div"); d.className = "vt-tmsg " + who; d.innerHTML = (who === "me" ? "" : `<span aria-hidden="true">${flag || "🧑‍🏫"}</span> `) + vtMath(text); L.appendChild(d); L.scrollTop = L.scrollHeight; } }
+function vtTalkAdd(S, who, text, flag){ S.talk = S.talk || []; S.talk.push({who, text: String(text), flag}); if(S.talk.length > 30) S.talk.shift(); if(who !== "me") vtHistSave(S); const L = $("vt-talklog"); if(L && vt.sol === S){ const d = document.createElement("div"); d.className = "vt-tmsg " + who; d.innerHTML = (who === "me" ? "" : `<span aria-hidden="true">${flag || "🧑‍🏫"}</span> `) + vtMath(text); L.appendChild(d); L.scrollTop = L.scrollHeight; } }
 async function vtTalk(msg){ const S = vt.sol; msg = String(msg || "").trim().slice(0, 500); if(!S || !msg || vt.busy) return; vtTalkAdd(S, "me", msg); vtLog("me", "💬 " + msg); if($("vt-talkin")) $("vt-talkin").value = "";
   if(!vtAI()){ const m = "I need the AI to talk about this answer (on the website, log in first). You can still use “Check my answer”, the 💡 hints, or type the question again in a different way."; vtTalkAdd(S, "bot", m); return; }
   vt.busy = true; vtState(); const btn = $("vt-talkgo"); if(btn){ btn.disabled = true; btn.textContent = "Checking…"; } let retry = "";
@@ -37558,11 +37575,28 @@ When you corrected the answer or rewrote the steps, replace null with {"title": 
     if(retry && retry.toLowerCase() !== String(S.q).toLowerCase()){ /* solved below, once we are no longer busy */ }
     else { retry = "";
       if(!S.ai && verdict === "wrong"){ vtTalkAdd(S, "bot", "One more thing: the answer on screen was worked out by the exact calculator for the problem as it was typed, so I'm keeping it. If your problem is different (another number or sign), tell me what it should be and I'll solve that one.", "🧮"); }
-      else if(N && Array.isArray(N.steps) && N.steps.length && N.answer){ const R = {kind: "ai", ai: true, subject: S.subject, q: S.q, title: String(N.title || S.title).slice(0, 120), answer: S.ai ? String(N.answer) : S.answer, keptAnswer: !S.ai, overview: String(N.overview || ""), check: S.ai ? null : S.check, graph: S.graph || null, followups: S.followups || [], talk: S.talk, revised: verdict === "wrong" ? "fixed" : "rewritten",
-        steps: N.steps.slice(0, 8).map(s => ({title: String(s.title || ""), math: String(s.math || ""), why: String(s.why || s.explanation || ""), hint: String(s.hint || "")}))}; vtShow(R); try { $("vt-sol").scrollIntoView({behavior: "smooth", block: "start"}); } catch(e){} } }
+      else if(N && Array.isArray(N.steps) && N.steps.length && N.answer){ const R = {kind: "ai", ai: true, subject: S.subject, q: S.q, title: String(N.title || S.title).slice(0, 120), answer: S.ai ? String(N.answer) : S.answer, keptAnswer: !S.ai, overview: String(N.overview || ""), check: S.ai ? null : S.check, graph: S.graph || null, followups: S.followups || [], talk: S.talk, hid: S.hid, revised: verdict === "wrong" ? "fixed" : "rewritten",
+        steps: N.steps.slice(0, 8).map(s => ({title: String(s.title || ""), math: String(s.math || ""), why: String(s.why || s.explanation || ""), hint: String(s.hint || "")}))}; vtShow(R); vtHistSave(R); try { $("vt-sol").scrollIntoView({behavior: "smooth", block: "start"}); } catch(e){} } }
   } catch(e){ if(vt.sol === S) vtTalkAdd(S, "bot", vtAIErr(e)); }
   finally { vt.busy = false; vtState(); const b2 = $("vt-talkgo"); if(b2){ b2.disabled = false; b2.textContent = "Send"; } }
   if(retry && vt.sol === S){ const keep = S.talk; $("vt-in").value = retry; await vtSolve(retry); if(vt.sol && vt.sol !== S){ vt.sol.talk = keep; vtShow(vt.sol, true); } } }
+// ---------- 🕘 History: every question and its answer, kept for 30 days ----------
+const VT_HKEY = "wordbook-vt-hist", VT_HDAYS = 30;
+function vtHistAll(){ let L = []; try { L = JSON.parse(localStorage.getItem(VT_HKEY) || "[]"); } catch(e){} if(!Array.isArray(L)) L = []; const cut = Date.now() - VT_HDAYS * 864e5, keep = L.filter(h => h && h.S && h.t > cut); if(keep.length !== L.length) vtHistPut(keep); return keep; }
+function vtHistPut(L){ L = L.slice(0, 200); for(;;){ try { if(L.length) localStorage.setItem(VT_HKEY, JSON.stringify(L)); else localStorage.removeItem(VT_HKEY); return; } catch(e){ if(L.length <= 1) return; L = L.slice(0, Math.ceil(L.length * 0.7)); } } }   // if storage is full, let the oldest go
+function vtHistSave(S){ if(!S || !S.q || !S.steps || !S.steps.length) return; try { if(!S.hid) S.hid = Date.now().toString(36) + Math.random().toString(36).slice(2, 6); const L = vtHistAll(), i = L.findIndex(h => h.id === S.hid), copy = JSON.parse(JSON.stringify({...S, talk: (S.talk || []).slice(-30)}));
+    if(i >= 0){ L[i].S = copy; } else { const same = L.findIndex(h => h.S.q === S.q); if(same >= 0) L.splice(same, 1); L.unshift({id: S.hid, t: Date.now(), S: copy}); } vtHistPut(L); if($("vt").dataset.tab === "hist") vtHistRender(); } catch(e){} }
+function vtHistOpen(id){ const h = vtHistAll().find(x => x.id === id); if(!h) return; try { stopAll(); } catch(e){} const S = h.S; vtTab("tutor"); $("vt-in").value = S.q || ""; vtShow(S); try { vtGraphFrom(S); } catch(e){} setTimeout(() => { try { $("vt-sol").scrollIntoView({behavior: "smooth", block: "start"}); } catch(e){} }, 150); }
+function vtHistRender(){ const box = $("vt-histlist"); if(!box) return; const all = vtHistAll(), f = ($("vt-histq").value || "").trim().toLowerCase(), L = f ? all.filter(h => (VTX.plain(h.S.q) + " " + VTX.plain(h.S.answer) + " " + (h.S.title || "")).toLowerCase().includes(f)) : all;
+  $("vt-histcount").textContent = all.length ? `${all.length} question${all.length === 1 ? "" : "s"} saved` : ""; $("vt-histclear").hidden = !all.length;
+  if(!L.length){ box.innerHTML = `<p class="vt-tip">${all.length ? "No saved question matches that search." : "Nothing here yet. Every question you ask the tutor is saved here with its full answer, so you can come back to it."}</p>`; return; }
+  const day = t => { const d = new Date(t), n = new Date(), a = new Date(d.getFullYear(), d.getMonth(), d.getDate()), b = new Date(n.getFullYear(), n.getMonth(), n.getDate()), diff = Math.round((b - a) / 864e5); return diff === 0 ? "Today" : diff === 1 ? "Yesterday" : d.toLocaleDateString(undefined, {weekday: "long", month: "short", day: "numeric"}); };
+  let last = "", html = ""; L.forEach(h => { const dy = day(h.t), S = h.S, left = Math.max(1, Math.ceil((h.t + VT_HDAYS * 864e5 - Date.now()) / 864e5)), q = VTX.plain(S.q); if(dy !== last){ html += `<h4 class="vt-histday">${dy}</h4>`; last = dy; }
+    html += `<div class="vt-histitem"><button type="button" class="vt-histopen" data-hopen="${h.id}"><b>${esc(q.length > 140 ? q.slice(0, 138) + "…" : q)}</b><span class="vt-histans">${S.kind === "ai" && !/\d/.test(S.answer) ? "Key idea" : "Answer"}: ${vtMath(String(S.answer).length > 160 ? String(S.answer).slice(0, 158) + "…" : S.answer)}</span><small>${new Date(h.t).toLocaleTimeString(undefined, {hour: "numeric", minute: "2-digit"})} · ${S.ai ? "🤖 AI answer" : "✅ Calculator"}${(S.talk || []).length ? " · 💬 " + S.talk.length : ""} · kept ${left} more day${left === 1 ? "" : "s"}</small></button><button type="button" class="btn alt vt-sm vt-histdel" data-hdel="${h.id}" aria-label="Delete this question from history">🗑️</button></div>`; });
+  box.innerHTML = html;
+  box.querySelectorAll("[data-hopen]").forEach(b => b.onclick = () => vtHistOpen(b.dataset.hopen));
+  box.querySelectorAll("[data-hdel]").forEach(b => b.onclick = () => { vtHistPut(vtHistAll().filter(h => h.id !== b.dataset.hdel)); vtHistRender(); }); }
+function vtHistInit(){ $("vt-histq").oninput = vtHistRender; const c = $("vt-histclear"); c.onclick = () => { if(c.dataset.sure){ delete c.dataset.sure; c.textContent = "🗑️ Clear all history"; vtHistPut([]); vtHistRender(); } else { c.dataset.sure = "1"; c.textContent = "Tap again to delete everything"; setTimeout(() => { if(c.dataset.sure){ delete c.dataset.sure; c.textContent = "🗑️ Clear all history"; } }, 3500); } }; vtHistAll(); }
 async function vtFollow(q){ const S = vt.sol; if(!vtAI()){ const m = "Follow-up questions need the AI. Tap 💡 on a step for a hint, or 🔊 to hear it again."; vtLog("bot", m); vtSay(m); return; }
   vt.busy = true; vtState(); try { const r = await vtSmp(`${vtBasePrompt()}
 ${S ? `We are working on: "${S.q}". Verified answer: ${S.answer}. Steps: ${S.steps.map((s, i) => `${i + 1}) ${s.title}: ${s.math}`).join("; ")}.` : ""}
@@ -37582,6 +37616,7 @@ function vtHeard(text, voice){ text = String(text).trim(); if(!text) return; con
   if(/\b(show|open|see) (me )?(the )?graph(ing)?\b/.test(t)){ vtTab("graph"); vtSay("Here's the graph."); return; }
   if(/\b(go )?back to (the )?tutor\b|^(open |show )?(the )?tutor$/.test(t)){ vtTab("tutor"); return; }
   if(/\b(open|show|go to) (the )?videos?( helper)?\b/.test(t)){ vtTab("video"); return; }
+  if(/\b(open|show|go to|see) (the |my )?history\b|\bprevious questions\b/.test(t)){ vtTab("hist"); return; }
   if(S){ const sm = t.match(/\b(?:explain|read|go to|show|what is|what's) (?:me )?step (\d+|one|two|three|four|five|six|seven|eight)\b/) || t.match(/\b(first|second|third|fourth|fifth|last) step\b/);
     if(sm){ const k = VT_NUMW[sm[1]] || +sm[1]; vtGoStep(Math.min(S.steps.length, k) - 1); return; }
     if(/^(next( step)?|go on|continue|keep going|what'?s next)\b/.test(t)){ if(vt.step + 1 < S.steps.length || vt.shown <= vt.step) vtGoStep(Math.min(S.steps.length - 1, vt.shown < S.steps.length ? vt.shown : vt.step + 1)); else vtSay("That was the last step! Try checking your own answer."); return; }
@@ -37592,7 +37627,7 @@ function vtHeard(text, voice){ text = String(text).trim(); if(!text) return; con
   $("vt-in").value = text; vtSolve(text); }
 // ---------- graph studio ----------
 const VT_COL = ["#2563eb", "#e11d48", "#16a34a"];
-function vtTab(t){ const el = $("vt"); if(!el) return; el.dataset.tab = t; el.querySelectorAll("[data-vtab]").forEach(b => b.setAttribute("aria-selected", String(b.dataset.vtab === t))); if(t === "graph"){ $("vt-gdot").hidden = true; requestAnimationFrame(() => { try { vtPlot(); } catch(e){} }); } try { $("vt").scrollIntoView({block: "start", behavior: "smooth"}); } catch(e){} }
+function vtTab(t){ const el = $("vt"); if(!el) return; el.dataset.tab = t; el.querySelectorAll("[data-vtab]").forEach(b => b.setAttribute("aria-selected", String(b.dataset.vtab === t))); if(t === "graph"){ $("vt-gdot").hidden = true; requestAnimationFrame(() => { try { vtPlot(); } catch(e){} }); } if(t === "hist") vtHistRender(); try { $("vt").scrollIntoView({block: "start", behavior: "smooth"}); } catch(e){} }
 function vtGraphFrom(S){ const g = S.graph; vt.anim = null; $("vt-launch").hidden = true;
   if(!g){ return; }
   if($("vt").dataset.tab !== "graph") $("vt-gdot").hidden = false;
@@ -37788,7 +37823,7 @@ function vtMxInit(){ const sel = (id, v, max) => { $(id).innerHTML = Array.from(
   $("vt-mxgo").onclick = () => { const op = $("vt-mxop").value, A = read("vt-mxa"), B = /^(mul|add|sub|solve)$/.test(op) ? read("vt-mxbg") : "", k = $("vt-mxk").value.trim().replace(/[−–]/g, "-"); if(A === null || B === null || (op === "k" && !NUM.test(k))){ $("vt-mxmsg").textContent = "Use numbers only, like 3, −2, 0.5 or 1/2."; return; } $("vt-mxmsg").textContent = "";
     const q = {mul: `${A} * ${B}`, add: `${A} + ${B}`, sub: `${A} - ${B}`, k: `${k} * ${A}`, det: `Find the determinant of ${A}`, inv: `Find the inverse of ${A}`, T: `Transpose of ${A}`, pow: `${A}^2`, rref: `Row reduce (rref) ${A}`, rank: `Find the rank of ${A}`, solve: `Solve ${A} x = ${B}`, eig: `Find the eigenvalues of ${A}`}[op];
     $("vt-in").value = q; vtLog("me", q); vtSolve(q); setTimeout(() => { try { $("vt-sol").scrollIntoView({behavior: "smooth", block: "start"}); } catch(e){} }, 300); }; }
-function vtInit(){ if(!$("vt")) return; requestAnimationFrame(() => vtPlot()); if(vt.inited) return; vt.inited = true; vtLoad(); try { vtYtInit(); } catch(e){} try { vtMxInit(); } catch(e){ console.error(e); } $("vt").querySelectorAll("[data-vtab]").forEach(b => b.onclick = () => vtTab(b.dataset.vtab));
+function vtInit(){ if(!$("vt")) return; requestAnimationFrame(() => vtPlot()); if(vt.inited) return; vt.inited = true; vtLoad(); try { vtYtInit(); } catch(e){} try { vtMxInit(); } catch(e){ console.error(e); } try { vtHistInit(); } catch(e){ console.error(e); } $("vt").querySelectorAll("[data-vtab]").forEach(b => b.onclick = () => vtTab(b.dataset.vtab));
   $("vt-subj").innerHTML = VT_SUBJECTS.map(s => `<option${s === vt.subject ? " selected" : ""}>${s}</option>`).join(""); $("vt-level").innerHTML = VT_LEVELS.map(([k, n]) => `<option value="${k}"${k === vt.level ? " selected" : ""}>${n}</option>`).join("");
   $("vt-subj").onchange = e => { vt.subject = e.target.value; vtSaveSet(); }; $("vt-level").onchange = e => { vt.level = e.target.value; vtSaveSet(); };
   const pers = () => { $("vt-personas").innerHTML = VT_PERSONAS.map(p => `<button type="button" class="vt-persona" data-p="${p.id}" aria-pressed="${p === vt.persona}"><b>${p.name}</b><small>${p.desc}</small></button>`).join(""); $("vt-who").textContent = "Tutor: " + vt.persona.name;
