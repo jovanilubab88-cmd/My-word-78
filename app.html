@@ -37391,7 +37391,7 @@ const VT_PERSONAS = [
   {id: "socratic", name: "🦉 Socratic Professor", desc: "Asks guiding questions so you work it out yourself.", pace: 0.95, style: "Socratic: explain briefly, then ask ONE short guiding question that helps the student think.", open: "Let's think this through together."},
   {id: "coach", name: "⚡ Energetic Coach", desc: "Upbeat, quick and full of encouragement.", pace: 1.1, style: "an upbeat, energetic coach: short punchy sentences and lots of encouragement.", open: "Awesome problem — let's crush it!"},
   {id: "patient", name: "🌿 Patient Mentor", desc: "Calm and slow, in tiny steps.", pace: 0.85, style: "a calm, patient mentor: very small steps, define every term, never rush.", open: "Let's take this slowly, one small step at a time."}];
-const VT_SUBJECTS = ["Arithmetic", "Algebra", "Linear Algebra", "Geometry", "Trigonometry", "Calculus", "Statistics", "Physics", "Chemistry", "Biology"];
+const VT_SUBJECTS = ["Arithmetic", "Algebra", "Linear Algebra", "Geometry", "Trigonometry", "Calculus", "Statistics", "Economics", "Physics", "Chemistry", "Biology"];
 const VT_LEVELS = [["elem", "Elementary"], ["middle", "Middle school"], ["high", "High school"], ["uni", "University"]];
 const VT_SAMPLES = [
   ["Calculus", "Chain rule derivative", "Find the derivative of f(x) = sin(x^2) + 3x^3 at x = 1"],
@@ -37405,6 +37405,11 @@ const VT_SAMPLES = [
   ["Linear Algebra", "Solve with matrices", "Solve [[1,1,1],[0,2,5],[2,5,-1]] x = [6,-4,27]"],
   ["Algebra", "Cubic equation", "Solve x^3 - 6x^2 + 11x - 6 = 0"],
   ["Physics", "Projectile motion", "A ball is launched at 30 m/s at 45 degrees. Find the max height, time of flight and range."],
+  ["Economics", "Market equilibrium", "Demand is Qd = 120 - 4P and supply is Qs = 2P. Find the equilibrium price and quantity."],
+  ["Economics", "Price elasticity of demand", "The price of a coffee rises from $4 to $5 and the quantity demanded falls from 200 to 160 cups. Find the price elasticity of demand using the midpoint method."],
+  ["Economics", "Profit and break-even", "A firm has fixed costs of $600, a variable cost of $8 per unit and sells each unit for $20. Find the break-even quantity and the profit at 100 units."],
+  ["Economics", "GDP", "Consumption is 500, investment is 120, government spending is 180, exports are 90 and imports are 70. Find GDP."],
+  ["Economics", "Compound interest", "You invest $2,000 at 5% interest per year, compounded yearly. How much is it worth after 3 years?"],
   ["Statistics", "Mean and spread", "Find the mean, median and standard deviation of 4, 8, 15, 16, 23, 42"],
   ["Trigonometry", "Trig equation", "Solve 2sin(x) = 1"],
   ["Chemistry", "SN2 reaction", "Explain the mechanism and transition state of the SN2 reaction of CH3Br with OH-"],
@@ -37458,7 +37463,12 @@ function vtLogRender(){ const b = $("vt-log"); if(!b) return; if(!vt.log.length)
 const vtSmp = Object.assign((p, o) => sampler(typeof p === "string" ? VTX.plain(p) : p, o), {json: p => sampler.json(VTX.plain(p))});
 const vtAI = () => typeof sampler !== "undefined" && sampler && sampler.json;
 const vtLevelName = () => (VT_LEVELS.find(l => l[0] === vt.level) || VT_LEVELS[2])[1];
-function vtBasePrompt(){ return `You are a ${vt.subject} tutor inside "My Word Book", a learning app for students. Speak as ${vt.persona.style} Pitch everything at a ${vtLevelName()} level. Write maths as plain text a screen can show: x^2, sqrt(x), a/b, π, ≤ — never LaTeX, never markdown, no emojis. Be accurate; if a question is unsafe or not about learning, gently steer back to schoolwork.`; }
+// ---- Economics: the tutor uses proper economic terms and formulas ----
+const VT_ECON_STRONG = /\b(elasticit|equilibrium (price|quantity|wage)|market equilibrium|quantity (demanded|supplied)|demand (curve|function|schedule)|supply (curve|function|schedule)|supply and demand|demand and supply|marginal (cost|revenue|utility|product|benefit|propensity)|average (total|variable|fixed) cost|total (revenue|cost)|fixed costs?|variable costs?|break[- ]?even|consumer surplus|producer surplus|deadweight|opportunity cost|comparative advantage|absolute advantage|gdp|gross domestic product|gnp|cpi|consumer price index|inflation|deflator|unemployment rate|labou?r force|multiplier|mpc|mps|reserve ratio|money supply|fiscal policy|monetary policy|aggregate (demand|supply)|price (floor|ceiling)|tariff|subsid(y|ies)|monopol|oligopol|perfect competition|economies of scale|diminishing returns|present value|future value|net present value|\bnpv\b|compound interest|simple interest|real interest|nominal interest|exchange rate|balance of (trade|payments)|budget (deficit|surplus|constraint|line)|indifference curve|production possibilit|\bppf\b|\bppc\b|scarcity|microeconomic|macroeconomic|economics?)\b/i;
+const VT_ECON_WORDS = /\b(demand|supply|price|prices|cost|costs|revenue|profit|loss|market|tax|taxes|wage|wages|income|interest|invest|saving|savings|loan|budget|consumer|producer|firm|output|trade|export|import|money|bank|growth|recession|utility|surplus|shortage|goods|labou?r|capital|rent|percent|%|\$)\b|[$€£]/i;
+function vtIsEcon(q){ q = String(q || ""); return VT_ECON_STRONG.test(q) || (vt.subject === "Economics" && VT_ECON_WORDS.test(q)); }
+const VT_ECON_GUIDE = ` Use correct economics terms and the standard formulas, and name the formula before you use it. Useful formulas: price elasticity of demand = % change in quantity demanded ÷ % change in price (use the midpoint method when two points are given: ((Q2 − Q1)/((Q1 + Q2)/2)) ÷ ((P2 − P1)/((P1 + P2)/2))); market equilibrium is where Qd = Qs; total revenue TR = P × Q; profit = TR − TC; TC = FC + VC; ATC = TC/Q; marginal cost MC = ΔTC/ΔQ; marginal revenue MR = ΔTR/ΔQ; profit is greatest where MR = MC; break-even quantity = FC ÷ (P − AVC); consumer and producer surplus are triangle areas (½ × base × height); GDP = C + I + G + (X − M); real GDP = nominal GDP ÷ GDP deflator × 100; inflation rate = (CPI2 − CPI1)/CPI1 × 100; unemployment rate = unemployed ÷ labour force × 100; spending multiplier = 1/(1 − MPC); money multiplier = 1 ÷ reserve ratio; simple interest I = P·r·t; compound interest A = P(1 + r/n)^(n·t); present value PV = FV/(1 + r)^t; real interest rate ≈ nominal rate − inflation rate; opportunity cost = what you give up ÷ what you gain. Explain each economics term in simple words the first time you use it, keep the units and currency signs, say any assumption you make, and finish with one sentence on what the answer means in real life.`;
+function vtBasePrompt(){ return `You are ${vt.econ || vt.subject === "Economics" ? "an Economics" : "a " + vt.subject} tutor inside "My Word Book", a learning app for students. Speak as ${vt.persona.style} Pitch everything at a ${vtLevelName()} level. Write maths as plain text a screen can show: x^2, sqrt(x), a/b, π, ≤ — never LaTeX, never markdown, no emojis. Be accurate; if a question is unsafe or not about learning, gently steer back to schoolwork.${vt.econ || vt.subject === "Economics" ? VT_ECON_GUIDE : ""}`; }
 async function vtAIExplainLocal(q, S){ // the calculator has the maths; the AI adds the friendly talk
   const prompt = `${vtBasePrompt()}
 The student asked: "${q}"
@@ -37471,17 +37481,20 @@ async function vtAISolve(q){
   const prompt = `${vtBasePrompt()}
 Solve or explain this for the student: "${q}"
 Reply with ONLY JSON in exactly this shape:
-{"title": "short title", "answer": "the final answer in one line (or the key takeaway for an explain question)", "overview": "2 sentences on the big idea", "opening": "1-2 friendly spoken sentences to start", "steps": [{"title": "step title", "math": "the working for this step as plain text (empty string if none)", "why": "1-3 sentence explanation", "hint": "one short guiding question"}], "followups": ["3 short follow-up questions"]}
-Use 3 to 7 steps. Double-check all arithmetic.`;
+{"title": "short title", "answer": "the final answer in one line (or the key takeaway for an explain question)", "overview": "2 sentences on the big idea", "opening": "1-2 friendly spoken sentences to start", "steps": [{"title": "step title", "math": "the working for this step as plain text (empty string if none)", "why": "1-3 sentence explanation", "hint": "one short guiding question"}], "followups": ["3 short follow-up questions"]${vt.econ ? `, "graph": null` : ""}}
+Use 3 to 7 steps. Double-check all arithmetic.${vt.econ ? ` If the problem has curves that are worth drawing (for example demand and supply, or cost and revenue), replace the graph null with {"fns": ["up to 3 formulas written with x as the only letter, e.g. 100 - 2*x"], "names": ["what each curve is, e.g. Demand (price as quantity changes)"], "marks": [x values to mark, such as the equilibrium quantity], "xmin": 0, "xmax": a sensible largest x}. Say in a step what x stands for. Otherwise keep graph null.` : ""}`;
   const j = await sampler.json(prompt); if(!j || !Array.isArray(j.steps) || !j.steps.length) throw {code: "failed"};
   return {kind: "ai", subject: vt.subject, title: String(j.title || q).slice(0, 120), answer: String(j.answer || ""), overview: String(j.overview || ""), opening: String(j.opening || ""), check: null, ai: true, followups: (j.followups || []).slice(0, 3).map(String),
-    steps: j.steps.slice(0, 8).map(s => ({title: String(s.title || ""), math: String(s.math || ""), why: String(s.why || s.explanation || ""), hint: String(s.hint || "")})), graph: null}; }
+    steps: j.steps.slice(0, 8).map(s => ({title: String(s.title || ""), math: String(s.math || ""), why: String(s.why || s.explanation || ""), hint: String(s.hint || "")})), graph: vtAIGraph(j.graph)}; }
+function vtAIGraph(g){ try { if(!g || !Array.isArray(g.fns)) return null; const fns = g.fns.map(f => String(f).replace(/\s+/g, " ").trim()).filter(f => f.length > 0 && f.length <= 60 && /^[0-9x+\-−*/^(). ]+$/i.test(f) && /x/i.test(f)).slice(0, 3); if(!fns.length) return null; const num = v => Number.isFinite(+v) ? +v : null, xmin = num(g.xmin), xmax = num(g.xmax), marks = (Array.isArray(g.marks) ? g.marks : []).map(num).filter(v => v !== null).slice(0, 4);
+    return {fns, marks, xmin: xmin !== null && xmax !== null && xmax > xmin ? xmin : null, xmax: xmin !== null && xmax !== null && xmax > xmin ? xmax : null, names: (Array.isArray(g.names) ? g.names : []).map(n => String(n).slice(0, 60)).slice(0, 3)}; } catch(e){ return null; } }
 function vtAIErr(e){ const c = e && e.code; return c === "limit" ? (e.message || "Please log in to use the AI.") : c === "rate_limited" ? "Lots of questions right now — wait a minute and try again." : c === "not_granted" ? "The AI isn't allowed here yet." : c === "unavailable" ? (e.message || "The AI isn't available right now.") : "The AI couldn't answer right now. Please try again."; }
 // ---------- solving ----------
 async function vtSolve(q){
   q = String(q || "").trim(); if(!q || vt.busy) return; if($("vt").dataset.tab !== "tutor") vtTab("tutor"); vt.busy = true; $("vt-go").disabled = true; vtState(); try { stopAll(); } catch(e){}
+  vt.econ = vtIsEcon(q);
   try {
-    const S = VTS.solve(q);
+    const S = vt.econ && vtAI() ? null : VTS.solve(q);
     if(S && S.err){ vtLog("bot", S.err); vtSay(S.err); return; }
     if(S){ S.q = q; S.opening = `${vt.persona.open} Here's the answer: ${S.answer}.`; S.followups = vtDefaultFollow(S);
       vtShow(S); vtGraphFrom(S);
@@ -37504,6 +37517,7 @@ function vtShow(S, keep){ vt.sol = S; if(!keep){ vt.step = 0; vt.shown = vt.guid
     <div class="vt-answer">${S.kind === "ai" && !/\d/.test(S.answer) ? "Key idea" : "Answer"}: ${vtMath(S.answer)}</div>${S.overview ? `<p class="vt-over">${vtMath(S.overview)}</p>` : ""}
     ${calcBox}<h4 class="vt-exh">📝 Step-by-step explanation</h4>
     <div class="vt-solbar"><label class="vt-tog"><input type="checkbox" id="vt-guided"${vt.guided ? " checked" : ""}> 👣 One step at a time</label><button type="button" class="btn alt vt-sm" id="vt-readall">▶ Read all steps</button>${S.graph ? `<button type="button" class="btn alt vt-sm" id="vt-seegraph">📈 See the graph</button>` : ""}</div>
+    ${S.graph && (S.graph.names || []).length ? `<p class="vt-tip">📈 On the graph: ${S.graph.names.map((n, i) => `curve ${i + 1} is ${esc(n)}`).join("; ")}.</p>` : ""}
     <ol class="vt-steps">${steps}</ol>
     ${nxt ? `<div class="vt-guide"><p>🤔 <b>Your turn first:</b> ${vtMath(nxt.hint || "What do you think comes next?")}</p><button type="button" class="btn vt-sm" id="vt-next">Show step ${vt.shown + 1} of ${S.steps.length} ▶</button></div>` : ""}
     <div class="vt-mine"><b>✍️ Check my answer</b><div class="vt-row" style="margin-top:6px"><input id="vt-mine" placeholder="${S.check ? "e.g. " + (S.check.length > 1 ? "x = 2 and x = −1" : "13") : "Type your answer"}" autocomplete="off"><button type="button" class="btn vt-sm" id="vt-chk">Check</button></div><p class="vt-mineres" id="vt-mineres" aria-live="polite"></p></div>
