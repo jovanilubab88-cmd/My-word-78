@@ -3341,7 +3341,7 @@ window.MWB_TRIAL_DAYS = 14;
       <button class="mp-mode" data-mpmode="trig" aria-pressed="false">📐 Trig Lab<small>Unit circle, graphs, equations</small></button>
     </div>
     <div class="vt" id="vt" data-tab="tutor" hidden>
-      <div class="vt-tabs" role="tablist" aria-label="Advanced Math sections">
+      <div class="vt-tabs" role="tablist" aria-label="AI Tutor sections">
         <button type="button" role="tab" data-vtab="tutor" aria-selected="true"><span aria-hidden="true">🧑‍🏫</span> Tutor</button>
         <button type="button" role="tab" data-vtab="graph" aria-selected="false"><span aria-hidden="true">📈</span> Graphing<i class="vt-tabdot" id="vt-gdot" hidden aria-label="new graph"></i></button>
         <button type="button" role="tab" data-vtab="video" aria-selected="false"><span aria-hidden="true">📺</span> Videos</button>
@@ -24846,7 +24846,7 @@ function renderFolders(){
   const ex = appSection(bi, "🔬 Explore & play");
   ex.appendChild(folderTile("⭐", "My stars", all.filter(x => stars.includes(x.w)).length, "", () => openFolder("stars")));
   ex.appendChild(folderTile("📄", "Smart Reader", null, "Read · Ask · Listen", openReader, "reader"));
-  ex.appendChild(folderTile("🚀", "Advanced Math", null, "AI Tutor · Photos · Graphs", openAdvMath, "advmath"));
+  ex.appendChild(folderTile("🧑‍🏫", "AI Tutor", null, "Math · Economics · Graphs · Videos", openAdvMath, "advmath"));
   ex.appendChild(folderTile("🧫", "Cell City", all.filter(x => x.c === "Cell Parts").length + cellTopicWords("Types of cells").length + cellTopicWords("Cell ideas").length, "+ DNA Lab", openCellFolder));
   ex.appendChild(folderTile("👁️", "Eye Explorer", all.filter(x => x.c === "Eye Parts").length, "", openEyeFolder, "eye"));
   ex.appendChild(folderTile("🧠", "Brain Lab", all.filter(x => x.c === "Anatomy" && x.t === "Brain & nerves").length, "+ Diagram", openBrainLab, "brain"));
@@ -33628,7 +33628,7 @@ document.addEventListener("keydown", e => {
   else if(e.key === "Enter"){ if(document.activeElement && document.activeElement.tagName === "BUTTON" && document.activeElement !== $("mp-go")) return; e.preventDefault(); if(!$("mp-done").hidden) mpRestart(); else mpCheck(); }
 });
 // 🚀 Advanced Math: the AI Voice Tutor on its own, opened from the home page
-function openAdvMath(){ showView("math", "folders"); const v = $("view-math"); v.classList.add("adv"); v.querySelector(".cell-head h2").textContent = "🚀 Advanced Math"; $("math-back").setAttribute("aria-label", "Back to the home page");
+function openAdvMath(){ showView("math", "folders"); const v = $("view-math"); v.classList.add("adv"); v.querySelector(".cell-head h2").textContent = "🧑‍🏫 AI Tutor"; $("math-back").setAttribute("aria-label", "Back to the home page");
   $("vt").hidden = false; window.scrollTo(0, 0); vtInit(); }
 function openMath(){ const v = $("view-math"); v.classList.remove("adv"); v.querySelector(".cell-head h2").textContent = "🧮 Math Practice"; $("math-back").setAttribute("aria-label", "Back to the Math folder"); if(mp.mode === "tutor") mp.mode = "facts";
   showView("math", "folders"); syncMPControls(); if(mp.mode === "trig") tlInit(); else if(!mp.q || !$("mp-done").hidden) mpRestart(); else renderMP(); }
