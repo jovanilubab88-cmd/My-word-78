@@ -14270,10 +14270,10 @@ document.addEventListener("pointerdown", function unlockSpeech(){
 }, true);
 function stopAll(){ speakToken++; synthCancel(); try { if(typeof AI_AUDIO !== "undefined" && AI_AUDIO && AI_AUDIO.__speaking){ AI_AUDIO.pause(); AI_AUDIO.__speaking = false; } } catch(e){} }
 // parts: a string, or a list of [text, pace] to say one after another
-function speak(text, pace, more, forceNow){
+function speak(text, pace, more, forceNow, style){
   window.__vcPaused = false; try { if("speechSynthesis" in window && speechSynthesis.paused) speechSynthesis.resume(); } catch(e){}
   try { if(window.__abcAudio){ window.__abcAudio.pause(); window.__abcAudio = null; } } catch(e){}
-  const parts = [[text, pace || 1], ...(more || [])];
+  const parts = [[text, pace || 1, style], ...(more || []).map(x => x.length > 2 || !style ? x : [x[0], x[1], style])];
   // on the website, read everything with the natural OpenAI voice (falls back to the device voice if it can't)
   if(typeof aiVoiceEverywhere === "function" && aiVoiceEverywhere()){ stopAll(); const token = speakToken; aiSpeakParts(parts, token, forceNow); return; }
   deviceSpeak(parts, forceNow);
@@ -14284,11 +14284,11 @@ function deviceSpeak(parts, forceNow){
   synthCancel();
   synthRun(() => {
     if(token !== speakToken) return;
-    parts.forEach(([t, p]) => {
+    parts.forEach(([t, p, style]) => {
       const u = new SpeechSynthesisUtterance(t);
       if(chosenVoice){ u.voice = chosenVoice; u.lang = chosenVoice.lang; } else u.lang = "en-US";
       u.rate = Math.max(0.5, Math.min(1.4, speed * (p || 1)));
-      u.pitch = 1;
+      u.pitch = style === "kids" ? 1.15 : 1;
       synthSay(u);
     });
   }, forceNow);
@@ -14385,20 +14385,20 @@ async function ttsFetch(init){
   if(res.ok && key && typeof caches !== "undefined"){ try { const copy = res.clone(), blob = await copy.blob(); if(blob.size > 200){ const c = await caches.open(WB_TTS_DEVICE); await c.put(key, new Response(blob, {headers: {"Content-Type": "audio/mpeg"}})); } } catch(e){} }
   return res;
 }
-function aiTTSUrl(text){ const voice = aiVoiceName(), key = voice + "|" + text; if(AI_TTS_CACHE.has(key)) return AI_TTS_CACHE.get(key);
-  const pr = (async () => { let res; try { res = await ttsFetch({method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({text: String(text).slice(0, 500), voice})}); } catch(e){ throw {status: "network"}; }
+function aiTTSUrl(text, style){ const voice = style === "kids" ? "coral" : aiVoiceName(), key = voice + "|" + (style || "") + "|" + text; if(AI_TTS_CACHE.has(key)) return AI_TTS_CACHE.get(key);
+  const pr = (async () => { let res; try { res = await ttsFetch({method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(Object.assign({text: String(text).slice(0, 500), voice}, style ? {style} : {}))}); } catch(e){ throw {status: "network"}; }
     if(!res.ok){ let d = ""; try { d = await res.text(); } catch(e){} throw {status: res.status, detail: d}; }
     const blob = await res.blob(); if(blob.size < 200) throw {status: "empty"}; return URL.createObjectURL(blob); })();
   pr.catch(() => AI_TTS_CACHE.delete(key)); AI_TTS_CACHE.set(key, pr);
   if(AI_TTS_CACHE.size > 250){ const [k, v] = AI_TTS_CACHE.entries().next().value; AI_TTS_CACHE.delete(k); v.then(u => URL.revokeObjectURL(u)).catch(() => {}); }
   return pr; }
 async function aiSpeakParts(parts, token, forceNow){
-  for(let i = 0; i < parts.length; i++){ const [t, p] = parts[i]; if(!String(t || "").trim()) continue; let url;
-    if(i + 1 < parts.length) aiTTSUrl(parts[i + 1][0]).catch(() => {}); // get the next part ready while this one plays
-    try { url = await aiTTSUrl(t); } catch(e){ if(token !== speakToken) return; if(e.status !== "network") window.__aiTTSDown = true; aiVoiceProblem(e.status, e.detail); deviceSpeak(parts.slice(i), true); return; }
+  for(let i = 0; i < parts.length; i++){ const [t, p, st] = parts[i]; if(!String(t || "").trim()) continue; let url;
+    if(i + 1 < parts.length) aiTTSUrl(parts[i + 1][0], parts[i + 1][2]).catch(() => {}); // get the next part ready while this one plays
+    try { url = await aiTTSUrl(t, st); } catch(e){ if(token !== speakToken) return; if(e.status !== "network") window.__aiTTSDown = true; aiVoiceProblem(e.status, e.detail); deviceSpeak(parts.slice(i), true); return; }
     if(token !== speakToken) return;
     while(window.__vcPaused && token === speakToken) await new Promise(r => setTimeout(r, 200)); if(token !== speakToken) return;
-    const a = AI_AUDIO; a.src = url; a.playbackRate = Math.max(0.6, Math.min(1.3, speed * (p || 1) * 1.05)); try { a.preservesPitch = true; } catch(e){} a.__speaking = true;
+    const a = AI_AUDIO; a.src = url; a.playbackRate = st === "kids" ? Math.max(0.8, Math.min(1.1, speed)) : Math.max(0.6, Math.min(1.3, speed * (p || 1) * 1.05)); try { a.preservesPitch = true; } catch(e){} a.__speaking = true;
     const ok = await new Promise(res => { a.onended = () => res(true); a.onerror = () => res(false); const pl = a.play(); if(pl && pl.catch) pl.catch(() => res(false)); });
     a.__speaking = false; if(token !== speakToken) return;
     if(!ok){ deviceSpeak(parts.slice(i), true); return; } } }
@@ -38123,14 +38123,14 @@ const K5_SIGHT = {
   "Grade 2–3": [["because","I am happy because we learned math."],["before","Wash your hands before eating."],["around","The Earth goes around the Sun."],["change","Caterpillars change into butterflies."],["always","I always brush my teeth."],["different","Every snowflake is different."],["thought","I thought it would rain."],["laugh","The joke made us laugh."],["through","We walked through the forest."],["enough","Is there enough cake for everyone?"],["special","Today is a special day."],["important","Sleep is important for your body."]],
   "Grade 4–5": [["between","The blue line is between two numbers."],["fraction","One half is a simple fraction."],["distance","Measure the distance with a ruler."],["equation","Solve the equation to find x."],["temperature","The temperature dropped at night."],["environment","Plants and animals share an environment."],["experiment","Our experiment tested which ball bounces highest."],["paragraph","Start a new paragraph for a new idea."],["perimeter","The perimeter is the distance around a shape."],["recognize","Can you recognize this song?"],["necessary","Water is necessary for life."],["describe","Describe your favourite animal."]]};
 const k5 = {tab: "trace", stars: 0, xp: 0, streak: 1, last: "", letter: 0, lower: false, ink: [], bw: 0, sg: "Pre-K & K", si: 0, ms: 0, mt: null, mk: "add", frame: 0, prob: null, slices: 4, shaded: 3, fq: null, wcs: 0, sw: false, inited: false, log: [], rec: null};
-const k5Say = (t, pace) => { try { speak(t, pace || 0.95); } catch(e){} };
+const k5Say = (t, pace) => { try { speak(t, pace || 0.82, null, false, "kids"); } catch(e){} };
 const k5Shuffle = a => { a = a.slice(); for(let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 function k5Tab(t){ k5.tab = t; document.querySelectorAll("[data-k5]").forEach(b => b.setAttribute("aria-selected", String(b.dataset.k5 === t))); document.querySelectorAll(".k5-pane").forEach(p => p.hidden = p.dataset.pane !== t);
   if(t === "trace") requestAnimationFrame(k5TraceDraw); if(t === "sci"){ k5WC(); k5Circ(); k5Plant(); } try { k5xTab(t); } catch(e){ console.warn("k5x", e); } }
 // ---------- ✍️ tracing (it checks how much of the letter you covered) ----------
 function k5Letters(){ $("k5-letters").innerHTML = K5_ABC.map((a, i) => `<button type="button" data-l="${i}" style="--h:${i * 14}" aria-pressed="${i === k5.letter}" aria-label="Letter ${a[0]}">${k5.lower ? a[0].toLowerCase() : a[0]}</button>`).join("");
   $("k5-letters").querySelectorAll("[data-l]").forEach(b => b.onclick = () => { k5.letter = +b.dataset.l; k5.ink = []; k5Letters(); k5TraceDraw(); k5SayLetter(); }); }
-function k5SayLetter(){ const a = K5_ABC[k5.letter]; k5Say(`${a[0]}. ${a[0]} says ${a[1]}, as in ${a[2]}.`); }
+function k5SayLetter(){ const a = K5_ABC[k5.letter]; k5Say(`This is the letter ${a[0]}. It makes the sound ${a[1]}, like ${a[2].toLowerCase()}!`); }
 function k5TCanvas(){ const c = $("k5-tcv"), r = c.getBoundingClientRect(), d = window.devicePixelRatio || 1, w = Math.max(240, r.width), h = r.height || 280; if(c.width !== Math.round(w * d)){ c.width = Math.round(w * d); c.height = Math.round(h * d); } const x = c.getContext("2d"); x.setTransform(d, 0, 0, d, 0, 0); return {c, x, w, h}; }
 function k5Glyph(){ const a = K5_ABC[k5.letter]; return k5.lower ? a[0].toLowerCase() : a[0]; }
 function k5GuideFont(h){ return `700 ${Math.round(h * 0.86)}px Andika, Fredoka, "Comic Sans MS", system-ui, sans-serif`; }

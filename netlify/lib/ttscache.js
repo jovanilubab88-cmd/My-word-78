@@ -9,7 +9,8 @@ const STYLES = {
   calm: "Read slowly in a calm, soft, soothing voice, like a bedtime story. Relaxed pacing with gentle pauses.",
   teacher: "Read like a clear, friendly teacher. Pronounce every word carefully at a steady pace and stress important words.",
   lively: "Read with lively, expressive energy and enthusiasm, while staying clear and easy to follow.",
-  plain: "Read in a natural, neutral narration voice at a steady pace."
+  plain: "Read in a natural, neutral narration voice at a steady pace.",
+  kids: "Speak like a warm, cheerful kindergarten teacher talking to a five-year-old. Use a bright, smiling, gentle voice. Speak slowly and clearly, say each word on its own, and leave a short happy pause after every sentence. Sound encouraging, never rushed."
 };
 // the same request always gives the same name, so a saved clip can be found again
 function clipKey(model, voice, style, text) {
