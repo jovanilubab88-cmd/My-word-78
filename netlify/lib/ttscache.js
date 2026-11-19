@@ -12,16 +12,51 @@ const STYLES = {
   plain: "Read in a natural, neutral narration voice at a steady pace.",
   kids: "Speak like a warm, cheerful kindergarten teacher talking to a five-year-old. Use a bright, smiling, gentle voice. Speak slowly and clearly, say each word on its own, and leave a short happy pause after every sentence. Sound encouraging, never rushed."
 };
+// K-5 phonics: exactly which pure sound each letter makes (only these fixed descriptions are ever sent, never user text)
+const PHONICS = {
+  a: "the short a sound /æ/, as at the start of 'apple' and in 'cat' (not 'ay', not 'ah')",
+  b: "a quick, crisp /b/ as at the start of 'ball', with almost no 'uh' after it",
+  c: "a quick, crisp /k/ as at the start of 'cat', with almost no 'uh' after it",
+  d: "a quick, crisp /d/ as at the start of 'dog', with almost no 'uh' after it",
+  e: "the short e sound /ɛ/, as at the start of 'egg' (not 'ee')",
+  f: "a long, gentle /f/: top teeth on the bottom lip, air only, no voice: ffff",
+  g: "a quick, crisp hard /g/ as at the start of 'goat', with almost no 'uh' after it",
+  h: "a soft, breathy /h/ as at the start of 'hat', just a puff of breath",
+  i: "the short i sound /ɪ/, as at the start of 'igloo' and in 'sit' (not 'eye')",
+  j: "a quick /dʒ/ as at the start of 'jam', with almost no 'uh' after it",
+  k: "a quick, crisp /k/ as at the start of 'kite', with almost no 'uh' after it",
+  l: "a long, held /l/ with the tongue up behind the teeth: llll",
+  m: "a long hum /m/ with the lips closed: mmmm",
+  n: "a long hum /n/ through the nose: nnnn",
+  o: "the short o sound /ɑ/, as at the start of 'octopus' and in 'hot' (not 'oh')",
+  p: "a quick puff /p/ as at the start of 'pig', with almost no 'uh' after it",
+  q: "a quick /kw/ as at the start of 'queen'",
+  r: "a long, held /r/ as at the start of 'red' (not 'ar'): rrrr",
+  s: "a long snake hiss /s/: ssss, air only, no voice",
+  t: "a quick, crisp /t/ as at the start of 'top', with almost no 'uh' after it",
+  u: "the short u sound /ʌ/, as at the start of 'umbrella' and in 'cup' (not 'you')",
+  v: "a long buzzing /v/: top teeth on the bottom lip with voice: vvvv",
+  w: "a quick /w/ as at the start of 'water', lips rounded",
+  x: "the /ks/ sound as at the end of 'fox'",
+  y: "a quick /j/ as at the start of 'yo-yo'",
+  z: "a long buzzing bee sound /z/: zzzz"
+};
+function instructionsFor(req) {
+  let ins = STYLES[req.style] || "";
+  if (req.snd && PHONICS[req.snd]) ins += ` This is a phonics lesson. Text written between slashes, like /sss/ or /ă/, is a letter SOUND, not a letter name: say it as ${PHONICS[req.snd]}. Hold it for about half a second, clearly, then carry on smiling. Never say the letter's name instead of its sound. If the text is only the sound, say only the sound.`;
+  return ins;
+}
 // the same request always gives the same name, so a saved clip can be found again
-function clipKey(model, voice, style, text) {
-  return crypto.createHash("sha256").update([model, voice, style || "", text].join("|")).digest("hex");
+function clipKey(model, voice, style, text, snd) {
+  return crypto.createHash("sha256").update([model, voice, style || "", text].concat(snd ? ["snd:" + snd] : []).join("|")).digest("hex");
 }
 function cleanRequest(body) {
   const style = STYLES[body.style] ? body.style : "";
   const text = String(body.text || "").replace(/\s+/g, " ").trim().slice(0, style ? 900 : 500);
   const voice = VOICES.includes(body.voice) ? body.voice : "nova";
   const model = style ? "gpt-4o-mini-tts" : "tts-1"; // word cards use the fast, cheap voice; reading styles use the steerable one
-  return { style, text, voice, model };
+  const snd = style === "kids" && /^[a-z]$/.test(String(body.snd || "")) ? String(body.snd) : "";
+  return { style, text, voice, model, snd };
 }
 function cacheStore(event) {
   if (!blobs) return null;
@@ -30,7 +65,7 @@ function cacheStore(event) {
 }
 // returns {buf, hit} — hit = true when the clip came from storage (no OpenAI call)
 async function getClip(event, apiKey, req) {
-  const st = cacheStore(event), key = clipKey(req.model, req.voice, req.style, req.text);
+  const st = cacheStore(event), key = clipKey(req.model, req.voice, req.style, req.text, req.snd);
   if (st) {
     try { const saved = await st.get(key, { type: "arrayBuffer" }); if (saved && saved.byteLength > 200) return { buf: Buffer.from(saved), hit: true, key }; } catch (e) {}
   }
@@ -38,12 +73,12 @@ async function getClip(event, apiKey, req) {
   const speech = payload => fetch("https://api.openai.com/v1/audio/speech", {
     method: "POST", headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" }, body: JSON.stringify(payload)
   });
-  let res = await speech(Object.assign({ model: req.model, voice: req.voice, input: req.text, response_format: "mp3" }, req.style ? { instructions: STYLES[req.style] } : {}));
-  // if the steerable model isn't available on this account, use the classic voice model
-  if (!res.ok && req.style && res.status !== 429) res = await speech({ model: "tts-1", voice: req.voice, input: req.text, response_format: "mp3" });
+  let res = await speech(Object.assign({ model: req.model, voice: req.voice, input: req.text, response_format: "mp3" }, req.style ? { instructions: instructionsFor(req) } : {}));
+  // if the steerable model isn't available on this account, use the classic voice model (never for letter sounds: it can't make them)
+  if (!res.ok && req.style && !req.snd && res.status !== 429) res = await speech({ model: "tts-1", voice: req.voice, input: req.text, response_format: "mp3" });
   if (!res.ok) throw { status: res.status, message: await res.text() };
   const buf = Buffer.from(await res.arrayBuffer());
   if (st && buf.length > 200) { try { await st.set(key, buf, { metadata: { voice: req.voice, style: req.style, model: req.model, chars: req.text.length } }); } catch (e) {} }
   return { buf, hit: false, key };
 }
-module.exports = { VOICES, STYLES, clipKey, cleanRequest, getClip };
+module.exports = { VOICES, STYLES, PHONICS, instructionsFor, clipKey, cleanRequest, getClip };
