@@ -1,8 +1,10 @@
 // Netlify Function: /.netlify/functions/stripe-webhook
 // Stripe calls this when a family subscribes, renews or cancels, and it updates their account in Firebase.
-// Needs STRIPE_WEBHOOK_SECRET (starts with whsec_) and FIREBASE_SERVICE_ACCOUNT in Netlify's environment variables.
+// Needs STRIPE_WEBHOOK_SECRET (starts with whsec_), STRIPE_SECRET_KEY and FIREBASE_SERVICE_ACCOUNT in Netlify's environment variables.
+// In Stripe → Developers → Webhooks, send: checkout.session.completed, customer.subscription.created/updated/deleted, invoice.paid
 const crypto = require("crypto");
 const { fb, reply } = require("../lib/fb.js");
+const { api, idOf, subFields, getSub } = require("../lib/stripe.js");
 
 function verify(raw, header, secret) {
   if (!header || !secret) return false;
@@ -16,27 +18,41 @@ exports.handler = async function (event) {
   if (event.httpMethod !== "POST") return reply(405, { error: "Method Not Allowed" });
   const raw = event.isBase64Encoded ? Buffer.from(event.body || "", "base64").toString("utf8") : (event.body || "");
   const h = event.headers || {};
-  if (!verify(raw, h["stripe-signature"] || h["Stripe-Signature"], process.env.STRIPE_WEBHOOK_SECRET)) return reply(400, { error: "bad_signature" });
+  if (!verify(raw, h["stripe-signature"] || h["Stripe-Signature"], process.env.STRIPE_WEBHOOK_SECRET)) {
+    console.error("stripe-webhook: signature check failed — is STRIPE_WEBHOOK_SECRET the signing secret of THIS webhook (live vs test)?");
+    return reply(400, { error: "bad_signature" });
+  }
   const a = fb(); if (!a) return reply(500, { error: "firebase_not_set_up" });
   let ev; try { ev = JSON.parse(raw); } catch (e) { return reply(400, { error: "Invalid JSON" }); }
-  const db = a.firestore(), T = ms => a.firestore.Timestamp.fromMillis(ms), o = (ev.data && ev.data.object) || {};
-  const uidOf = async () => {
-    const u = o.client_reference_id || (o.metadata && o.metadata.uid);
-    if (u) return String(u);
-    if (o.customer) { const q = await db.collection("users").where("stripeCustomer", "==", o.customer).limit(1).get(); if (!q.empty) return q.docs[0].id; }
-    return null;
-  };
-  const uid = await uidOf();
-  if (!uid) return reply(200, { received: true, note: "no matching account" });
-  const ref = db.collection("users").doc(uid);
+  const db = a.firestore(), users = db.collection("users"), o = (ev.data && ev.data.object) || {};
+  const type = ev.type || "";
+  if (!/^(checkout\.session\.completed|customer\.subscription\.(created|updated|deleted)|invoice\.(paid|payment_succeeded))$/.test(type)) return reply(200, { received: true, ignored: type });
 
-  if (ev.type === "checkout.session.completed") {
-    await ref.set({ plan: "active", stripeCustomer: o.customer || null, stripeSubscription: o.subscription || null, paidSince: T(Date.now()) }, { merge: true });
-  } else if (/^customer\.subscription\.(created|updated|deleted)$/.test(ev.type)) {
-    const live = ev.type !== "customer.subscription.deleted" && /^(active|trialing|past_due)$/.test(o.status || "");
-    const until = o.current_period_end ? o.current_period_end * 1000 : (o.items && o.items.data && o.items.data[0] && o.items.data[0].current_period_end ? o.items.data[0].current_period_end * 1000 : null);
-    await ref.set(Object.assign({ plan: live ? "active" : "canceled", stripeCustomer: o.customer || null, stripeSubscription: o.id || null, stripeStatus: o.status || null },
-      until ? { paidUntil: T(live ? until + 3 * 864e5 : until) } : {}), { merge: true });
+  // which subscription is this about? Ask Stripe for its status now, so messages that arrive out of order can't undo a payment
+  const subId = o.object === "subscription" ? o.id : (idOf(o.subscription) || (o.parent && o.parent.subscription_details && idOf(o.parent.subscription_details.subscription)));
+  let sub = o.object === "subscription" ? o : null;
+  try { const fresh = await getSub(subId); if (fresh) sub = fresh; } catch (e) { console.warn("stripe-webhook: couldn't fetch subscription", e.message); }
+  if (o.object === "checkout.session" && o.mode && o.mode !== "subscription") return reply(200, { received: true, ignored: "not a subscription" });
+
+  // whose account? the app's own id first, then the saved Stripe customer, then the email
+  const customer = idOf(o.customer) || (sub && idOf(sub.customer));
+  let uid = o.client_reference_id || (o.metadata && o.metadata.uid) || (sub && sub.metadata && sub.metadata.uid) || null;
+  if (!uid && customer) { const q = await users.where("stripeCustomer", "==", customer).limit(1).get(); if (!q.empty) uid = q.docs[0].id; }
+  if (!uid) {
+    let email = (o.customer_details && o.customer_details.email) || o.customer_email || null;
+    if (!email && customer) { try { const cu = await api("customers/" + encodeURIComponent(customer)); email = cu && cu.email; } catch (e) {} }
+    for (const e of new Set(email ? [email, email.toLowerCase()] : [])) {
+      const q = await users.where("accountEmail", "==", e).limit(1).get();
+      if (!q.empty) { uid = q.docs[0].id; break; }
+    }
+  }
+  if (!uid) { console.warn("stripe-webhook: no account matches", type, customer); return reply(200, { received: true, note: "no matching account" }); }
+  const ref = users.doc(String(uid));
+
+  if (sub) {
+    await ref.set(Object.assign(subFields(a, sub), type === "checkout.session.completed" ? { paidSince: a.firestore.Timestamp.fromMillis(Date.now()) } : {}), { merge: true });
+  } else if (type === "checkout.session.completed") {
+    await ref.set({ plan: "active", stripeCustomer: customer, stripeSubscription: subId || null, paidSince: a.firestore.Timestamp.fromMillis(Date.now()) }, { merge: true });
   }
   return reply(200, { received: true });
 };

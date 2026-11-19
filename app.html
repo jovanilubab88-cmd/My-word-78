@@ -1765,12 +1765,20 @@ window.MWB_TRIAL_DAYS = 14;
         card.innerHTML = '<div class="g-spin"></div><p>Finishing your subscription…</p>';
         for(let i = 0; i < 10 && !a.ok; i++){ await new Promise(r => setTimeout(r, 2000)); try { p = await MWB.getProfile(user.uid); a = MWB.access(p); } catch(e){} }
       }
+      // already paid but the account wasn't updated? ask Stripe directly before showing the payment screen
+      const syncSub = async () => { try { const r = await window.fetch("/.netlify/functions/sub-sync", {method: "POST", headers: {"Content-Type": "application/json"}, body: "{}"}), d = await r.json().catch(() => ({})); if(d.ok){ p = await MWB.getProfile(user.uid); a = MWB.access(p); } return d; } catch(e){ return {message: "Couldn't check right now. Please try again."}; } };
+      if(!a.ok && (p.stripeCustomer || p.plan !== "trial" || justPaid || !sessionStorage.getItem("mwb-synced-" + user.uid))){
+        sessionStorage.setItem("mwb-synced-" + user.uid, "1");
+        card.innerHTML = '<div class="g-spin"></div><p>Checking your subscription…</p>'; await syncSub();
+      }
       window.MWB_PROFILE = p; window.MWB_ACCESS = a;
       if(!a.ok){
         card.innerHTML = '<div class="g-ico">⭐</div><h2>Your free trial has ended</h2><p>Thanks for learning with My Word Book, ' + esc(p.name || "friend") + '! Choose a plan to keep using all the labs, Smart Reader and the AI voice. Your words and progress are saved.</p>' +
-          '<button class="g-btn" id="mwb-sub">⭐ Subscribe — $3.99/month per family</button><a class="g-btn alt" href="index.html#pricing">See what’s included</a><button class="g-btn alt" id="mwb-out">Log out</button><p id="mwb-paymsg" style="color:#b91c1c;font-weight:700;margin:12px 0 0;min-height:1em"></p>';
+          '<button class="g-btn" id="mwb-sub">⭐ Subscribe — $3.99/month per family</button><a class="g-btn alt" href="index.html#pricing">See what’s included</a><button class="g-btn alt" id="mwb-have">✅ I already subscribed — check again</button><button class="g-btn alt" id="mwb-out">Log out</button><p id="mwb-paymsg" style="color:#b91c1c;font-weight:700;margin:12px 0 0;min-height:1em"></p>';
         document.getElementById("mwb-sub").onclick = e => MWB_PAY("checkout", e.currentTarget);
         document.getElementById("mwb-out").onclick = () => MWB.signOut().then(() => location.replace("index.html"));
+        document.getElementById("mwb-have").onclick = async e => { const b = e.currentTarget, m = document.getElementById("mwb-paymsg"); b.disabled = true; b.textContent = "Checking with the payment system…"; m.textContent = "";
+          const d = await syncSub(); if(d.ok && a.ok){ location.reload(); return; } b.disabled = false; b.textContent = "✅ I already subscribed — check again"; m.textContent = d.message || "We couldn't find a subscription for this account yet."; };
         wbDone(null); return;
       }
       // bring this person's saved things onto the device, then start the app with their cloud save switched on

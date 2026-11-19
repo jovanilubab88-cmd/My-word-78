@@ -30,7 +30,7 @@ async function caller(event) {
   const a = fb(); if (!a) return { configured: false };
   const h = event.headers || {}, m = String(h.authorization || h.Authorization || "").match(/^Bearer\s+(.+)$/);
   if (!m) return { configured: true, user: null };
-  try { const t = await a.auth().verifyIdToken(m[1]); return { configured: true, user: { uid: t.uid, email: t.email || "" } }; }
+  try { const t = await a.auth().verifyIdToken(m[1]); return { configured: true, user: { uid: t.uid, email: t.email || "", emailVerified: !!t.email_verified } }; }
   catch (e) { return { configured: true, user: null }; }
 }
 async function profile(uid) { const s = await fb().firestore().collection("users").doc(uid).get(); return s.exists ? s.data() : null; }
