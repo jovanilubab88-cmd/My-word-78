@@ -3386,6 +3386,14 @@ window.MWB_TRIAL_DAYS = 14;
         <details class="vt-samples"><summary>📚 Try a sample problem</summary><div id="vt-samples"></div></details>
       </div>
       <div class="vt-card vt-sol" id="vt-sol" data-vsec="tutor" hidden></div>
+      <div class="vt-card vt-find" id="vt-find" data-vsec="video">
+        <h3 class="vt-h">🔎 Find a video that explains it</h3>
+        <p class="vt-tip">Type what you want to understand. I'll find good lesson videos on YouTube, with trusted teachers first.</p>
+        <div class="vt-row vt-ytrow"><input id="vt-findq" type="search" enterkeyhint="search" autocomplete="off" placeholder="e.g. How do I complete the square?" aria-label="What do you want a video about?"><button type="button" class="btn vt-sm" id="vt-findgo">🔎 Find videos</button></div>
+        <button type="button" class="vt-findmine" id="vt-findmine" hidden></button>
+        <p class="vt-ytmsg" id="vt-findmsg" aria-live="polite"></p>
+        <div class="vt-findlist" id="vt-findlist"></div>
+      </div>
       <div class="vt-card vt-yt" id="vt-yt" data-vsec="video">
         <h3 class="vt-h">📺 Video helper</h3>
         <p class="vt-tip">Paste a YouTube link to a lesson. The tutor writes a summary and explains the questions in the video.</p>
@@ -36928,6 +36936,16 @@ try { __diag("script-end"); } catch(e){}
 .vt[data-tab="graph"] .vt-cw canvas{min-height:min(60vh,520px)}
 
 /* 📺 Video helper */
+.vt-findmine{display:block;margin:8px 0 0;padding:8px 12px;border:2px dashed var(--line);border-radius:12px;background:transparent;color:inherit;font:inherit;font-size:14px;text-align:left;cursor:pointer;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vt-findlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;margin-top:10px}
+.vt-vid{display:flex;flex-direction:column;border:3px solid var(--line);border-radius:16px;overflow:hidden;background:var(--card,#fff);min-width:0}
+.vt-vid .vt-th{position:relative;display:block;aspect-ratio:16/9;background:#0f172a;max-width:100%}.vt-vid .vt-th img{width:100%;height:100%;object-fit:cover;display:block}
+.vt-vid .vt-len{position:absolute;right:6px;bottom:6px;background:rgba(0,0,0,.8);color:#fff;font-size:12px;font-weight:700;padding:2px 6px;border-radius:6px}
+.vt-vid .vt-play{position:absolute;inset:0;margin:auto;width:52px;height:36px;border-radius:10px;background:rgba(220,38,38,.92);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px}
+.vt-vid .vt-vb{padding:10px 12px;display:flex;flex-direction:column;gap:6px;flex:1;min-width:0}
+.vt-vid .vt-vt{font-weight:800;font-size:15px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.vt-vid .vt-vc{font-size:13px;opacity:.8}.vt-vid .vt-ok{display:inline-block;margin-left:4px;padding:1px 7px;border-radius:999px;background:#dcfce7;color:#166534;font-size:11px;font-weight:800}
+.vt-vid .vt-va{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto}.vt-vid .vt-va a,.vt-vid .vt-va button{flex:1 1 auto;text-align:center;text-decoration:none}
 .vt-ytrow{gap:8px;flex-wrap:wrap}.vt-ytrow input{flex:1 1 240px;min-width:0;font:inherit;font-size:16px;padding:10px 12px;border:3px solid var(--line);border-radius:12px;background:#fff;color:#0f172a}
 .vt-yttr{margin-top:8px}.vt-yttr summary{cursor:pointer;font-weight:700;color:#4f46e5}.vt-yttr textarea{width:100%;font:inherit;font-size:15px;padding:8px 10px;border:3px solid var(--line);border-radius:12px;background:#fff;color:#0f172a}
 .vt-ytmsg{margin:8px 0 0;font-weight:600;min-height:1em}.vt-ytmsg.err{color:#b91c1c}
@@ -37728,7 +37746,7 @@ function vtHeard(text, voice){ text = String(text).trim(); if(!text) return; con
   $("vt-in").value = text; vtSolve(text); }
 // ---------- graph studio ----------
 const VT_COL = ["#2563eb", "#e11d48", "#16a34a"];
-function vtTab(t){ const el = $("vt"); if(!el) return; el.dataset.tab = t; el.querySelectorAll("[data-vtab]").forEach(b => b.setAttribute("aria-selected", String(b.dataset.vtab === t))); if(t === "graph"){ $("vt-gdot").hidden = true; requestAnimationFrame(() => { try { vtPlot(); } catch(e){} }); } if(t === "hist") vtHistRender(); try { $("vt").scrollIntoView({block: "start", behavior: "smooth"}); } catch(e){} }
+function vtTab(t){ const el = $("vt"); if(!el) return; el.dataset.tab = t; if(t === "video") try { vtFindMine(); } catch(e){} el.querySelectorAll("[data-vtab]").forEach(b => b.setAttribute("aria-selected", String(b.dataset.vtab === t))); if(t === "graph"){ $("vt-gdot").hidden = true; requestAnimationFrame(() => { try { vtPlot(); } catch(e){} }); } if(t === "hist") vtHistRender(); try { $("vt").scrollIntoView({block: "start", behavior: "smooth"}); } catch(e){} }
 function vtGraphFrom(S){ const g = S.graph; vt.anim = null; $("vt-launch").hidden = true;
   if(!g){ return; }
   if($("vt").dataset.tab !== "graph") $("vt-gdot").hidden = false;
@@ -37911,6 +37929,29 @@ function vtYtRender(v, j, has){ const box = $("vt-ytout"), L = a => Array.isArra
     catch(e){ out.textContent = vtAIErr(e); } finally { vtY.busy = false; $("vt-ytaskgo").disabled = false; } };
   $("vt-ytaskgo").onclick = ask; $("vt-ytq").onkeydown = e => { if(e.key === "Enter") ask(); };
   box.scrollIntoView({behavior: "smooth", block: "nearest"}); }
+// 🔎 Find a video: the student's question → a few good YouTube lessons (trusted teachers first)
+const vtF = {busy: false};
+function vtFindMsg(t, err){ const p = $("vt-findmsg"); p.textContent = t || ""; p.classList.toggle("err", !!err); }
+function vtFindMine(){ const b = $("vt-findmine"), q = vt.sol && vt.sol.q ? String(vt.sol.q).replace(/\s+/g, " ").trim() : "";
+  b.hidden = !q || $("vt-findq").value.trim() === q; if(q){ b.textContent = "↪ Use my question: " + q.slice(0, 90); b.onclick = () => { $("vt-findq").value = q; b.hidden = true; vtFindGo(); }; } }
+async function vtFindGo(){ if(vtF.busy) return; const q = $("vt-findq").value.trim(), list = $("vt-findlist");
+  if(q.length < 3){ vtFindMsg("Type what you want to learn about first.", true); $("vt-findq").focus(); return; }
+  if(typeof IS_NETLIFY !== "undefined" && !IS_NETLIFY){ vtFindMsg("Finding videos works on the website version of the app.", true); return; }
+  vtF.busy = true; $("vt-findgo").disabled = true; list.innerHTML = ""; vtFindMsg("Looking for the best videos…");
+  try {
+    const r = await fetch("/.netlify/functions/ytsearch", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({q, subject: vt.subject || ""})});
+    const j = await r.json().catch(() => ({}));
+    if(!r.ok || !(j.videos || []).length){ vtFindMsg(j.error || j.message || "I couldn't find videos right now. Try again in a minute.", true); return; }
+    vtFindMsg(`Videos for “${j.query}” · tap one to watch, or let the tutor explain it.`);
+    list.innerHTML = j.videos.map((v, i) => `<div class="vt-vid">
+      <a class="vt-th" href="${esc(v.url)}" target="_blank" rel="noopener" aria-label="Watch ${esc(v.title)} on YouTube"><img src="${esc(v.thumb)}" alt="" loading="lazy"><span class="vt-play" aria-hidden="true">▶</span>${v.length ? `<span class="vt-len">${esc(v.length)}</span>` : ""}</a>
+      <div class="vt-vb"><div class="vt-vt">${esc(v.title)}</div>
+        <div class="vt-vc">${esc(v.channel)}${v.trusted ? '<span class="vt-ok">✓ Trusted teacher</span>' : ""}</div>
+        <div class="vt-va"><a class="btn alt vt-sm" href="${esc(v.url)}" target="_blank" rel="noopener">▶ Watch</a><button type="button" class="btn vt-sm" data-vexp="${i}">🧑‍🏫 Explain it</button></div></div></div>`).join("");
+    list.querySelectorAll("[data-vexp]").forEach(b => b.onclick = () => { const v = j.videos[+b.dataset.vexp]; $("vt-yturl").value = v.url; $("vt-yt").scrollIntoView({behavior: "smooth", block: "start"}); vtYtGo(); });
+  } catch(e){ vtFindMsg("Couldn't reach the video search. Check your internet and try again.", true); }
+  finally { vtF.busy = false; $("vt-findgo").disabled = false; } }
+function vtFindInit(){ $("vt-findgo").onclick = vtFindGo; $("vt-findq").onkeydown = e => { if(e.key === "Enter"){ e.preventDefault(); vtFindGo(); } }; $("vt-findq").oninput = vtFindMine; }
 function vtYtInit(){ $("vt-ytgo").onclick = vtYtGo; $("vt-yturl").onkeydown = e => { if(e.key === "Enter") vtYtGo(); };
   $("vt-ytpaste").onclick = async () => { try { const t = await navigator.clipboard.readText(); if(t){ $("vt-yturl").value = t.trim(); $("vt-yturl").focus(); } } catch(e){ $("vt-yturl").focus(); vtYtMsg("Tap and hold in the box, then choose Paste."); } }; }
 // ---------- 🔢 Matrix builder ----------
@@ -37924,7 +37965,7 @@ function vtMxInit(){ const sel = (id, v, max) => { $(id).innerHTML = Array.from(
   $("vt-mxgo").onclick = () => { const op = $("vt-mxop").value, A = read("vt-mxa"), B = /^(mul|add|sub|solve)$/.test(op) ? read("vt-mxbg") : "", k = $("vt-mxk").value.trim().replace(/[−–]/g, "-"); if(A === null || B === null || (op === "k" && !NUM.test(k))){ $("vt-mxmsg").textContent = "Use numbers only, like 3, −2, 0.5 or 1/2."; return; } $("vt-mxmsg").textContent = "";
     const q = {mul: `${A} * ${B}`, add: `${A} + ${B}`, sub: `${A} - ${B}`, k: `${k} * ${A}`, det: `Find the determinant of ${A}`, inv: `Find the inverse of ${A}`, T: `Transpose of ${A}`, pow: `${A}^2`, rref: `Row reduce (rref) ${A}`, rank: `Find the rank of ${A}`, solve: `Solve ${A} x = ${B}`, eig: `Find the eigenvalues of ${A}`}[op];
     $("vt-in").value = q; vtLog("me", q); vtSolve(q); setTimeout(() => { try { $("vt-sol").scrollIntoView({behavior: "smooth", block: "start"}); } catch(e){} }, 300); }; }
-function vtInit(){ if(!$("vt")) return; requestAnimationFrame(() => vtPlot()); if(vt.inited) return; vt.inited = true; vtLoad(); try { vtYtInit(); } catch(e){} try { vtMxInit(); } catch(e){ console.error(e); } try { vtHistInit(); } catch(e){ console.error(e); } $("vt").querySelectorAll("[data-vtab]").forEach(b => b.onclick = () => vtTab(b.dataset.vtab));
+function vtInit(){ if(!$("vt")) return; requestAnimationFrame(() => vtPlot()); if(vt.inited) return; vt.inited = true; vtLoad(); try { vtFindInit(); vtYtInit(); } catch(e){} try { vtMxInit(); } catch(e){ console.error(e); } try { vtHistInit(); } catch(e){ console.error(e); } $("vt").querySelectorAll("[data-vtab]").forEach(b => b.onclick = () => vtTab(b.dataset.vtab));
   $("vt-subj").innerHTML = VT_SUBJECTS.map(s => `<option${s === vt.subject ? " selected" : ""}>${s}</option>`).join(""); $("vt-level").innerHTML = VT_LEVELS.map(([k, n]) => `<option value="${k}"${k === vt.level ? " selected" : ""}>${n}</option>`).join("");
   $("vt-subj").onchange = e => { vt.subject = e.target.value; vtSaveSet(); }; $("vt-level").onchange = e => { vt.level = e.target.value; vtSaveSet(); };
   const pers = () => { $("vt-personas").innerHTML = VT_PERSONAS.map(p => `<button type="button" class="vt-persona" data-p="${p.id}" aria-pressed="${p === vt.persona}"><b>${p.name}</b><small>${p.desc}</small></button>`).join(""); $("vt-who").textContent = "Tutor: " + vt.persona.name;
