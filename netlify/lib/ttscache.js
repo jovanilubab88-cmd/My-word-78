@@ -10,6 +10,7 @@ const STYLES = {
   teacher: "Read like a clear, friendly teacher. Pronounce every word carefully at a steady pace and stress important words.",
   lively: "Read with lively, expressive energy and enthusiasm, while staying clear and easy to follow.",
   plain: "Read in a natural, neutral narration voice at a steady pace.",
+  word: "You are a friendly, clear teacher helping a student learn a new vocabulary word. Speak at a calm, steady pace.",
   kids: "Speak like a warm, cheerful kindergarten teacher talking to a five-year-old. Use a bright, smiling, gentle voice. Speak slowly and clearly, say each word on its own, and leave a short happy pause after every sentence. Sound encouraging, never rushed."
 };
 // K-5 phonics: exactly which pure sound each letter makes (only these fixed descriptions are ever sent, never user text)
@@ -43,12 +44,13 @@ const PHONICS = {
 };
 function instructionsFor(req) {
   let ins = STYLES[req.style] || "";
+  if (req.w) ins += ` The text says the word "${req.w}", then the same word split into syllables separated by dashes, then the word again. Pronounce "${req.w}" correctly, exactly the way a science or language teacher would say it. For the syllables, say each one slowly as a piece of the real word, sounding exactly as it does inside "${req.w}", with a short pause between them. Never spell out letters, and never read a syllable as a separate word, name or abbreviation (for example "us" is not "U.S." and "a" is said the way it sounds inside the word).`;
   if (req.snd && PHONICS[req.snd]) ins += ` This is a phonics lesson. Text written between slashes, like /sss/ or /ă/, is a letter SOUND, not a letter name: say it as ${PHONICS[req.snd]}. Hold it for about half a second, clearly, then carry on smiling. Never say the letter's name instead of its sound. If the text is only the sound, say only the sound.`;
   return ins;
 }
 // the same request always gives the same name, so a saved clip can be found again
-function clipKey(model, voice, style, text, snd) {
-  return crypto.createHash("sha256").update([model, voice, style || "", text].concat(snd ? ["snd:" + snd] : []).join("|")).digest("hex");
+function clipKey(model, voice, style, text, snd, w) {
+  return crypto.createHash("sha256").update([model, voice, style || "", text].concat(snd ? ["snd:" + snd] : [], w ? ["w:" + w] : []).join("|")).digest("hex");
 }
 function cleanRequest(body) {
   const style = STYLES[body.style] ? body.style : "";
@@ -56,7 +58,9 @@ function cleanRequest(body) {
   const voice = VOICES.includes(body.voice) ? body.voice : "nova";
   const model = style ? "gpt-4o-mini-tts" : "tts-1"; // word cards use the fast, cheap voice; reading styles use the steerable one
   const snd = style === "kids" && /^[a-z]$/.test(String(body.snd || "")) ? String(body.snd) : "";
-  return { style, text, voice, model, snd };
+  // a vocabulary word being taught (letters, spaces, hyphens and apostrophes only), for the "word" style
+  const w = style === "word" ? String(body.w || "").replace(/[^A-Za-z\u00C0-\u024F' -]/g, "").trim().slice(0, 40) : "";
+  return { style, text, voice, model, snd, w };
 }
 function cacheStore(event) {
   if (!blobs) return null;
@@ -65,7 +69,7 @@ function cacheStore(event) {
 }
 // returns {buf, hit} — hit = true when the clip came from storage (no OpenAI call)
 async function getClip(event, apiKey, req) {
-  const st = cacheStore(event), key = clipKey(req.model, req.voice, req.style, req.text, req.snd);
+  const st = cacheStore(event), key = clipKey(req.model, req.voice, req.style, req.text, req.snd, req.w);
   if (st) {
     try { const saved = await st.get(key, { type: "arrayBuffer" }); if (saved && saved.byteLength > 200) return { buf: Buffer.from(saved), hit: true, key }; } catch (e) {}
   }
@@ -75,7 +79,7 @@ async function getClip(event, apiKey, req) {
   });
   let res = await speech(Object.assign({ model: req.model, voice: req.voice, input: req.text, response_format: "mp3" }, req.style ? { instructions: instructionsFor(req) } : {}));
   // if the steerable model isn't available on this account, use the classic voice model (never for letter sounds: it can't make them)
-  if (!res.ok && req.style && !req.snd && res.status !== 429) res = await speech({ model: "tts-1", voice: req.voice, input: req.text, response_format: "mp3" });
+  if (!res.ok && req.style && !req.snd && res.status !== 429) res = await speech({ model: "tts-1", voice: req.voice, input: req.w ? `${req.w}. ${req.w}.` : req.text, response_format: "mp3" });
   if (!res.ok) throw { status: res.status, message: await res.text() };
   const buf = Buffer.from(await res.arrayBuffer());
   if (st && buf.length > 200) { try { await st.set(key, buf, { metadata: { voice: req.voice, style: req.style, model: req.model, chars: req.text.length } }); } catch (e) {} }

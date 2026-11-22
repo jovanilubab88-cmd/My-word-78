@@ -14445,10 +14445,33 @@ async function ttsFetch(init){
   if(res.ok && key && typeof caches !== "undefined"){ try { const copy = res.clone(), blob = await copy.blob(); if(blob.size > 200){ const c = await caches.open(WB_TTS_DEVICE); await c.put(key, new Response(blob, {headers: {"Content-Type": "audio/mpeg"}})); } } catch(e){} }
   return res;
 }
+// put ~ms of silence in front of an MP3 by adding silent frames that copy the file's own frame format
+function mp3Pad(input, ms){
+  const b = input instanceof Uint8Array ? input : new Uint8Array(input); let i = 0;
+  if(b[0] === 0x49 && b[1] === 0x44 && b[2] === 0x33) i = 10 + ((b[6] & 127) << 21 | (b[7] & 127) << 14 | (b[8] & 127) << 7 | (b[9] & 127)) + (b[5] & 16 ? 10 : 0); // skip ID3 tag
+  while(i + 4 < b.length && !(b[i] === 0xFF && (b[i + 1] & 0xE6) === 0xE2)) i++; // first Layer III frame
+  if(i + 4 >= b.length) return b;
+  const ver = (b[i + 1] >> 3) & 3, mono = (b[i + 3] >> 6) === 3, bi = b[i + 2] >> 4, si = (b[i + 2] >> 2) & 3;
+  const RATES = {3: [44100, 48000, 32000], 2: [22050, 24000, 16000], 0: [11025, 12000, 8000]}, sr = (RATES[ver] || [])[si];
+  const KB1 = [0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320], KB2 = [0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160];
+  const kbps = (ver === 3 ? KB1 : KB2)[bi]; if(!sr || !kbps) return b;
+  const spf = ver === 3 ? 1152 : 576, flen = Math.floor((ver === 3 ? 144 : 72) * kbps * 1000 / sr);
+  const side = ver === 3 ? (mono ? 17 : 32) : (mono ? 9 : 17);
+  // keep a Xing/Info header frame first, if there is one
+  let at = i; const tag = String.fromCharCode(...b.slice(i + 4 + side, i + 8 + side));
+  if(tag === "Xing" || tag === "Info"){ const pad = (b[i + 2] >> 1) & 1; at = i + flen + (pad ? 1 : 0); }
+  const n = Math.max(1, Math.round(ms / 1000 * sr / spf)), frame = new Uint8Array(flen);
+  frame[0] = 0xFF; frame[1] = b[i + 1] | 1; /* no CRC */ frame[2] = b[i + 2] & 0xFD; /* no padding byte */ frame[3] = b[i + 3];
+  const out = new Uint8Array(b.length + n * flen); out.set(b.subarray(0, at), 0);
+  for(let k = 0; k < n; k++) out.set(frame, at + k * flen);
+  out.set(b.subarray(at), at + n * flen); return out;
+}
+// iPads can swallow the first moment of a clip, cutting off the start of the word: give every AI clip a quarter-second lead-in
+async function aiPadBlob(blob){ try { return new Blob([mp3Pad(await blob.arrayBuffer(), 250)], {type: "audio/mpeg"}); } catch(e){ return blob; } }
 function aiTTSUrl(text, style, snd){ const voice = style === "kids" ? "coral" : aiVoiceName(), key = voice + "|" + (style || "") + "|" + (snd || "") + "|" + text; if(AI_TTS_CACHE.has(key)) return AI_TTS_CACHE.get(key);
   const pr = (async () => { let res; try { res = await ttsFetch({method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(Object.assign({text: String(text).slice(0, 500), voice}, style ? {style} : {}, snd ? {snd} : {}))}); } catch(e){ throw {status: "network"}; }
     if(!res.ok){ let d = ""; try { d = await res.text(); } catch(e){} throw {status: res.status, detail: d}; }
-    const blob = await res.blob(); if(blob.size < 200) throw {status: "empty"}; return URL.createObjectURL(blob); })();
+    const blob = await res.blob(); if(blob.size < 200) throw {status: "empty"}; return URL.createObjectURL(await aiPadBlob(blob)); })();
   pr.catch(() => AI_TTS_CACHE.delete(key)); AI_TTS_CACHE.set(key, pr);
   if(AI_TTS_CACHE.size > 250){ const [k, v] = AI_TTS_CACHE.entries().next().value; AI_TTS_CACHE.delete(k); v.then(u => URL.revokeObjectURL(u)).catch(() => {}); }
   return pr; }
@@ -14528,20 +14551,26 @@ function aiVoiceProblem(status, detail){ if(window.__aiVoiceWarned) return; wind
     : `AI voice error (${status}). Using the device voice.`;
   try { (typeof srToast === "function" ? srToast : typeof toast === "function" ? toast : console.warn)(msg); } catch(e){ console.warn(msg); } try { __diag("ai-voice", status + " " + d.slice(0, 160)); } catch(e){} }
 let currentAudio = null;
-async function speakWithOpenAI(text){
+// word-card clips are kept for this visit, so a second tap (or a tap after the warm-up below) plays at once
+const WORD_CLIPS = new Map();
+function wordClip(text, extra){
+  const voice = typeof aiVoiceName === "function" ? aiVoiceName() : "nova", key = voice + "|" + JSON.stringify(extra || {}) + "|" + text;
+  if(WORD_CLIPS.has(key)) return WORD_CLIPS.get(key);
+  const pr = (async () => { let res; try { res = await ttsFetch({method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(Object.assign({text, voice}, extra || {}))}); } catch(e){ throw {status: "network"}; }
+    if(!res.ok){ let d = ""; try { d = await res.text(); } catch(e){} throw {status: res.status, detail: d}; }
+    return URL.createObjectURL(await aiPadBlob(await res.blob())); })();
+  pr.catch(() => WORD_CLIPS.delete(key)); WORD_CLIPS.set(key, pr);
+  if(WORD_CLIPS.size > 120){ const [k, v] = WORD_CLIPS.entries().next().value; WORD_CLIPS.delete(k); v.then(u => URL.revokeObjectURL(u)).catch(() => {}); }
+  return pr; }
+const wordCardText = (word, syllables) => syllables && syllables.length > 1 ? word + ". " + syllables.join(" - ") + ". " + word + "." : word + ". " + word + ".";
+// start making a word's clip the moment a finger touches its tile, before the tap even finishes
+function wordWarm(x){ try { if(x && x.w && IS_NETLIFY && useAiVoice && !window.__aiTTSDown) wordClip(wordCardText(x.w, x.s), {style: "word", w: x.w}).catch(() => {}); } catch(e){} }
+async function speakWithOpenAI(text, extra){
   try {
     if(currentAudio){ currentAudio.pause(); currentAudio = null; }
-    let res; try { res = await ttsFetch({
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text, voice: typeof aiVoiceName === "function" ? aiVoiceName() : "nova" })
-    }); } catch(e){ aiVoiceProblem("network"); return false; }
-    if(!res.ok){ let d = ""; try { d = await res.text(); } catch(e){} aiVoiceProblem(res.status, d); return false; }
-    const blob = await res.blob();
-    const url = URL.createObjectURL(blob);
+    let url; try { url = await wordClip(text, extra); } catch(e){ aiVoiceProblem(e.status, e.detail); return false; }
     currentAudio = AI_AUDIO || new Audio(); currentAudio.src = url;
     currentAudio.onended = () => {
-      URL.revokeObjectURL(url);
       currentAudio = null;
       const b = $("c-say");
       if(b) b.innerHTML = '<span aria-hidden="true">🔊</span> Hear it';
@@ -14558,10 +14587,9 @@ async function speakWithAI(word, syllables, def){
   if(IS_NETLIFY){
     // Use OpenAI TTS directly — just speak the word naturally
     if(b) b.innerHTML = '<span aria-hidden="true">✨</span> Loading…';
-    const text = syllables && syllables.length > 1
-      ? word + ". " + syl + ". " + word + "."
-      : word + ". " + word + ".";
-    const ok = await speakWithOpenAI(text);
+    const text = wordCardText(word, syllables);
+    // the teaching voice is told which word this is, so it pronounces it properly and says the syllables as sounds, not letters
+    const ok = await speakWithOpenAI(text, {style: "word", w: word});
     if(ok){
       if(b) b.innerHTML = '<span aria-hidden="true">⏹</span> Stop';
     } else {
@@ -14669,7 +14697,7 @@ function tile(x){
   const seq = tileSeq++; if(!tileSeqReset) tileSeqReset = requestAnimationFrame(() => { tileSeq = 0; tileSeqReset = 0; });
   b.style.setProperty("--i", Math.min(seq, 18));
   b.innerHTML = `<span class="pic" aria-hidden="true">${esc(x.p)}</span><b>${esc(x.w)}</b><small>${x.n ? "#" + x.n + " · " : ""}${esc(x.c)}${x.builtIn ? "" : ' <span class="mine">new</span>'}</small>`;
-  b.onclick = () => { wiggle(b.querySelector(".pic"), x); openCard(x); };
+  b.onclick = () => { wiggle(b.querySelector(".pic"), x); openCard(x); }; b.addEventListener("pointerdown", () => wordWarm(x), {passive: true});
   const pic = b.querySelector(".pic");
   b.addEventListener("pointerenter", e => { if(e.pointerType === "mouse") wiggle(pic, x); });
   b.addEventListener("focus", () => wiggle(pic, x));
@@ -16780,7 +16808,7 @@ $("c-say").onclick = () => {
   } else if(useAiVoice) {
     speakWithAI(current.w, current.s, current.d);
   } else {
-    const more = current.s.length > 1 ? [[current.s.join(", "), 0.75], [current.w, 0.95]] : [];
+    const more = current.s.length > 1 ? [[current.w, 0.7], [current.w, 0.95]] : [];
     speak(current.w, 0.95, more);
     $("c-say").innerHTML = '<span aria-hidden="true">⏹</span> Stop';
     const dur = Math.max(1800, (1 + current.s.length) * 900);
@@ -18564,7 +18592,7 @@ function renderCellTypes(){
     const grp = cellGrp(x);
     b.innerHTML = `<span class="pic" aria-hidden="true">${esc(x.p)}</span><span class="ct-txt"><b>${esc(x.w)}</b><span class="ct-job"><em>Job:</em> ${esc(cellJob(x))}</span>${grp ? `<span class="where ${grp}">${CT_LABEL[grp]}</span>` : ""}</span>`;
     const pic = b.querySelector(".pic");
-    b.onclick = () => { wiggle(pic, x); openCard(x); };
+    b.onclick = () => { wiggle(pic, x); openCard(x); }; b.addEventListener("pointerdown", () => wordWarm(x), {passive: true});
     pic.addEventListener("animationend", () => { pic.classList.remove("mv1"); pic.style.animationName = ""; });
     g.appendChild(b);
   });
@@ -24888,7 +24916,7 @@ function renderWotd(){
   const el = $("wotd-banner"), emo = $("wotd-emo"), ww = $("wotd-word"), wd = $("wotd-def");
   if(!el) return;
   emo.textContent = w.p; ww.textContent = w.w; wd.textContent = w.d;
-  el.onclick = () => { openCard(w); };
+  el.onclick = () => { openCard(w); }; el.addEventListener("pointerdown", () => wordWarm(w), {passive: true});
   el.onkeydown = e => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); openCard(w); } };
 }
 function renderStarsBar(){
