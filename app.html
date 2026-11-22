@@ -37615,18 +37615,57 @@ function vtMicHelp(code){ const ios = /iPad|iPhone|iPod/.test(navigator.userAgen
   if(code === "service-not-allowed") return ios ? "🎤 Voice typing is switched off on this iPad. Open Settings → General → Keyboard → turn on Enable Dictation (and in Settings → Siri turn on Siri). Then come back and tap the mic. Or type your question." : "🎤 Your browser's speech service is turned off. Turn on voice typing in your device settings, or type your question.";
   return ios ? "🎤 Safari is blocking the microphone. Tap AA in the address bar → Website Settings → Microphone → Allow, then reload and tap the mic. Or type your question." : "🎤 The microphone is blocked. Click the lock icon in the address bar → allow Microphone, then reload. Or type your question."; }
 function vtMicOK(){ return !!(window.SpeechRecognition || window.webkitSpeechRecognition); }
-function vtMicStart(){ if(vt.listening) return; if(!vtMicOK()){ $("vt-live").textContent = "🎤 Voice input doesn't work in this browser — type your question instead (Chrome, Edge and Safari support it)."; return; }
+// iPads/iPhones (and browsers without voice typing): record the question and have the server write it down,
+// so the mic never depends on Safari's Dictation setting. It stops by itself when the student stops talking.
+const vtIOS = () => /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+const vtRecOK = () => typeof IS_NETLIFY !== "undefined" && IS_NETLIFY && !!window.MediaRecorder && !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+const vtB64 = blob => new Promise((res, rej) => { const f = new FileReader(); f.onload = () => res(String(f.result).split(",")[1] || ""); f.onerror = rej; f.readAsDataURL(blob); });
+function vtRecFinish(){ const r = vt.recr; if(r && r.rec.state === "recording") r.rec.stop(); }
+function vtRecStart(){ if(vt.listening) return;
+  try { stopAll(); } catch(e){}
+  const AC = window.AudioContext || window.webkitAudioContext; if(AC && !vt.ac){ try { vt.ac = new AC(); } catch(e){} } try { vt.ac && vt.ac.resume(); } catch(e){}
+  vt.listening = true; vt.recCancel = false; vtState(); $("vt-live").textContent = "🎤 Tap Allow if your browser asks to use the microphone…";
+  navigator.mediaDevices.getUserMedia({audio: {echoCancellation: true, noiseSuppression: true, autoGainControl: true}}).then(stream => {
+    if(!vt.listening){ stream.getTracks().forEach(t => t.stop()); return; }
+    vt.gum = true;
+    const mime = ["audio/mp4", "audio/webm;codecs=opus", "audio/webm", "audio/ogg"].find(t => MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t)) || "";
+    let rec; try { rec = new MediaRecorder(stream, mime ? {mimeType: mime} : undefined); } catch(e){ rec = new MediaRecorder(stream); }
+    const chunks = []; vt.recr = {rec, stream}; rec.ondataavailable = e => { if(e.data && e.data.size) chunks.push(e.data); };
+    let an = null; try { if(vt.ac && vt.ac.state === "running"){ const src = vt.ac.createMediaStreamSource(stream); an = vt.ac.createAnalyser(); an.fftSize = 1024; src.connect(an); } } catch(e){ an = null; }
+    const buf = new Float32Array(1024), t0 = Date.now(); let heard = false, quiet = 0, tm = 0;
+    const loop = () => { if(rec.state !== "recording") return; const now = Date.now();
+      if(an){ an.getFloatTimeDomainData(buf); let q = 0; for(let i = 0; i < buf.length; i++) q += buf[i] * buf[i]; const lvl = Math.sqrt(q / buf.length);
+        if(lvl > 0.018){ heard = true; quiet = 0; } else if(heard){ if(!quiet) quiet = now; else if(now - quiet > 1300){ rec.stop(); return; } }
+        if(!heard && now - t0 > 8000){ rec.stop(); return; } }
+      if(now - t0 > (an ? 25000 : 15000)){ rec.stop(); return; }
+      tm = setTimeout(loop, 80); };
+    rec.onstop = async () => { clearTimeout(tm); stream.getTracks().forEach(t => t.stop()); vt.recr = null; vt.listening = false;
+      const again = () => { if(vt.hands && !vtIsSpeaking() && !vt.busy) setTimeout(() => { if(vt.hands && !vt.listening && !vtIsSpeaking()) vtMicStart(); }, 900); };
+      if(vt.recCancel){ vt.recCancel = false; vtState(); return; }
+      if(an && !heard){ $("vt-live").textContent = "I didn't hear anything — tap the mic and try again."; vtState(); again(); return; }
+      const blob = new Blob(chunks, {type: (rec.mimeType || mime || "audio/mp4").split(";")[0]});
+      vt.busy = true; vtState(); $("vt-live").textContent = "✍️ Writing down what you said…";
+      let text = "", note = "";
+      try { const r = await fetch("/.netlify/functions/stt", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({audio: await vtB64(blob), type: blob.type, subject: vt.econ ? "Economics" : vt.subject})});
+        const d = await r.json().catch(() => ({})); if(r.ok) text = d.text || ""; else note = d.message || "I couldn't hear that clearly. Try again."; }
+      catch(e){ note = "Couldn't reach the speech service. Check your internet and try again."; }
+      vt.busy = false; vtState();
+      if(text) vtHeard(text, true); else { $("vt-live").textContent = "🎤 " + (note || "I didn't catch that — tap the mic and try again."); again(); } };
+    try { rec.start(250); } catch(e){ try { rec.start(); } catch(_){} }
+    $("vt-live").textContent = an ? "🎙️ Listening… ask your question. I'll stop when you finish." : "🎙️ Listening… ask your question, then tap the mic when you're done."; loop();
+  }).catch(err => { vt.listening = false; vt.hands = false; try { $("vt-hands").checked = false; } catch(_){} $("vt-live").textContent = vtMicHelp(err && err.name === "NotFoundError" ? "audio-capture" : "not-allowed"); vtState(); }); }
+function vtMicStart(){ if(vt.listening) return; if(vtRecOK() && (vtIOS() || !vtMicOK() || vt.sttOnly)){ vtRecStart(); return; } if(!vtMicOK()){ $("vt-live").textContent = "🎤 Voice input doesn't work in this browser — type your question instead (Chrome, Edge and Safari support it)."; return; }
   if(!vt.gum && navigator.mediaDevices && navigator.mediaDevices.getUserMedia){   // Safari/iPad: ask for the microphone first, then listen
     $("vt-live").textContent = "🎤 Tap Allow if your browser asks to use the microphone…";
     navigator.mediaDevices.getUserMedia({audio: true}).then(st => { st.getTracks().forEach(t => t.stop()); vt.gum = true; vtMicStart(); }).catch(err => { vt.listening = false; vt.hands = false; try { $("vt-hands").checked = false; } catch(_){} $("vt-live").textContent = vtMicHelp(err && err.name === "NotFoundError" ? "audio-capture" : "not-allowed"); vtState(); }); return; }
   try { stopAll(); } catch(e){}
   const R = new (window.SpeechRecognition || window.webkitSpeechRecognition)(); R.lang = "en-US"; R.interimResults = true; R.maxAlternatives = 1; R.continuous = false; vt.rec = R; let final = "";
   R.onresult = e => { let t = ""; for(let i = e.resultIndex; i < e.results.length; i++){ t += e.results[i][0].transcript; if(e.results[i].isFinal) final += e.results[i][0].transcript; } $("vt-live").textContent = "🗣️ " + (final || t); };
-  R.onerror = e => { vt.listening = false; $("vt-live").textContent = e.error === "not-allowed" || e.error === "service-not-allowed" || e.error === "audio-capture" ? vtMicHelp(e.error) : e.error === "no-speech" ? "I didn't hear anything — tap the mic and try again." : "The microphone stopped. Tap it to try again."; if(e.error === "not-allowed" || e.error === "service-not-allowed") { vt.hands = false; $("vt-hands").checked = false; } vtState(); };
+  R.onerror = e => { vt.listening = false; if(vtRecOK() && /service-not-allowed|network|language-not-supported/.test(e.error)){ vt.sttOnly = true; vtState(); vtRecStart(); return; } $("vt-live").textContent = e.error === "not-allowed" || e.error === "service-not-allowed" || e.error === "audio-capture" ? vtMicHelp(e.error) : e.error === "no-speech" ? "I didn't hear anything — tap the mic and try again." : "The microphone stopped. Tap it to try again."; if(e.error === "not-allowed" || e.error === "service-not-allowed") { vt.hands = false; $("vt-hands").checked = false; } vtState(); };
   R.onend = () => { vt.listening = false; vtState(); const t = final.trim(); if(t) vtHeard(t, true); else if(vt.hands && !vtIsSpeaking() && !vt.busy) setTimeout(() => { if(vt.hands && !vt.listening && !vtIsSpeaking()) vtMicStart(); }, 900); };
   try { R.start(); vt.listening = true; $("vt-live").textContent = "🎙️ Listening… ask your question."; } catch(e){ vt.listening = false; }
   vtState(); }
-function vtMicStop(){ if(vt.rec){ try { vt.rec.abort(); } catch(e){} } vt.listening = false; }
+function vtMicStop(){ if(vt.rec){ try { vt.rec.abort(); } catch(e){} } if(vt.recr){ vt.recCancel = true; try { vt.recr.rec.stop(); } catch(e){} } vt.listening = false; }
 // ---------- conversation log ----------
 function vtLog(who, text){ text = VTX.plain(text); vt.log.push({who, text, t: new Date().toLocaleTimeString([], {hour: "numeric", minute: "2-digit"})}); if(vt.log.length > 80) vt.log.shift(); vtLogRender(); }
 function vtLogRender(){ const b = $("vt-log"); if(!b) return; if(!vt.log.length){ b.innerHTML = `<p class="vt-empty">No conversation yet. Ask a question to get started!</p>`; return; }
@@ -38125,7 +38164,7 @@ function vtInit(){ if(!$("vt")) return; requestAnimationFrame(() => vtPlot()); i
   $("vt-samples").querySelectorAll("[data-i]").forEach(b => b.onclick = () => { const [s, , q] = VT_SAMPLES[+b.dataset.i]; vt.subject = s; $("vt-subj").value = s; vtSaveSet(); $("vt-in").value = q; vtLog("me", q); vtSolve(q); });
   $("vt-go").onclick = () => { const q = $("vt-in").value.trim(); if(q) vtHeard(q); };
   $("vt-in").onkeydown = e => { if(e.key === "Enter" && !e.shiftKey){ e.preventDefault(); $("vt-go").click(); } };
-  $("vt-mic").onclick = () => { if(vt.listening){ vtMicStop(); vtState(); } else vtMicStart(); };
+  $("vt-mic").onclick = () => { if(vt.recr){ vtRecFinish(); return; } if(vt.listening){ vtMicStop(); vtState(); } else vtMicStart(); };
   const mute = () => { $("vt-mute").textContent = vt.muted ? "🔇" : "🔊"; $("vt-mute").setAttribute("aria-pressed", String(vt.muted)); }; mute();
   $("vt-mute").onclick = () => { vt.muted = !vt.muted; if(vt.muted) try { stopAll(); } catch(e){} vtSaveSet(); mute(); };
   $("vt-hands").checked = vt.hands; $("vt-hands").onchange = e => { vt.hands = e.target.checked; vtSaveSet(); if(vt.hands && !vt.listening && !vtIsSpeaking()) vtMicStart(); if(!vt.hands) vtMicStop(); vtState(); };
