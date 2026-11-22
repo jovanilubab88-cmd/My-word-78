@@ -26,6 +26,21 @@ exports.handler = async function (event) {
   let ev; try { ev = JSON.parse(raw); } catch (e) { return reply(400, { error: "Invalid JSON" }); }
   const db = a.firestore(), users = db.collection("users"), o = (ev.data && ev.data.object) || {};
   const type = ev.type || "";
+  // a minute pack for Live Tutor talk: add the minutes once per payment (Stripe can send the same message twice)
+  if (/^checkout\.session\.(completed|async_payment_succeeded)$/.test(type) && o.mode === "payment" && o.metadata && o.metadata.kind === "talk") {
+    if (o.payment_status !== "paid") return reply(200, { received: true, note: "talk pack not paid yet" });
+    const uid = String(o.metadata.uid || o.client_reference_id || ""), minutes = Math.floor(+o.metadata.minutes || 0);
+    if (!uid || minutes <= 0 || minutes > 1000) return reply(200, { received: true, note: "bad talk pack" });
+    const buy = db.collection("talkBuys").doc(String(o.id)), wallet = db.collection("talk").doc(uid);
+    let added = false;
+    await db.runTransaction(async t => {
+      const seen = await t.get(buy); if (seen.exists) return;
+      t.set(buy, { uid, minutes, amount: o.amount_total || null, currency: o.currency || null, at: a.firestore.Timestamp.fromMillis(Date.now()) });
+      t.set(wallet, { seconds: a.firestore.FieldValue.increment(minutes * 60), bought: a.firestore.FieldValue.increment(minutes) }, { merge: true });
+      added = true;
+    });
+    return reply(200, { received: true, talkMinutesAdded: added ? minutes : 0 });
+  }
   if (!/^(checkout\.session\.completed|customer\.subscription\.(created|updated|deleted)|invoice\.(paid|payment_succeeded))$/.test(type)) return reply(200, { received: true, ignored: type });
 
   // which subscription is this about? Ask Stripe for its status now, so messages that arrive out of order can't undo a payment

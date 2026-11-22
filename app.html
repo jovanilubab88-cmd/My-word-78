@@ -3355,7 +3355,24 @@ window.MWB_TRIAL_DAYS = 14;
           <button type="button" class="vt-round" id="vt-mute" aria-pressed="false" aria-label="Mute the tutor's voice">🔊</button>
         </div>
         <p class="vt-live" id="vt-live" aria-live="polite">Tap the microphone and ask out loud — or type below.</p>
-        <label class="vt-check"><input type="checkbox" id="vt-hands"> Hands-free: the mic turns back on after the tutor speaks</label>
+        <label class="vt-check"><input type="checkbox" id="vt-hands"> Hands-free (free): the mic turns back on after the tutor speaks</label>
+        <div class="vt-livebar" id="vt-livebar">
+          <button type="button" class="vt-golive" id="vt-golive"><span aria-hidden="true">⚡</span> Live talk <small id="vt-livemins">real time</small></button>
+          <button type="button" class="vt-getmins" id="vt-buyopen">Get minutes</button>
+        </div>
+        <div class="vt-livebox" id="vt-livebox" hidden aria-live="polite">
+          <div class="vt-liverow"><span class="vt-livedot" aria-hidden="true"></span><b id="vt-livestate">Connecting…</b><span class="vt-livetime" id="vt-livetime"></span></div>
+          <p class="vt-livewarn" id="vt-livewarn" hidden></p>
+          <p class="vt-tip">Just talk — the tutor answers right away, and you can interrupt any time.</p>
+          <button type="button" class="btn alt vt-sm" id="vt-liveend">⏹ End live talk</button>
+        </div>
+        <div class="vt-buybox" id="vt-buybox" hidden>
+          <div class="vt-buyhead"><b>⚡ Live talk minutes</b><button type="button" class="vt-buyx" id="vt-buyclose" aria-label="Close">✕</button></div>
+          <p>Talk with the tutor in real time, like a phone call. Hands-free talk stays free.</p>
+          <p class="vt-grown">👋 Ask a grown-up to buy minutes. Minutes never expire.</p>
+          <div class="vt-packs" id="vt-packs"></div>
+          <p class="vt-ytmsg" id="vt-buymsg" aria-live="polite"></p>
+        </div>
         <details class="vt-cmds"><summary>🗣️ Things you can say</summary>
           <div class="vt-chips"><span>“Next step”</span><span>“Explain step 2”</span><span>“Give me a hint”</span><span>“Repeat that”</span><span>“My answer is 13”</span><span>“Why is that true?”</span><span>“Read slower”</span><span>“Show the graph”</span><span>“Stop”</span><span>“New problem”</span></div>
         </details>
@@ -33680,7 +33697,7 @@ document.addEventListener("keydown", e => {
 });
 // 🚀 Advanced Math: the AI Voice Tutor on its own, opened from the home page
 function openAdvMath(){ showView("math", "folders"); const v = $("view-math"); v.classList.add("adv"); v.querySelector(".cell-head h2").textContent = "🧑‍🏫 AI Tutor"; $("math-back").setAttribute("aria-label", "Back to the home page");
-  $("vt").hidden = false; window.scrollTo(0, 0); vtInit(); }
+  $("vt").hidden = false; window.scrollTo(0, 0); vtInit(); try { vtLiveInit(); } catch(e){} }
 function openMath(){ const v = $("view-math"); v.classList.remove("adv"); v.querySelector(".cell-head h2").textContent = "🧮 Math Practice"; $("math-back").setAttribute("aria-label", "Back to the Math folder"); if(mp.mode === "tutor") mp.mode = "facts";
   showView("math", "folders"); syncMPControls(); if(mp.mode === "trig") tlInit(); else if(!mp.q || !$("mp-done").hidden) mpRestart(); else renderMP(); }
 $("math-back").onclick = () => { if($("view-math").classList.contains("adv")){ try { vtMicStop(); stopAll(); } catch(e){} $("view-math").classList.remove("adv"); $("vt").hidden = true; openFolders(); } else openFolder("group:Math"); };
@@ -36969,6 +36986,23 @@ try { __diag("script-end"); } catch(e){}
 
 /* 📺 Video helper */
 .vt-ytsteps ol{margin:6px 0 0;padding-left:1.4em;display:grid;gap:12px}.vt-ytsteps li p{margin:4px 0 6px}.vt-ytsteps li::marker{font-weight:800;color:#0d9488}
+.vt-livebar{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:10px 0 4px}
+.vt-golive{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:999px;border:3px solid #fff;background:linear-gradient(135deg,#f97316,#e11d48);color:#fff;font:inherit;font-weight:800;font-size:17px;cursor:pointer;box-shadow:3px 3px 0 #1e293b}
+.vt-golive small{font-weight:700;font-size:12px;background:rgba(255,255,255,.25);padding:2px 8px;border-radius:999px}
+.vt-golive.on{background:#1e293b}
+.vt-getmins{padding:8px 14px;border-radius:999px;border:2px solid #1e293b;background:#fff;color:#1e293b;font:inherit;font-weight:700;cursor:pointer}
+.vt-livebox,.vt-buybox{margin:8px auto 4px;max-width:520px;padding:12px 14px;border:2px solid #1e293b;border-radius:14px;background:#fff;color:#1e293b;text-align:left}
+.vt-liverow{display:flex;align-items:center;gap:8px;font-size:17px}.vt-livetime{margin-left:auto;font-variant-numeric:tabular-nums;font-weight:700}
+.vt-livedot{width:12px;height:12px;border-radius:50%;background:#f97316}.vt-livebox.live .vt-livedot{background:#16a34a;animation:vtLivePulse 1.2s infinite}
+.vt-livebox.talking .vt-livedot{background:#e11d48}
+@keyframes vtLivePulse{50%{box-shadow:0 0 0 6px rgba(22,163,74,.25)}}
+.vt-livewarn{margin:8px 0 0;padding:6px 10px;border-radius:10px;background:#fef3c7;color:#78350f;font-weight:700}
+.vt-buyhead{display:flex;align-items:center;justify-content:space-between;font-size:18px}.vt-buyx{border:0;background:none;font-size:20px;cursor:pointer;color:inherit}
+.vt-grown{font-weight:700;color:#9a3412}
+.vt-packs{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:6px}
+.vt-pack{padding:12px;border:2px solid #1e293b;border-radius:12px;background:#fff7ed;color:#1e293b;font:inherit;cursor:pointer;text-align:center}
+.vt-pack b{display:block;font-size:20px}.vt-pack span{font-size:15px}.vt-pack:disabled{opacity:.6}
+@media (prefers-reduced-motion:reduce){.vt-livebox.live .vt-livedot{animation:none}}
 .vt-findmine{display:block;margin:8px 0 0;padding:8px 12px;border:2px dashed var(--line);border-radius:12px;background:transparent;color:inherit;font:inherit;font-size:14px;text-align:left;cursor:pointer;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .vt-findlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;margin-top:10px}
 .vt-vid{display:flex;flex-direction:column;border:3px solid var(--line);border-radius:16px;overflow:hidden;background:var(--card,#fff);min-width:0}
@@ -37990,6 +38024,85 @@ async function vtFindGo(){ if(vtF.busy) return; const q = $("vt-findq").value.tr
   } catch(e){ vtFindMsg("Couldn't reach the video search. Check your internet and try again.", true); }
   finally { vtF.busy = false; $("vt-findgo").disabled = false; } }
 function vtFindInit(){ $("vt-findgo").onclick = vtFindGo; $("vt-findq").onkeydown = e => { if(e.key === "Enter"){ e.preventDefault(); vtFindGo(); } }; $("vt-findq").oninput = vtFindMine; }
+// ⚡ Live talk: real-time voice with the tutor, paid with minute packs (see netlify/functions/talk.js)
+const vtL = {on: false, sid: "", pc: null, dc: null, mic: null, audio: null, end: 0, bal: 0, extending: false, noMore: false, warned: false, timer: 0, packs: []};
+const vtLiveAPI = (action, extra, opts) => fetch("/.netlify/functions/talk", Object.assign({method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(Object.assign({action}, extra || {}))}, opts || {})).then(async r => ({ok: r.ok, status: r.status, d: await r.json().catch(() => ({}))}));
+const vtMinsText = s => s >= 60 ? Math.floor(s / 60) + " min left" : s > 0 ? s + " sec left" : "no minutes yet";
+function vtLiveLabel(){ const m = $("vt-livemins"); if(m) m.textContent = vtL.on ? "on" : vtMinsText(vtL.bal); }
+async function vtLiveBal(){ if(typeof IS_NETLIFY !== "undefined" && !IS_NETLIFY){ $("vt-livemins").textContent = "on the website"; return; }
+  try { const r = await vtLiveAPI("balance"); if(r.ok){ vtL.bal = r.d.seconds || 0; vtL.packs = r.d.packs || []; vtLiveLabel(); } } catch(e){} }
+function vtBuyOpen(msg){ const box = $("vt-buybox"); box.hidden = false; $("vt-buymsg").textContent = msg || "";
+  const P = vtL.packs.length ? vtL.packs : [{minutes: 30, cents: 399}, {minutes: 60, cents: 599}];
+  $("vt-packs").innerHTML = P.map(p => `<button type="button" class="vt-pack" data-min="${p.minutes}"><b>${p.minutes} minutes</b><span>$${(p.cents / 100).toFixed(2)}</span></button>`).join("");
+  $("vt-packs").querySelectorAll("[data-min]").forEach(b => b.onclick = async () => { if(typeof IS_NETLIFY !== "undefined" && !IS_NETLIFY){ $("vt-buymsg").textContent = "Buying minutes works on the website version of the app."; return; }
+    $("vt-packs").querySelectorAll("button").forEach(x => x.disabled = true); $("vt-buymsg").textContent = "Opening the secure payment page…";
+    try { const r = await vtLiveAPI("buy", {minutes: +b.dataset.min}); if(r.ok && r.d.url){ location.href = r.d.url; return; } $("vt-buymsg").textContent = r.d.message || "Couldn't open the payment page. Try again."; }
+    catch(e){ $("vt-buymsg").textContent = "Couldn't reach the payment page. Check your internet."; }
+    $("vt-packs").querySelectorAll("button").forEach(x => x.disabled = false); });
+  box.scrollIntoView({behavior: "smooth", block: "nearest"}); }
+function vtLiveState(t, cls){ $("vt-livestate").textContent = t; const b = $("vt-livebox"); b.classList.toggle("live", cls === "live" || cls === "talking"); b.classList.toggle("talking", cls === "talking"); }
+function vtLiveEvent(ev){ const t = ev.type || "";
+  if(t === "input_audio_buffer.speech_started"){ vtLiveState("Listening…", "live"); }
+  else if(t === "output_audio_buffer.started" || t === "response.output_audio.delta" || t === "response.audio.delta"){ vtLiveState("Tutor is talking…", "talking"); }
+  else if(t === "output_audio_buffer.stopped" || t === "response.done"){ vtLiveState("Your turn — just talk", "live"); }
+  else if(t === "conversation.item.input_audio_transcription.completed" && ev.transcript){ vtLog("me", "🎙️ " + ev.transcript.trim()); }
+  else if((t === "response.output_audio_transcript.done" || t === "response.audio_transcript.done") && ev.transcript){ vtLog("bot", ev.transcript.trim()); }
+  else if(t === "error"){ console.warn("live tutor:", ev.error); } }
+function vtLiveTick(){ if(!vtL.on) return; const rem = Math.max(0, Math.round((vtL.end - Date.now()) / 1000)), total = rem + (vtL.noMore ? 0 : vtL.bal);
+  $("vt-livetime").textContent = `${Math.floor(total / 60)}:${String(total % 60).padStart(2, "0")} left`;
+  if($("vt").hidden || $("view-math").hidden){ vtLiveStop("left"); return; }
+  if(rem < 45 && !vtL.extending && !vtL.noMore){ vtL.extending = true;
+    vtLiveAPI("extend", {sid: vtL.sid}).then(r => { if(r.ok && r.d.added > 0){ vtL.end += r.d.added * 1000; vtL.bal = r.d.seconds || 0; } else { vtL.noMore = true; vtL.bal = 0; } }).catch(() => {}).finally(() => { vtL.extending = false; }); }
+  if(total <= 120 && total > 0 && !vtL.warned){ vtL.warned = true; const w = $("vt-livewarn"); w.hidden = false; w.textContent = "⏳ About 2 minutes of live talk left. Then the tutor switches to free hands-free talk."; }
+  if(rem <= 0 && (vtL.noMore || !vtL.extending)) vtLiveStop("out"); }
+async function vtLiveStart(){
+  if(vtL.on){ vtLiveStop("user"); return; }
+  if(typeof IS_NETLIFY !== "undefined" && !IS_NETLIFY){ $("vt-live").textContent = "⚡ Live talk works on the website version of the app."; return; }
+  if(!window.RTCPeerConnection || !(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)){ $("vt-live").textContent = "⚡ This browser can't do live talk. Try hands-free talk instead, or update the browser."; return; }
+  try { stopAll(); } catch(e){} vtMicStop(); vt.hands = false; $("vt-hands").checked = false;
+  $("vt-buybox").hidden = true; const box = $("vt-livebox"); box.hidden = false; $("vt-livewarn").hidden = true; vtLiveState("Connecting…"); $("vt-livetime").textContent = ""; $("vt-golive").classList.add("on");
+  let mic;
+  try { mic = await navigator.mediaDevices.getUserMedia({audio: {echoCancellation: true, noiseSuppression: true, autoGainControl: true}}); }
+  catch(err){ box.hidden = true; $("vt-golive").classList.remove("on"); $("vt-live").textContent = vtMicHelp(err && err.name === "NotFoundError" ? "audio-capture" : "not-allowed"); return; }
+  const S = vt.sol;
+  let r; try { r = await vtLiveAPI("start", {subject: vt.econ ? "Economics" : vt.subject, level: vtLevelName(), problem: S && S.q || "", answer: S && S.answer || ""}); } catch(e){ r = {ok: false, d: {message: "Couldn't reach the live tutor. Check your internet."}}; }
+  if(!r.ok){ mic.getTracks().forEach(t => t.stop()); box.hidden = true; $("vt-golive").classList.remove("on");
+    if(r.status === 402 && r.d.error === "no_minutes"){ vtL.bal = r.d.seconds || 0; if(r.d.packs) vtL.packs = r.d.packs; vtLiveLabel(); vtBuyOpen("You don't have live talk minutes yet. Hands-free talk (the mic above) is free."); }
+    else $("vt-live").textContent = "⚡ " + (r.d.message || "The live tutor couldn't start. Try again in a minute, or use hands-free talk.");
+    return; }
+  Object.assign(vtL, {on: true, sid: r.d.sid, mic, end: Date.now() + r.d.reserved * 1000, bal: r.d.seconds || 0, noMore: false, warned: false, extending: false}); vtLiveLabel();
+  try {
+    const pc = new RTCPeerConnection(); vtL.pc = pc;
+    const au = new Audio(); au.autoplay = true; au.playsInline = true; vtL.audio = au;
+    pc.ontrack = e => { au.srcObject = e.streams[0]; const p = au.play(); if(p && p.catch) p.catch(() => {}); };
+    mic.getTracks().forEach(t => pc.addTrack(t, mic));
+    const dc = pc.createDataChannel("oai-events"); vtL.dc = dc;
+    dc.onmessage = e => { try { vtLiveEvent(JSON.parse(e.data)); } catch(_){} };
+    dc.onopen = () => { vtLiveState("Your turn — just talk", "live"); try { dc.send(JSON.stringify({type: "response.create", response: {instructions: S ? "Greet the student warmly in one short sentence and ask what they'd like to understand about the problem on their screen." : "Greet the student warmly in one short sentence and ask what they'd like to learn about today."}})); } catch(_){} };
+    pc.onconnectionstatechange = () => { if(vtL.pc === pc && (pc.connectionState === "failed" || pc.connectionState === "disconnected")) vtLiveStop("lost"); };
+    const offer = await pc.createOffer(); await pc.setLocalDescription(offer);
+    const ans = await fetch("https://api.openai.com/v1/realtime/calls", {method: "POST", body: offer.sdp, headers: {Authorization: `Bearer ${r.d.key}`, "Content-Type": "application/sdp"}});
+    if(!ans.ok) throw new Error("calls " + ans.status);
+    await pc.setRemoteDescription({type: "answer", sdp: await ans.text()});
+    vtL.timer = setInterval(vtLiveTick, 1000); vtLiveTick();
+  } catch(e){ console.warn("live tutor:", e); vtLiveStop("fail"); }
+}
+function vtLiveStop(why){ if(!vtL.on && !vtL.pc) return; const sid = vtL.sid; vtL.on = false; clearInterval(vtL.timer);
+  try { vtL.dc && vtL.dc.close(); } catch(e){} try { vtL.pc && vtL.pc.close(); } catch(e){} try { vtL.mic && vtL.mic.getTracks().forEach(t => t.stop()); } catch(e){} try { if(vtL.audio){ vtL.audio.pause(); vtL.audio.srcObject = null; } } catch(e){}
+  vtL.pc = vtL.dc = vtL.mic = vtL.audio = null; vtL.sid = "";
+  $("vt-livebox").hidden = true; $("vt-golive").classList.remove("on");
+  if(sid) vtLiveAPI("end", {sid}, {keepalive: true}).then(r => { if(r.ok){ vtL.bal = r.d.seconds || 0; vtLiveLabel(); } }).catch(() => {});
+  vtLiveLabel();
+  if(why === "out"){ $("vt-live").textContent = "⚡ Your live talk minutes are used up — switching to free hands-free talk."; vt.hands = true; $("vt-hands").checked = true; vtSay("Your live talk minutes are used up, so let's keep going in hands-free mode. Ask me your next question."); }
+  else if(why === "fail") $("vt-live").textContent = "⚡ The live tutor couldn't connect, so no minutes were used. Try again, or use hands-free talk.";
+  else if(why === "lost") $("vt-live").textContent = "⚡ The live connection dropped. Tap Live talk to reconnect — unused time was given back.";
+  else if(why === "user") $("vt-live").textContent = "Live talk ended. Unused time goes back to your minutes."; }
+function vtLiveInit(){ if(vtL.inited){ if(!vtL.on) vtLiveBal(); return; } vtL.inited = true;
+  $("vt-golive").onclick = vtLiveStart; $("vt-liveend").onclick = () => vtLiveStop("user"); $("vt-buyopen").onclick = () => vtBuyOpen(); $("vt-buyclose").onclick = () => { $("vt-buybox").hidden = true; };
+  addEventListener("pagehide", () => { if(vtL.on) vtLiveStop("left"); });
+  if(vtL.justBought){ vtL.justBought = false; $("vt-live").textContent = "🎉 Thanks! Your live talk minutes are being added."; let n = 0; const poll = () => { vtLiveBal().then(() => { if(++n < 6 && !vtL.bal) setTimeout(poll, 2500); }); }; poll(); }
+  else vtLiveBal(); }
+try { const q = new URLSearchParams(location.search); if(q.get("talk")){ vtL.justBought = q.get("talk") === "bought"; q.delete("talk"); history.replaceState(null, "", location.pathname + (q.toString() ? "?" + q : "") + location.hash); if(vtL.justBought) setTimeout(() => { try { openAdvMath(); } catch(e){} }, 1200); } } catch(e){}
 function vtYtInit(){ $("vt-ytgo").onclick = vtYtGo; $("vt-yturl").onkeydown = e => { if(e.key === "Enter") vtYtGo(); };
   $("vt-ytpaste").onclick = async () => { try { const t = await navigator.clipboard.readText(); if(t){ $("vt-yturl").value = t.trim(); $("vt-yturl").focus(); } } catch(e){ $("vt-yturl").focus(); vtYtMsg("Tap and hold in the box, then choose Paste."); } }; }
 // ---------- 🔢 Matrix builder ----------
