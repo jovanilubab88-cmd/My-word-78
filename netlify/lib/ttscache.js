@@ -26,7 +26,7 @@ const PHONICS = {
   i: "the short i sound /ɪ/, as at the start of 'igloo' and in 'sit' (not 'eye')",
   j: "a quick /dʒ/ as at the start of 'jam', with almost no 'uh' after it",
   k: "a quick, crisp /k/ as at the start of 'kite', with almost no 'uh' after it",
-  l: "a long, held /l/ with the tongue up behind the teeth: llll",
+  l: "the sound at the very start of 'lion' and 'leg', stretched out: lllll. Tongue tip pressed up behind the top teeth, voice on, like a soft hum. Do NOT say the letter name 'el' (no 'eh' before it) and do NOT add 'uh' after it (not 'luh'); no vowel at all before or after the l",
   m: "a long hum /m/ with the lips closed: mmmm",
   n: "a long hum /n/ through the nose: nnnn",
   o: "the short o sound /ɑ/, as at the start of 'octopus' and in 'hot' (not 'oh')",
