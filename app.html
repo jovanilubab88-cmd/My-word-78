@@ -14356,10 +14356,13 @@ function pfSaveText(){ try { localStorage.setItem("wordbook-pronfix", JSON.strin
 function pfDB(){ if(PF.db) return PF.db; PF.db = new Promise((res, rej) => { try { const r = indexedDB.open(window.wbDBName ? wbDBName("voice-fixes") : "voice-fixes", 1); r.onupgradeneeded = () => r.result.createObjectStore("clips"); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); } catch(e){ rej(e); } }); PF.db.catch(() => { PF.db = null; }); return PF.db; }
 async function pfPut(key, blob){ const db = await pfDB(); await new Promise((res, rej) => { const t = db.transaction("clips", "readwrite"); blob ? t.objectStore("clips").put(blob, key) : t.objectStore("clips").delete(key); t.oncomplete = res; t.onerror = () => rej(t.error); }); }
 async function pfLoad(){ try { const j = JSON.parse(localStorage.getItem("wordbook-pronfix") || "{}"); PF.words = j.words || {}; PF.letters = j.letters || {}; } catch(e){}
+  const oldRec = []; // letter sounds recorded in a parent's own voice are no longer used: K-5 letter sounds are always the AI voice
   try { const db = await pfDB(); await new Promise(res => { const t = db.transaction("clips", "readonly"), st = t.objectStore("clips"), req = st.openCursor();
       req.onsuccess = () => { const c = req.result; if(!c){ res(); return; } const k = String(c.key), url = URL.createObjectURL(c.value); PF.urls[k] = url;
-        if(k.startsWith("l:")){ const l = k.slice(2); PF.letters[l] = Object.assign(PF.letters[l] || {}, {rec: true, url}); } else if(k.startsWith("w:")){ const w = k.slice(2); PF.words[w] = Object.assign(PF.words[w] || {w}, {rec: true, url}); } c.continue(); };
+        if(k.startsWith("a:")){ const l = k.slice(2); PF.letters[l] = Object.assign(PF.letters[l] || {}, {rec: true, ai: true, url}); }
+        else if(k.startsWith("l:")){ URL.revokeObjectURL(url); delete PF.urls[k]; oldRec.push(k); } else if(k.startsWith("w:")){ const w = k.slice(2); PF.words[w] = Object.assign(PF.words[w] || {w}, {rec: true, url}); } c.continue(); };
       req.onerror = () => res(); }); } catch(e){}
+  oldRec.forEach(k => { pfPut(k, null).catch(() => {}); }); Object.keys(PF.letters).forEach(l => { if(!PF.letters[l].ai) delete PF.letters[l]; });
   // a recording that is gone from this device can't be used
   Object.values(PF.words).forEach(v => { if(v.rec && !v.url) v.rec = false; }); Object.values(PF.letters).forEach(v => { if(v.rec && !v.url) v.rec = false; });
   PF.ready = true; }
@@ -14389,21 +14392,30 @@ function pfDraw(){ const b = $("pf-body");
   pfUI.tab === "letters" ? pfDrawLetters() : pfDrawWords(); }
 function pfRecBox(id){ return pfMicOK() ? `<div class="pf-recrow"><button type="button" class="btn" id="${id}-rec">🎙️ Record</button><button type="button" class="btn alt" id="${id}-play" ${pfUI.blob ? "" : "hidden"}>▶ Play my recording</button></div>`
   : `<p class="pf-note">🎙️ Recording works on the website version of the app.</p>`; }
-function pfDrawLetters(){ const l = pfUI.letter, ex = (typeof K5_ABC !== "undefined" ? K5_ABC.find(a => a[0].toLowerCase() === l) : null), has = PF.letters[l] && PF.letters[l].url;
-  $("pf-pane").innerHTML = `<p class="pf-tip">Pick a letter, listen to the app's sound, and if it's not right, record the correct sound in your own voice. Say only the sound (like <b>“sss”</b> for S), not the letter's name.</p>
+function pfDrawLetters(){ const l = pfUI.letter, ex = (typeof K5_ABC !== "undefined" ? K5_ABC.find(a => a[0].toLowerCase() === l) : null), has = PF.letters[l] && PF.letters[l].url, ai = typeof k5AIok === "function" && k5AIok();
+  if(pfUI.tryL !== l){ pfUI.tryL = l; pfUI.take = 0; pfUI.tryUrl = ""; }
+  $("pf-pane").innerHTML = `<p class="pf-tip">Pick a letter and listen. If the sound isn't right, tell the AI how it should sound and let it try again. When you hear a good one, tap <b>Use this sound</b>. The AI's voice is then used for this letter everywhere in K–5.</p>
     <div class="pf-letters">${"abcdefghijklmnopqrstuvwxyz".split("").map(c => `<button type="button" data-pfl="${c}" aria-pressed="${c === l}" class="${PF.letters[c] && PF.letters[c].url ? "fixed" : ""}">${c}${PF.letters[c] && PF.letters[c].url ? "<i>✓</i>" : ""}</button>`).join("")}</div>
     <div class="pf-card"><p class="pf-big">${l.toUpperCase()} ${l}${ex ? ` <small>as in ${esc(ex[2].toLowerCase())}</small>` : ""}</p>
-      <div class="pf-recrow"><button type="button" class="btn alt" id="pf-lapp">🔊 App's sound</button>${has ? `<button type="button" class="btn alt" id="pf-lmine">▶ Your saved sound</button>` : ""}</div>
-      ${pfRecBox("pf-l")}
-      <div class="pf-recrow"><button type="button" class="btn" id="pf-lsave" ${pfUI.blob ? "" : "hidden"}>💾 Use my recording</button>${has ? `<button type="button" class="btn alt" id="pf-ldel">🗑 Go back to the app's sound</button>` : ""}</div>
-      <p class="pf-msg" id="pf-lmsg" aria-live="polite">${has ? "✓ Your recording is used for this letter." : ""}</p></div>`;
-  $("pf-pane").querySelectorAll("[data-pfl]").forEach(x => x.onclick = () => { pfRecStop(true); pfUI.letter = x.dataset.pfl; pfUI.blob = null; pfDrawLetters(); });
-  $("pf-lapp").onclick = () => { PF.bypass = true; try { k5Line([{s: l}]); } finally { setTimeout(() => { PF.bypass = false; }, 50); } };
-  if(has) $("pf-lmine").onclick = () => clipPlay(PF.letters[l].url);
-  pfRecWire("pf-l", "pf-lmsg", 3000, () => { $("pf-lsave").hidden = false; });
-  $("pf-lsave").onclick = async () => { try { await pfPut("l:" + l, pfUI.blob); } catch(e){ $("pf-lmsg").textContent = "Couldn't save on this device."; return; }
-    if(PF.letters[l] && PF.letters[l].url) URL.revokeObjectURL(PF.letters[l].url); PF.letters[l] = {rec: true, url: URL.createObjectURL(pfUI.blob)}; pfUI.blob = null; pfSaveText(); pfChanged(); pfDrawLetters(); $("pf-lmsg").textContent = "✓ Saved! Your sound is now used for this letter."; };
-  if(has) $("pf-ldel").onclick = async () => { try { await pfPut("l:" + l, null); } catch(e){} URL.revokeObjectURL(PF.letters[l].url); delete PF.letters[l]; pfSaveText(); pfChanged(); pfDrawLetters(); $("pf-lmsg").textContent = "Back to the app's sound."; }; }
+      <div class="pf-recrow"><button type="button" class="btn alt" id="pf-lapp">🔊 App's sound now</button></div>
+      <label class="pf-lab">How should it sound? <small>(optional)</small><input id="pf-lhint" type="text" maxlength="120" autocomplete="off" spellcheck="false" value="${esc(pfUI.hint && pfUI.hintL === l ? pfUI.hint : "")}" placeholder="e.g. a long llll like the start of lion, not 'el'"></label>
+      <div class="pf-recrow"><button type="button" class="btn alt" id="pf-ltry" ${ai ? "" : "disabled"}>🤖 AI, try again</button><button type="button" class="btn" id="pf-luse" ${pfUI.tryUrl ? "" : "hidden"}>✅ Use this sound</button>${has ? `<button type="button" class="btn alt" id="pf-ldel">↩️ Go back to the app's sound</button>` : ""}</div>
+      <p class="pf-msg" id="pf-lmsg" aria-live="polite">${!ai ? "The AI voice only works on your website, so open the app there to fix letter sounds." : has ? "✓ A chosen AI sound is used for this letter." : ""}</p></div>`;
+  $("pf-pane").querySelectorAll("[data-pfl]").forEach(x => x.onclick = () => { pfUI.letter = x.dataset.pfl; pfDrawLetters(); });
+  $("pf-lhint").oninput = e => { pfUI.hint = e.target.value; pfUI.hintL = l; };
+  $("pf-lapp").onclick = () => { try { k5Line([{s: l}]); } catch(e){} };
+  $("pf-ltry").onclick = async () => { const msg = $("pf-lmsg"), btn = $("pf-ltry"); btn.disabled = true; msg.textContent = "The AI is trying…"; pfUI.take = (pfUI.take || 0) + 1;
+    try { const url = await aiTTSUrl("/" + (K5_AISND[l] || l) + "/", "kids", l, {hint: $("pf-lhint").value.trim(), take: pfUI.take}); if(pfUI.letter !== l) return;
+      pfUI.tryUrl = url; clipPlay(url); msg.textContent = `Try ${pfUI.take}. Good? Tap ✅ Use this sound. Not yet? Change the description or tap “AI, try again”.`; $("pf-luse").hidden = false;
+    } catch(e){ msg.textContent = "The AI couldn't make the sound right now. Please try again in a moment."; }
+    btn.disabled = false; };
+  $("pf-luse").onclick = async () => { const msg = $("pf-lmsg"); if(!pfUI.tryUrl) return;
+    try { const blob = await (await fetch(pfUI.tryUrl)).blob(); await pfPut("a:" + l, blob);
+      if(PF.letters[l] && PF.letters[l].url) URL.revokeObjectURL(PF.letters[l].url); PF.letters[l] = {rec: true, ai: true, url: URL.createObjectURL(blob)};
+    } catch(e){ msg.textContent = "Couldn't save on this device."; return; }
+    pfUI.tryUrl = ""; pfSaveText(); pfChanged(); try { if(typeof siA !== "undefined" && siA.buf) Object.keys(siA.buf).forEach(k => { if(k.endsWith(":" + l)) delete siA.buf[k]; }); } catch(e){}
+    pfDrawLetters(); $("pf-lmsg").textContent = "✓ Saved! This AI sound is now used for this letter."; };
+  if(has) $("pf-ldel").onclick = async () => { try { await pfPut("a:" + l, null); } catch(e){} URL.revokeObjectURL(PF.letters[l].url); delete PF.letters[l]; pfSaveText(); pfChanged(); pfDrawLetters(); $("pf-lmsg").textContent = "Back to the app's sound."; }; }
 function pfDrawWords(){ const k = pfKey(pfUI.word), cur = PF.words[k] || null, list = Object.values(PF.words).filter(v => v.say || v.url);
   $("pf-pane").innerHTML = `<p class="pf-tip">Type a word the app says wrong. Then either write how it should sound, or record yourself saying it.</p>
     <div class="pf-card"><label class="pf-lab">Word<input id="pf-w" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" value="${esc(pfUI.word)}" placeholder="e.g. Golgi"></label>
@@ -14564,7 +14576,7 @@ const AI_TTS_CACHE = new Map();
 const WB_TTS_DEVICE = "wb-tts-v1";
 async function ttsFetch(init){
   let key = null;
-  try { const b = JSON.parse(init.body || "{}"); key = "https://tts.cache/" + encodeURIComponent([b.voice || "nova", b.style || "", String(b.text || "").replace(/\s+/g, " ").trim()].join("|")).slice(0, 1800); } catch(e){}
+  try { const b = JSON.parse(init.body || "{}"); key = "https://tts.cache/" + encodeURIComponent([b.voice || "nova", b.style || "", String(b.text || "").replace(/\s+/g, " ").trim()].concat(b.snd ? ["s:" + b.snd] : [], b.w ? ["w:" + b.w] : [], b.hint ? ["h:" + b.hint] : [], b.take ? ["t:" + b.take] : []).join("|")).slice(0, 1800); } catch(e){}
   if(key && typeof caches !== "undefined"){ try { const c = await caches.open(WB_TTS_DEVICE), hit = await c.match(key); if(hit) return hit; } catch(e){} }
   const res = await fetch("/.netlify/functions/tts", init);
   if(res.ok && key && typeof caches !== "undefined"){ try { const copy = res.clone(), blob = await copy.blob(); if(blob.size > 200){ const c = await caches.open(WB_TTS_DEVICE); await c.put(key, new Response(blob, {headers: {"Content-Type": "audio/mpeg"}})); } } catch(e){} }
@@ -14593,8 +14605,8 @@ function mp3Pad(input, ms){
 }
 // iPads can swallow the first moment of a clip, cutting off the start of the word: give every AI clip a quarter-second lead-in
 async function aiPadBlob(blob){ try { return new Blob([mp3Pad(await blob.arrayBuffer(), 250)], {type: "audio/mpeg"}); } catch(e){ return blob; } }
-function aiTTSUrl(text, style, snd){ const voice = style === "kids" ? "coral" : aiVoiceName(), key = voice + "|" + (style || "") + "|" + (snd || "") + "|" + text; if(AI_TTS_CACHE.has(key)) return AI_TTS_CACHE.get(key);
-  const pr = (async () => { let res; try { res = await ttsFetch({method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(Object.assign({text: String(text).slice(0, 500), voice}, style ? {style} : {}, snd ? {snd} : {}))}); } catch(e){ throw {status: "network"}; }
+function aiTTSUrl(text, style, snd, more){ more = more || {}; const voice = style === "kids" ? "coral" : aiVoiceName(), key = voice + "|" + (style || "") + "|" + (snd || "") + "|" + (more.hint || "") + "|" + (more.take || "") + "|" + text; if(AI_TTS_CACHE.has(key)) return AI_TTS_CACHE.get(key);
+  const pr = (async () => { let res; try { res = await ttsFetch({method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(Object.assign({text: String(text).slice(0, 500), voice}, style ? {style} : {}, snd ? {snd} : {}, more.hint ? {hint: String(more.hint).slice(0, 120)} : {}, more.take ? {take: more.take} : {}))}); } catch(e){ throw {status: "network"}; }
     if(!res.ok){ let d = ""; try { d = await res.text(); } catch(e){} throw {status: res.status, detail: d}; }
     const blob = await res.blob(); if(blob.size < 200) throw {status: "empty"}; return URL.createObjectURL(await aiPadBlob(blob)); })();
   pr.catch(() => AI_TTS_CACHE.delete(key)); AI_TTS_CACHE.set(key, pr);
