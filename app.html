@@ -2359,68 +2359,27 @@ window.MWB_TRIAL_DAYS = 14;
   <section id="view-sounds" hidden>
     <div class="cell-head"><button class="icon-btn" id="sounds-back" aria-label="Back to folders">‹</button><h2>🔤 Sounds Lab</h2></div>
     <!-- Mascot hero banner -->
-    <div id="sounds-hero" style="max-width:580px;margin:0 auto 8px;border-radius:22px;overflow:hidden;position:relative;background:linear-gradient(135deg,#E0F2FE 0%,#FEF9C3 100%);box-shadow:0 4px 18px #0002">
-      <svg viewBox="0 0 580 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">
-        <!-- Sky background -->
-        <defs>
-          <linearGradient id="hero-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#BAE6FD"/><stop offset="100%" stop-color="#FEF9C3"/></linearGradient>
-          <linearGradient id="grass-g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#86EFAC"/><stop offset="100%" stop-color="#4ADE80"/></linearGradient>
-        </defs>
-        <rect width="580" height="130" fill="url(#hero-sky)"/>
-        <!-- Clouds -->
-        <ellipse cx="80" cy="28" rx="36" ry="18" fill="#fff" opacity=".85"/>
-        <ellipse cx="106" cy="22" rx="26" ry="16" fill="#fff" opacity=".9"/>
-        <ellipse cx="56" cy="24" rx="22" ry="14" fill="#fff" opacity=".8"/>
-        <ellipse cx="460" cy="20" rx="30" ry="16" fill="#fff" opacity=".85"/>
-        <ellipse cx="490" cy="14" rx="24" ry="14" fill="#fff" opacity=".9"/>
-        <!-- Sun -->
-        <circle cx="530" cy="30" r="22" fill="#FCD34D"/>
-        <circle cx="530" cy="30" r="18" fill="#FDE68A"/>
-        <!-- Ground / grass hill -->
-        <ellipse cx="290" cy="145" rx="320" ry="55" fill="url(#grass-g)"/>
-        <!-- Flowers -->
-        <circle cx="170" cy="108" r="5" fill="#F9A8D4"/>
-        <circle cx="170" cy="108" r="2.5" fill="#FDE68A"/>
-        <circle cx="185" cy="112" r="4" fill="#93C5FD"/>
-        <circle cx="185" cy="112" r="2" fill="#FDE68A"/>
-        <circle cx="400" cy="110" r="5" fill="#FCA5A5"/>
-        <circle cx="400" cy="110" r="2.5" fill="#FDE68A"/>
-        <circle cx="415" cy="107" r="4" fill="#A78BFA"/>
-        <circle cx="415" cy="107" r="2" fill="#FDE68A"/>
-        <!-- Bear mascot (simple cute bear) -->
-        <!-- body -->
-        <ellipse cx="295" cy="108" rx="28" ry="26" fill="#6EE7B7"/>
-        <!-- tummy -->
-        <ellipse cx="295" cy="112" rx="16" ry="14" fill="#A7F3D0"/>
-        <!-- head -->
-        <circle cx="295" cy="72" r="26" fill="#6EE7B7"/>
-        <!-- ears -->
-        <circle cx="272" cy="52" r="10" fill="#6EE7B7"/>
-        <circle cx="272" cy="52" r="6" fill="#34D399"/>
-        <circle cx="318" cy="52" r="10" fill="#6EE7B7"/>
-        <circle cx="318" cy="52" r="6" fill="#34D399"/>
-        <!-- face -->
-        <circle cx="286" cy="68" r="5" fill="#1A1A1A"/> <!-- left eye -->
-        <circle cx="304" cy="68" r="5" fill="#1A1A1A"/> <!-- right eye -->
-        <circle cx="287" cy="67" r="2" fill="#fff"/>
-        <circle cx="305" cy="67" r="2" fill="#fff"/>
-        <!-- nose -->
-        <ellipse cx="295" cy="77" rx="7" ry="5" fill="#34D399"/>
-        <!-- smile -->
-        <path d="M283 83 Q295 93 307 83" stroke="#1A1A1A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-        <!-- arms holding a book -->
-        <ellipse cx="263" cy="100" rx="12" ry="7" fill="#6EE7B7" transform="rotate(-30 263 100)"/>
-        <ellipse cx="327" cy="100" rx="12" ry="7" fill="#6EE7B7" transform="rotate(30 327 100)"/>
-        <!-- book -->
-        <rect x="275" y="96" width="40" height="30" rx="4" fill="#3B82F6"/>
-        <rect x="277" y="98" width="36" height="26" rx="2" fill="#60A5FA"/>
-        <text x="295" y="117" text-anchor="middle" font-size="13" fill="#fff" font-weight="900">ABC</text>
-        <!-- Stars / sparkles -->
-        <text x="75" y="65" font-size="18" opacity=".7">⭐</text>
-        <text x="490" y="70" font-size="16" opacity=".6">✨</text>
-        <text x="200" y="50" font-size="14" opacity=".5">⭐</text>
-        <!-- Title text -->
-        <text x="290" y="24" text-anchor="middle" font-size="16" font-family="sans-serif" fill="#1E3A8A" font-weight="900" letter-spacing="1">Sounds Lab 🔤</text>
+    <div id="sounds-hero" class="sl-hero" aria-label="Sounds Lab. Tap the letter balloons to hear their sounds.">
+      <div class="sl-sky" aria-hidden="true">
+        <div class="sl-rainbow"></div>
+        <div class="sl-sun"><i></i></div>
+        <div class="sl-cloud c1"></div><div class="sl-cloud c2"></div><div class="sl-cloud c3"></div>
+        <span class="sl-fly f1">🦋</span><span class="sl-fly f2">🦋</span>
+        <svg class="sl-hills" viewBox="0 0 600 120" preserveAspectRatio="none"><path d="M0 70 Q120 20 250 60 T600 50 V120 H0Z" fill="#86efac"/><path d="M0 95 Q160 55 330 90 T600 80 V120 H0Z" fill="#4ade80"/>
+          <g fill="#fde68a"><circle cx="80" cy="100" r="4"/><circle cx="470" cy="98" r="4"/></g><g fill="#f9a8d4"><circle cx="96" cy="104" r="4"/><circle cx="520" cy="104" r="4"/></g></svg>
+      </div>
+      <h3 class="sl-title" aria-label="Sounds Lab"><span style="--d:0">S</span><span style="--d:1">o</span><span style="--d:2">u</span><span style="--d:3">n</span><span style="--d:4">d</span><span style="--d:5">s</span><b> </b><span style="--d:7">L</span><span style="--d:8">a</span><span style="--d:9">b</span></h3>
+      <div class="sl-balloons" id="sl-balloons"></div>
+      <svg class="sl-bear" viewBox="0 0 120 130" aria-hidden="true">
+        <g class="sl-arm"><ellipse cx="98" cy="74" rx="10" ry="16" fill="#6ee7b7" transform="rotate(-35 98 74)"/></g>
+        <ellipse cx="60" cy="100" rx="30" ry="27" fill="#6ee7b7"/><ellipse cx="60" cy="104" rx="17" ry="15" fill="#a7f3d0"/>
+        <circle cx="37" cy="24" r="11" fill="#6ee7b7"/><circle cx="37" cy="24" r="6" fill="#34d399"/><circle cx="83" cy="24" r="11" fill="#6ee7b7"/><circle cx="83" cy="24" r="6" fill="#34d399"/>
+        <circle cx="60" cy="48" r="28" fill="#6ee7b7"/>
+        <g class="sl-eyes"><circle cx="50" cy="44" r="5" fill="#1a1a1a"/><circle cx="70" cy="44" r="5" fill="#1a1a1a"/><circle cx="51.5" cy="42.5" r="1.8" fill="#fff"/><circle cx="71.5" cy="42.5" r="1.8" fill="#fff"/></g>
+        <ellipse cx="42" cy="55" rx="5" ry="3" fill="#f9a8d4" opacity=".7"/><ellipse cx="78" cy="55" rx="5" ry="3" fill="#f9a8d4" opacity=".7"/>
+        <ellipse cx="60" cy="53" rx="6" ry="4" fill="#34d399"/><path d="M50 60 Q60 69 70 60" stroke="#1a1a1a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <ellipse cx="24" cy="88" rx="10" ry="7" fill="#6ee7b7" transform="rotate(30 24 88)"/>
+        <rect x="38" y="86" width="44" height="30" rx="5" fill="#3b82f6"/><rect x="40" y="88" width="40" height="26" rx="3" fill="#60a5fa"/><text x="60" y="107" text-anchor="middle" font-size="13" fill="#fff" font-weight="900" font-family="sans-serif">ABC</text>
       </svg>
     </div>
     <div class="k5" id="k5">
@@ -22313,7 +22272,7 @@ function pronWire(){ const mic = $("pron-mic"); if(!mic || mic.dataset.wired) re
   $("pron-fb").addEventListener("click", e => { if(e.target.closest("[data-pl]")) pronListen(); }); }
 function openSoundsLab(){ pronWire(); try { voicePrep(); } catch(e){} setTimeout(() => { try { k5Init(); } catch(e){ console.warn("k5", e); } }, 0);
   ["words","stars","spell","play","ai","cell","folders","folder","lab","dna","math","books","book","eye","brain","bacteria","dict"].forEach(v => { const el = $("view-"+v); if(el) el.hidden = true; });
-  $("view-sounds").hidden = false; soundCat = "abc"; sjStep = 0;
+  $("view-sounds").hidden = false; soundCat = "abc"; sjStep = 0; try { slHeroInit(); } catch(e){}
   // Reset quiz state if open
   if(soundsQuizActive) stopSoundsQuiz();
   document.querySelectorAll("[data-scat]").forEach(b => b.setAttribute("aria-pressed", b.dataset.scat === soundCat));
@@ -38388,6 +38347,34 @@ function vtInit(){ if(!$("vt")) return; requestAnimationFrame(() => vtPlot()); i
 .pf-gate{display:flex;flex-direction:column;gap:8px}.pf-q{font-size:24px;font-weight:800;margin:0}
 .pf-link{display:block;margin:8px auto 0;border:0;background:none;color:inherit;opacity:.75;font:inherit;font-size:14px;text-decoration:underline;cursor:pointer}
 .pf-open{width:100%;margin-top:14px}
+.sl-hero{position:relative;max-width:720px;margin:0 auto 10px;height:clamp(170px,32vw,230px);border-radius:24px;overflow:hidden;box-shadow:0 6px 20px rgba(0,0,0,.15);border:3px solid #fff;user-select:none;-webkit-user-select:none}
+.sl-sky{position:absolute;inset:0;background:linear-gradient(#7dd3fc,#bae6fd 55%,#fef9c3)}
+.sl-rainbow{position:absolute;left:50%;bottom:-62%;width:110%;aspect-ratio:1;transform:translateX(-50%);border-radius:50%;opacity:.45;background:radial-gradient(circle,transparent 52%,#a78bfa 52% 55%,#60a5fa 55% 58%,#34d399 58% 61%,#facc15 61% 64%,#fb923c 64% 67%,#f87171 67% 70%,transparent 70%)}
+.sl-sun{position:absolute;right:6%;top:10%;width:clamp(44px,8vw,62px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#fef08a,#facc15);box-shadow:0 0 24px #fde047}
+.sl-sun i{position:absolute;inset:-40%;border-radius:50%;background:repeating-conic-gradient(rgba(253,224,71,.55) 0 10deg,transparent 10deg 30deg);animation:slSpin 14s linear infinite;z-index:-1}
+.sl-cloud{position:absolute;width:90px;height:28px;border-radius:20px;background:#fff;opacity:.9;animation:slCloud linear infinite}.sl-cloud::before,.sl-cloud::after{content:"";position:absolute;background:#fff;border-radius:50%}
+.sl-cloud::before{width:44px;height:44px;left:12px;top:-20px}.sl-cloud::after{width:32px;height:32px;left:44px;top:-13px}
+.sl-cloud.c1{top:14%;animation-duration:38s;animation-delay:-8s}.sl-cloud.c2{top:30%;transform:scale(.7);animation-duration:52s;animation-delay:-30s}.sl-cloud.c3{top:8%;transform:scale(.55);animation-duration:64s;animation-delay:-45s}
+.sl-fly{position:absolute;font-size:22px;animation:slFly 16s ease-in-out infinite}.sl-fly.f2{animation-duration:21s;animation-delay:-9s;font-size:18px}
+.sl-hills{position:absolute;left:0;bottom:0;width:100%;height:42%}
+.sl-title{position:absolute;left:0;right:0;top:6px;margin:0;text-align:center;font-size:clamp(26px,5.6vw,40px);font-weight:900;letter-spacing:1px;z-index:3;-webkit-text-stroke:2px #1e3a8a;paint-order:stroke fill;text-shadow:0 3px 0 #1e3a8a}
+.sl-title span{display:inline-block;animation:slWave 2.2s ease-in-out infinite;animation-delay:calc(var(--d) * .11s)}
+.sl-title span:nth-child(6n+1){color:#f87171}.sl-title span:nth-child(6n+2){color:#fb923c}.sl-title span:nth-child(6n+3){color:#facc15}.sl-title span:nth-child(6n+4){color:#4ade80}.sl-title span:nth-child(6n+5){color:#60a5fa}.sl-title span:nth-child(6n){color:#c084fc}
+.sl-balloons{position:absolute;inset:0;z-index:2}
+.sl-bal{position:absolute;bottom:22%;width:clamp(40px,8vw,56px);height:clamp(48px,9.6vw,66px);margin-left:calc(clamp(40px,8vw,56px) / -2);border:0;padding:0;border-radius:50% 50% 48% 48%;color:#fff;font:inherit;font-size:clamp(22px,4.6vw,32px);font-weight:900;cursor:pointer;box-shadow:inset -6px -8px 0 rgba(0,0,0,.12),inset 5px 6px 0 rgba(255,255,255,.35);animation:slBob var(--t) ease-in-out infinite;animation-delay:var(--dl);text-shadow:0 2px 0 rgba(0,0,0,.2)}
+.sl-bal::after{content:"";position:absolute;left:50%;top:100%;width:2px;height:26px;background:rgba(30,41,59,.45);transform:translateX(-50%)}
+.sl-bal.pop{animation:slPop .35s ease-out forwards}.sl-bal.in{animation:slIn .7s ease-out,slBob var(--t) ease-in-out .7s infinite}
+.sl-bear{position:absolute;left:50%;bottom:-2px;width:clamp(86px,16vw,120px);transform:translateX(-50%);z-index:2;animation:slBear 3s ease-in-out infinite}
+.sl-arm{transform-origin:84px 86px;animation:slWaveArm 2.6s ease-in-out infinite}.sl-eyes{transform-origin:60px 44px;animation:slBlink 4.5s infinite}
+@keyframes slSpin{to{transform:rotate(360deg)}}@keyframes slCloud{from{left:-120px}to{left:110%}}
+@keyframes slFly{0%{left:-8%;top:55%}25%{left:25%;top:35%}50%{left:55%;top:50%}75%{left:80%;top:28%}100%{left:108%;top:45%}}
+@keyframes slWave{0%,100%{transform:translateY(0) rotate(0)}30%{transform:translateY(-8px) rotate(-6deg)}60%{transform:translateY(2px) rotate(4deg)}}
+@keyframes slBob{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-12px) rotate(4deg)}}
+@keyframes slPop{to{transform:scale(1.6);opacity:0}}@keyframes slIn{from{transform:translateY(80px) scale(.3);opacity:0}to{transform:none;opacity:1}}
+@keyframes slBear{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-4px)}}
+@keyframes slWaveArm{0%,60%,100%{transform:rotate(0)}70%{transform:rotate(-22deg)}80%{transform:rotate(8deg)}90%{transform:rotate(-16deg)}}
+@keyframes slBlink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+@media (prefers-reduced-motion:reduce){.sl-hero *,.sl-hero *::before{animation:none!important}}
 .k5-card{border:3px solid var(--line);border-radius:18px;padding:10px 12px;display:flex;flex-direction:column;gap:8px;background:var(--paper)}
 .k5-fb{margin:0;text-align:center;font-weight:700;min-height:1.3em}
 .k5-seg{display:flex;gap:4px;justify-content:center}.k5-seg.k5-wrap{flex-wrap:wrap}
@@ -39154,6 +39141,17 @@ function k5SiInit(){ if(siw.inited) return; siw.inited = true;
   $("k5-sinext").onclick = k5SiNew;
   $("k5-sislow").onclick = () => { const w = siw.word; k5Line([...[...w].map(c => ({s: c})), `${w}!`]); };
   k5SiNew(); }
+// ---------- 🎈 Sounds Lab banner: letter balloons you can pop to hear their sounds ----------
+const SL_COLORS = ["#f87171", "#fb923c", "#facc15", "#4ade80", "#60a5fa", "#a78bfa", "#f472b6", "#2dd4bf"];
+const SL_SPOTS = [9, 22, 33, 67, 78, 91];
+function slLetter(skip){ const A = "ABCDEFGHIJKLMNOPRSTUVWZ"; let c; do { c = A[Math.floor(Math.random() * A.length)]; } while(skip.includes(c)); return c; }
+function slBalloon(i, cls){ const box = $("sl-balloons"); if(!box) return; const have = [...box.querySelectorAll(".sl-bal")].map(b => b.textContent), c = slLetter(have);
+  const b = document.createElement("button"); b.type = "button"; b.className = "sl-bal" + (cls ? " " + cls : ""); b.textContent = c; b.setAttribute("aria-label", "Letter " + c + ". Tap to hear its sound.");
+  b.style.left = SL_SPOTS[i] + "%"; b.style.background = SL_COLORS[(i * 3 + c.charCodeAt(0)) % SL_COLORS.length]; b.style.setProperty("--t", (2.6 + (i % 3) * 0.6) + "s"); b.style.setProperty("--dl", (-i * 0.7) + "s"); b.style.bottom = (18 + (i % 2) * 14) + "%";
+  b.onclick = () => { if(b.classList.contains("pop")) return; b.classList.add("pop"); try { typeof k5Sound === "function" ? k5Sound(c.toLowerCase()) : speak(c); } catch(e){} try { if(typeof playChime === "function") playChime(true); } catch(e){}
+    setTimeout(() => { b.remove(); slBalloon(i, "in"); }, 380); };
+  const old = box.querySelector(`.sl-bal[data-i="${i}"]`); if(old) old.remove(); b.dataset.i = i; box.appendChild(b); }
+function slHeroInit(){ const box = $("sl-balloons"); if(!box || box.childElementCount) return; SL_SPOTS.forEach((_, i) => slBalloon(i)); }
 // ---------- 🧱 number blocks + arrays ----------
 const K5_ONES = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"], K5_TENS = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
 const k5Words = n => n < 20 ? K5_ONES[n] : n < 100 ? K5_TENS[Math.floor(n / 10)] + (n % 10 ? "-" + K5_ONES[n % 10] : "") : n < 1000 ? K5_ONES[Math.floor(n / 100)] + " hundred" + (n % 100 ? " " + k5Words(n % 100) : "") : k5Words(Math.floor(n / 1000)) + " thousand" + (n % 1000 ? " " + k5Words(n % 1000) : "");
