@@ -38928,8 +38928,34 @@ const K5_SIW = {
       ["lamp", "💡"], ["desk", "🪑"], ["gift", "🎁"], ["plum", "🟣"], ["snap", "🫰"]]
 };
 const siw = {mode: "slide", n: 3, i: -1, word: "", pic: "", at: -1, done: false, built: [], won: false};
+// a small sound player just for sliding: every sound of the word is decoded ahead of time, trimmed of silence,
+// and each new sound fades the last one out smoothly (no clicks, no waiting, no chopped-up audio)
+const siA = {ctx: null, buf: {}, cur: null};
+function k5SiCtx(){ if(!siA.ctx){ const AC = window.AudioContext || window.webkitAudioContext; if(AC){ try { siA.ctx = new AC(); } catch(e){} } } try { siA.ctx && siA.ctx.state !== "running" && siA.ctx.resume(); } catch(e){} return siA.ctx; }
+function k5SiTrim(ab){ const ch = ab.getChannelData(0), n = ch.length, th = 0.02, sr = ab.sampleRate; let a = 0, b = n - 1;
+  while(a < n && Math.abs(ch[a]) < th) a++; while(b > a && Math.abs(ch[b]) < th) b--;
+  a = Math.max(0, a - Math.round(sr * 0.012)); b = Math.min(n - 1, b + Math.round(sr * 0.04)); if(b - a < sr * 0.03) return ab;
+  const out = siA.ctx.createBuffer(1, b - a, sr); out.getChannelData(0).set(ch.subarray(a, b)); return out; }
+async function k5SiLoad(l){ const key = (k5AIok() ? "ai:" : "rec:") + l; if(siA.buf[key]) return siA.buf[key];
+  const ctx = k5SiCtx(); if(!ctx) return null;
+  siA.buf[key] = (async () => { let bytes = null;
+    if(k5AIok()){ try { const url = await aiTTSUrl("/" + (K5_AISND[l] || l) + "/", "kids", l); bytes = await (await fetch(url)).arrayBuffer(); } catch(e){ bytes = null; } }
+    if(!bytes && K5_PH[l]){ const b64 = K5_PH[l].split(",")[1], bin = atob(b64), u = new Uint8Array(bin.length); for(let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); bytes = u.buffer; }
+    if(!bytes) return null;
+    const ab = await new Promise((res, rej) => { const p = ctx.decodeAudioData(bytes, res, rej); if(p && p.then) p.then(res, rej); });
+    return k5SiTrim(ab); })().catch(() => { delete siA.buf[key]; return null; });
+  return siA.buf[key]; }
+function k5SiPlay(l){ const ctx = k5SiCtx(), key = (k5AIok() ? "ai:" : "rec:") + l, p = siA.buf[key];
+  const go = ab => { if(!ab || !ctx){ k5Sound(l); return; } try { stopAll(); } catch(e){}
+    const t = ctx.currentTime;
+    if(siA.cur){ try { siA.cur.g.gain.cancelScheduledValues(t); siA.cur.g.gain.setValueAtTime(siA.cur.g.gain.value, t); siA.cur.g.gain.linearRampToValueAtTime(0, t + 0.06); siA.cur.s.stop(t + 0.07); } catch(e){} }
+    const s = ctx.createBufferSource(), g = ctx.createGain(); s.buffer = ab; s.connect(g); g.connect(ctx.destination);
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(1, t + 0.012);
+    const end = t + ab.duration; g.gain.setValueAtTime(1, Math.max(t + 0.013, end - 0.05)); g.gain.linearRampToValueAtTime(0, end);
+    s.start(t); siA.cur = {s, g}; s.onended = () => { if(siA.cur && siA.cur.s === s) siA.cur = null; }; };
+  if(p) p.then(go); else k5SiLoad(l).then(go); }
 // get every letter sound of this word ready, so sliding is instant
-function k5SiWarm(w){ try { if(k5AIok()) [...new Set(w)].forEach(l => aiTTSUrl("/" + (K5_AISND[l] || l) + "/", "kids", l).catch(() => {})); } catch(e){} }
+function k5SiWarm(w){ try { if(siA.ctx) [...new Set(w)].forEach(l => k5SiLoad(l)); else if(k5AIok()) [...new Set(w)].forEach(l => aiTTSUrl("/" + (K5_AISND[l] || l) + "/", "kids", l).catch(() => {})); } catch(e){} }
 function k5SiNew(){ const L = K5_SIW[siw.n]; let i; do { i = Math.floor(Math.random() * L.length); } while(L.length > 1 && i === siw.i); siw.i = i;
   [siw.word, siw.pic] = L[i]; siw.at = -1; siw.done = false; siw.won = false; siw.built = Array(siw.word.length).fill(null); k5SiWarm(siw.word); k5SiDraw(); }
 function k5SiDraw(){ const w = siw.word, box = $("k5-sibox");
@@ -38958,13 +38984,13 @@ function k5SiSlideWire(){ const car = $("k5-sicar"), track = $("k5-sitrack"); le
     const cx = tr.left + pos + car.offsetWidth / 2, letters = [...document.querySelectorAll("#k5-siword .k5-silt")];
     let k = -1; letters.forEach((e, j) => { const r = e.getBoundingClientRect(); if(cx >= r.left - 4) k = j; });
     car.setAttribute("aria-valuenow", String(k + 1));
-    if(k > siw.at){ siw.at = k; k5SiHi(k); k5Sound(siw.word[k]); }
+    if(k > siw.at){ siw.at = k; k5SiHi(k); k5SiPlay(siw.word[k]); }
     if(pos >= max - 2 && siw.at >= letters.length - 1 && !siw.done) k5SiFinish(); };
-  car.onpointerdown = e => { drag = true; car.setPointerCapture(e.pointerId); car.classList.add("drag"); if(siw.done || siw.at >= siw.word.length - 1){ siw.at = -1; siw.done = false; } e.preventDefault(); };
+  car.onpointerdown = e => { if(k5SiCtx()) [...new Set(siw.word)].forEach(l => k5SiLoad(l)); drag = true; car.setPointerCapture(e.pointerId); car.classList.add("drag"); if(siw.done || siw.at >= siw.word.length - 1){ siw.at = -1; siw.done = false; } e.preventDefault(); };
   car.onpointermove = e => { if(drag) place(e.clientX); };
   car.onpointerup = car.onpointercancel = () => { drag = false; car.classList.remove("drag"); };
   track.onpointerdown = e => { if(e.target === track){ siw.at = -1; siw.done = false; place(e.clientX); } };
-  car.onkeydown = e => { if(e.key === "ArrowRight" || e.key === " "){ e.preventDefault(); const k = Math.min(siw.word.length - 1, siw.at + 1); siw.at = k; k5SiHi(k); k5Sound(siw.word[k]);
+  car.onkeydown = e => { if(e.key === "ArrowRight" || e.key === " "){ e.preventDefault(); const k = Math.min(siw.word.length - 1, siw.at + 1); siw.at = k; k5SiHi(k); k5SiPlay(siw.word[k]);
       const r = document.querySelectorAll("#k5-siword .k5-silt")[k].getBoundingClientRect(), tr = track.getBoundingClientRect(); car.style.transform = `translateX(${Math.max(0, r.left + r.width / 2 - tr.left - car.offsetWidth / 2)}px)`;
       if(k === siw.word.length - 1) setTimeout(k5SiFinish, 900); }
     if(e.key === "ArrowLeft" || e.key === "Home"){ siw.at = -1; car.style.transform = "translateX(0)"; k5SiHi(-1); } }; }
