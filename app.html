@@ -2654,6 +2654,13 @@ window.MWB_TRIAL_DAYS = 14;
       </div>
       <!-- 🔤 ABC alphabet and letter sounds -->
       <div class="k5-pane" data-pane="abc" hidden>
+        <div class="k5-card k5-si">
+          <div class="k5-row sp"><b>🎯 Drag &amp; Sound It Out</b>
+            <div class="k5-seg" id="k5-simodes" role="group" aria-label="How to play"><button type="button" data-sim="slide" aria-pressed="true">🚗 Slide</button><button type="button" data-sim="build" aria-pressed="false">🧩 Build</button></div></div>
+          <div class="k5-sibox" id="k5-sibox"></div>
+          <div class="k5-row"><div class="k5-seg" id="k5-silen" role="group" aria-label="Word length"><button type="button" data-sin="3" aria-pressed="true">3 letters</button><button type="button" data-sin="4" aria-pressed="false">4 letters</button></div>
+            <button type="button" class="k5-btn alt" id="k5-sislow">🔊 Sound it out</button><button type="button" class="k5-btn" id="k5-sinext">Next word ▶</button></div>
+        </div>
         <div class="k5-card k5-abc">
     <p class="cell-intro" style="text-align:center;font-size:.95rem">Tap any word to hear it! The coloured letters show the special sound. ✨ Use AI to discover more words!</p>
     <div style="display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin:0 0 6px">
@@ -38242,6 +38249,19 @@ function vtInit(){ if(!$("vt")) return; requestAnimationFrame(() => vtPlot()); i
 .k5-bkend{text-align:center}.k5-bkend h3{margin:6px 0}.k5-bkstars{font-size:40px;margin:4px 0}.k5-bkq{font-size:clamp(22px,4.4vw,30px);font-weight:800;margin:6px 0}
 .k5-bkopts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}.k5-bkopts .k5-btn{font-size:18px;padding:12px}
 .k5-bkopts .k5-btn.right{background:#16a34a;color:#fff}.k5-bkopts .k5-btn.wrong{background:#fecaca;color:#7f1d1d;opacity:.8}.k5-bkfb{text-align:center;font-weight:800;min-height:1.4em}
+.k5-sibox{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;display:flex;flex-direction:column;align-items:center;gap:12px;padding:6px 0}
+.k5-sipic{font-size:72px;line-height:1;transition:opacity .4s,transform .4s}.k5-sipic.hide{opacity:.12;filter:blur(6px);transform:scale(.85)}
+.k5-siword,.k5-sislots{display:flex;gap:10px;justify-content:center}
+.k5-silt,.k5-sislot{display:grid;place-items:center;width:clamp(56px,14vw,84px);height:clamp(66px,16vw,96px);border-radius:16px;border:3px solid var(--line);background:#fff;color:#1d4ed8;font-size:clamp(40px,10vw,64px);font-weight:800;transition:transform .15s,background .15s}
+.k5-silt.v,.k5-sitile.v{color:#ea580c}.k5-silt.on,.k5-sislot.on{background:#fde047;transform:translateY(-6px) scale(1.08)}.k5-silt.all,.k5-sislot.all{background:#bbf7d0}
+.k5-sislot{border-style:dashed;color:#1d4ed8}.k5-sislot.ok{border-style:solid}.k5-sislot.over{background:#e0f2fe}.k5-sislot.no,.k5-sitile.no{animation:k5SiNo .5s}
+@keyframes k5SiNo{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.k5-sitrack{position:relative;width:min(100%,calc(4 * clamp(56px,14vw,84px) + 150px));height:64px;border-radius:32px;background:repeating-linear-gradient(90deg,#94a3b8 0 18px,#cbd5e1 18px 30px);border:3px solid var(--line);touch-action:none}
+.k5-sicar{position:absolute;left:0;top:50%;margin-top:-28px;width:56px;height:56px;display:grid;place-items:center;font-size:44px;cursor:grab;touch-action:none;transform:translateX(0);transition:filter .15s}
+.k5-sicar.drag{cursor:grabbing;filter:drop-shadow(0 4px 6px rgba(0,0,0,.35))}.k5-siflag{position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:30px;pointer-events:none}
+.k5-sitiles{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.k5-sitile{width:clamp(52px,12vw,70px);height:clamp(58px,14vw,78px);border-radius:14px;border:3px solid var(--line);background:#fef3c7;color:#1d4ed8;font:inherit;font-size:clamp(32px,8vw,46px);font-weight:800;cursor:grab;touch-action:none;box-shadow:0 4px 0 var(--line);user-select:none;-webkit-user-select:none}
+.k5-sitile.drag{cursor:grabbing;position:relative;z-index:5;box-shadow:0 10px 18px rgba(0,0,0,.25)}
 .k5-card{border:3px solid var(--line);border-radius:18px;padding:10px 12px;display:flex;flex-direction:column;gap:8px;background:var(--paper)}
 .k5-fb{margin:0;text-align:center;font-weight:700;min-height:1.3em}
 .k5-seg{display:flex;gap:4px;justify-content:center}.k5-seg.k5-wrap{flex-wrap:wrap}
@@ -38691,7 +38711,7 @@ function k5Stickers(){ const got = K5_BADGES.filter(b => k5.badges[b[0]]).length
   $("k5-stk").innerHTML = K5_BADGES.map(b => k5.badges[b[0]] ? `<button type="button" class="k5-stk on" data-b="${b[0]}"><span>${b[1]}</span><small>${b[2]}</small></button>` : `<button type="button" class="k5-stk" data-b="${b[0]}" aria-label="Locked sticker. ${b[3]}"><span>🔒</span><small>???</small></button>`).join("");
   $("k5-stk").querySelectorAll("[data-b]").forEach(btn => btn.onclick = () => { const b = K5_BADGES.find(x => x[0] === btn.dataset.b), on = k5.badges[b[0]]; $("k5-stinfo").textContent = on ? `${b[1]} ${b[2]} — ${b[3]}` : `🔒 How to get it: ${b[3]}`; if(on) k5Say(`${b[2]}. ${b[3]}`); }); }
 function k5xTab(t){ if(t !== "stickers" && !k5.seen.tabs.includes(t)){ k5.seen.tabs.push(t); k5Badges(); k5Save(); }
-  k5Bubble(K5_TIPS[t] || "Let's play!"); if(t === "build"){ k5BuildDraw(); k5ArrDraw(); } if(t === "clock") k5ClockDraw(); if(t === "space") k5SpaceInit(); if(t === "matter") k5MatterStart(); if(t === "money") k5MoneyDraw(); if(t === "shapes"){ k5ShapeDraw(); k5GridDraw(); k5AngleDraw(); } if(t === "music") k5PianoDraw(); if(t === "animals" && !k5.anm) k5AnimalNext(); if(t === "dino") k5DinoInit(); if(t === "stickers") k5Stickers(); if(t === "abc"){ try { renderSoundsGrid(); } catch(e){} } else { try { abcStop(); if(soundsQuizActive) stopSoundsQuiz(); } catch(e){} } if(t === "books") k5BooksInit(); else if(typeof kbk !== "undefined" && kbk.book){ kbk.auto = false; try { $("k5-bkauto").checked = false; } catch(e){} k5BkStop(); } }
+  k5Bubble(K5_TIPS[t] || "Let's play!"); if(t === "build"){ k5BuildDraw(); k5ArrDraw(); } if(t === "clock") k5ClockDraw(); if(t === "space") k5SpaceInit(); if(t === "matter") k5MatterStart(); if(t === "money") k5MoneyDraw(); if(t === "shapes"){ k5ShapeDraw(); k5GridDraw(); k5AngleDraw(); } if(t === "music") k5PianoDraw(); if(t === "animals" && !k5.anm) k5AnimalNext(); if(t === "dino") k5DinoInit(); if(t === "stickers") k5Stickers(); if(t === "abc"){ try { renderSoundsGrid(); } catch(e){} try { k5SiInit(); } catch(e){ console.warn("sound it out", e); } } else { try { abcStop(); if(soundsQuizActive) stopSoundsQuiz(); } catch(e){} } if(t === "books") k5BooksInit(); else if(typeof kbk !== "undefined" && kbk.book){ kbk.auto = false; try { $("k5-bkauto").checked = false; } catch(e){} k5BkStop(); } }
 function k5xAsk(){ k5.asks++; k5Badges(); k5Save(); }
 // 📚 Read-along storybooks for K–5: original stories and classic fables retold in simple words.
 // Each page: t = text, s = scene, p = pictures [emoji, x%, y%, size% of picture width, flip?]
@@ -38898,6 +38918,85 @@ function k5BooksInit(){ if(!kbk.inited){ kbk.inited = true;
     $("k5-bkauto").onchange = e => { kbk.auto = e.target.checked; if(kbk.auto) k5BkSay(); else k5BkStop(); };
     addEventListener("resize", k5BkSize); }
   if(!kbk.book) k5BkShelf(); }
+// ---------- 🎯 Drag & Sound It Out: slide under a word to hear each sound, or drag letters to build it ----------
+const K5_SIW = {
+  3: [["cat", "🐱"], ["dog", "🐶"], ["sun", "☀️"], ["pig", "🐷"], ["hat", "🎩"], ["bed", "🛏️"], ["fox", "🦊"], ["bus", "🚌"], ["hen", "🐔"], ["map", "🗺️"],
+      ["net", "🥅"], ["bat", "🦇"], ["bug", "🐛"], ["box", "📦"], ["log", "🪵"], ["van", "🚐"], ["web", "🕸️"], ["cap", "🧢"], ["ant", "🐜"], ["cup", "☕"]],
+  4: [["frog", "🐸"], ["crab", "🦀"], ["drum", "🥁"], ["flag", "🚩"], ["sled", "🛷"], ["nest", "🪺"], ["tent", "⛺"], ["swim", "🏊"], ["milk", "🥛"], ["hand", "✋"],
+      ["lamp", "💡"], ["desk", "🪑"], ["gift", "🎁"], ["plum", "🟣"], ["snap", "🫰"]]
+};
+const siw = {mode: "slide", n: 3, i: -1, word: "", pic: "", at: -1, done: false, built: [], won: false};
+// get every letter sound of this word ready, so sliding is instant
+function k5SiWarm(w){ try { if(typeof aiVoiceEverywhere === "function" && aiVoiceEverywhere() && !window.__aiTTSDown) [...new Set(w)].forEach(l => aiTTSUrl("/" + (K5_AISND[l] || l) + "/", "kids", l).catch(() => {})); } catch(e){} }
+function k5SiNew(){ const L = K5_SIW[siw.n]; let i; do { i = Math.floor(Math.random() * L.length); } while(L.length > 1 && i === siw.i); siw.i = i;
+  [siw.word, siw.pic] = L[i]; siw.at = -1; siw.done = false; siw.won = false; siw.built = Array(siw.word.length).fill(null); k5SiWarm(siw.word); k5SiDraw(); }
+function k5SiDraw(){ const w = siw.word, box = $("k5-sibox");
+  $("k5-simodes").querySelectorAll("[data-sim]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.sim === siw.mode)));
+  $("k5-silen").querySelectorAll("[data-sin]").forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.sin === siw.n)));
+  if(siw.mode === "slide"){
+    box.innerHTML = `<div class="k5-sipic ${siw.done ? "" : "hide"}" aria-hidden="true">${siw.pic}</div>
+      <div class="k5-siword" id="k5-siword">${[...w].map((l, k) => `<span class="k5-silt${K5_VOWELS.includes(l) ? " v" : ""}" data-k="${k}">${l}</span>`).join("")}</div>
+      <div class="k5-sitrack" id="k5-sitrack"><div class="k5-sicar" id="k5-sicar" role="slider" tabindex="0" aria-label="Slide the car under the word to sound it out" aria-valuemin="0" aria-valuemax="${w.length}" aria-valuenow="0">🚗</div><span class="k5-siflag" aria-hidden="true">🏁</span></div>
+      <p class="k5-fb" id="k5-sifb" aria-live="polite">${siw.done ? `🎉 ${w}!` : "Drag the car slowly under the letters 👉"}</p>`;
+    k5SiSlideWire();
+  } else {
+    const extra = "abcdefghijklmnoprstuvw".split("").filter(l => !w.includes(l)).sort(() => Math.random() - 0.5).slice(0, 2);
+    const tiles = [...w, ...extra].map((l, k) => ({l, k})).sort(() => Math.random() - 0.5);
+    box.innerHTML = `<div class="k5-sipic" aria-hidden="true">${siw.pic}</div>
+      <div class="k5-sislots" id="k5-sislots">${[...w].map((_, k) => `<span class="k5-sislot" data-s="${k}">${siw.built[k] || ""}</span>`).join("")}</div>
+      <div class="k5-sitiles" id="k5-sitiles">${tiles.map(t => `<button type="button" class="k5-sitile${K5_VOWELS.includes(t.l) ? " v" : ""}" data-l="${t.l}" data-t="${t.k}">${t.l}</button>`).join("")}</div>
+      <p class="k5-fb" id="k5-sifb" aria-live="polite">Drag the letters to spell the picture. Tap a letter to hear it.</p>`;
+    k5SiBuildWire();
+  } }
+const K5_VOWELS = "aeiou";
+function k5SiHi(k){ document.querySelectorAll("#k5-siword .k5-silt, #k5-sislots .k5-sislot").forEach(e => e.classList.toggle("on", +(e.dataset.k ?? e.dataset.s) === k)); }
+// ----- slide mode: the car sounds each letter it passes -----
+function k5SiSlideWire(){ const car = $("k5-sicar"), track = $("k5-sitrack"); let drag = false;
+  const place = x => { const tr = track.getBoundingClientRect(), max = tr.width - car.offsetWidth; const pos = Math.max(0, Math.min(max, x - tr.left - car.offsetWidth / 2)); car.style.transform = `translateX(${pos}px)`;
+    const cx = tr.left + pos + car.offsetWidth / 2, letters = [...document.querySelectorAll("#k5-siword .k5-silt")];
+    let k = -1; letters.forEach((e, j) => { const r = e.getBoundingClientRect(); if(cx >= r.left - 4) k = j; });
+    car.setAttribute("aria-valuenow", String(k + 1));
+    if(k > siw.at){ siw.at = k; k5SiHi(k); k5Sound(siw.word[k]); }
+    if(pos >= max - 2 && siw.at >= letters.length - 1 && !siw.done) k5SiFinish(); };
+  car.onpointerdown = e => { drag = true; car.setPointerCapture(e.pointerId); car.classList.add("drag"); if(siw.done || siw.at >= siw.word.length - 1){ siw.at = -1; siw.done = false; } e.preventDefault(); };
+  car.onpointermove = e => { if(drag) place(e.clientX); };
+  car.onpointerup = car.onpointercancel = () => { drag = false; car.classList.remove("drag"); };
+  track.onpointerdown = e => { if(e.target === track){ siw.at = -1; siw.done = false; place(e.clientX); } };
+  car.onkeydown = e => { if(e.key === "ArrowRight" || e.key === " "){ e.preventDefault(); const k = Math.min(siw.word.length - 1, siw.at + 1); siw.at = k; k5SiHi(k); k5Sound(siw.word[k]);
+      const r = document.querySelectorAll("#k5-siword .k5-silt")[k].getBoundingClientRect(), tr = track.getBoundingClientRect(); car.style.transform = `translateX(${Math.max(0, r.left + r.width / 2 - tr.left - car.offsetWidth / 2)}px)`;
+      if(k === siw.word.length - 1) setTimeout(k5SiFinish, 900); }
+    if(e.key === "ArrowLeft" || e.key === "Home"){ siw.at = -1; car.style.transform = "translateX(0)"; k5SiHi(-1); } }; }
+function k5SiFinish(){ if(siw.done) return; siw.done = true; k5SiHi(-1); const w = siw.word;
+  setTimeout(() => { document.querySelectorAll("#k5-siword .k5-silt").forEach(e => e.classList.add("all")); const pic = document.querySelector("#k5-sibox .k5-sipic"); if(pic) pic.classList.remove("hide");
+    $("k5-sifb").textContent = `🎉 ${w}! You sounded it out!`; k5Line([`${w}!`]); if(!siw.won){ siw.won = true; k5Win(3, $("k5-sicar")); } }, 700); }
+// ----- build mode: drag letters into the boxes -----
+function k5SiBuildWire(){ const tilesBox = $("k5-sitiles");
+  const put = (tile, slot) => { const k = +slot.dataset.s, l = tile.dataset.l;
+    if(siw.built[k]){ return false; }
+    if(l !== siw.word[k]){ k5Sound(l); slot.classList.add("no"); tile.classList.add("no"); setTimeout(() => { slot.classList.remove("no"); tile.classList.remove("no"); }, 600); $("k5-sifb").textContent = `That says “${l}”. Which letter goes here?`; return false; }
+    siw.built[k] = l; slot.textContent = l; slot.classList.add("ok"); tile.remove(); k5SiHi(k); k5Sound(l);
+    if(siw.built.every(Boolean)){ const w = siw.word; $("k5-sifb").textContent = `🎉 You built “${w}”!`;
+      setTimeout(() => { document.querySelectorAll("#k5-sislots .k5-sislot").forEach(e => e.classList.add("all")); k5Line([...[...w].map(c => ({s: c})), `${w}!`]); k5Win(4, $("k5-sislots")); }, 900); }
+    else $("k5-sifb").textContent = "Yes! Keep going 👍";
+    return true; };
+  tilesBox.querySelectorAll(".k5-sitile").forEach(tile => { let sx = 0, sy = 0, moved = false, drag = false;
+    tile.onpointerdown = e => { drag = true; moved = false; sx = e.clientX; sy = e.clientY; tile.setPointerCapture(e.pointerId); tile.classList.add("drag"); e.preventDefault(); };
+    tile.onpointermove = e => { if(!drag) return; const dx = e.clientX - sx, dy = e.clientY - sy; if(Math.abs(dx) + Math.abs(dy) > 6) moved = true; tile.style.transform = `translate(${dx}px,${dy}px) scale(1.12)`;
+      document.querySelectorAll("#k5-sislots .k5-sislot").forEach(s => { const r = s.getBoundingClientRect(); s.classList.toggle("over", e.clientX > r.left && e.clientX < r.right && e.clientY > r.top && e.clientY < r.bottom); }); };
+    tile.onpointerup = e => { if(!drag) return; drag = false; tile.classList.remove("drag"); tile.style.transform = "";
+      const slots = [...document.querySelectorAll("#k5-sislots .k5-sislot")]; slots.forEach(s => s.classList.remove("over"));
+      if(!moved){ k5Sound(tile.dataset.l); return; } // a tap: just hear the letter
+      // dropped: the box under the finger, or the closest empty box
+      let target = slots.find(s => { const r = s.getBoundingClientRect(); return e.clientX > r.left - 10 && e.clientX < r.right + 10 && e.clientY > r.top - 20 && e.clientY < r.bottom + 20; });
+      if(!target){ $("k5-sifb").textContent = "Drop the letter into a box ⬆️"; return; }
+      put(tile, target); };
+    tile.onpointercancel = () => { drag = false; tile.classList.remove("drag"); tile.style.transform = ""; }; }); }
+function k5SiInit(){ if(siw.inited) return; siw.inited = true;
+  $("k5-simodes").querySelectorAll("[data-sim]").forEach(b => b.onclick = () => { siw.mode = b.dataset.sim; siw.at = -1; siw.done = false; siw.built = Array(siw.word.length).fill(null); k5SiDraw(); });
+  $("k5-silen").querySelectorAll("[data-sin]").forEach(b => b.onclick = () => { siw.n = +b.dataset.sin; k5SiNew(); });
+  $("k5-sinext").onclick = k5SiNew;
+  $("k5-sislow").onclick = () => { const w = siw.word; k5Line([...[...w].map(c => ({s: c})), `${w}!`]); };
+  k5SiNew(); }
 // ---------- 🧱 number blocks + arrays ----------
 const K5_ONES = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"], K5_TENS = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
 const k5Words = n => n < 20 ? K5_ONES[n] : n < 100 ? K5_TENS[Math.floor(n / 10)] + (n % 10 ? "-" + K5_ONES[n % 10] : "") : n < 1000 ? K5_ONES[Math.floor(n / 100)] + " hundred" + (n % 100 ? " " + k5Words(n % 100) : "") : k5Words(Math.floor(n / 1000)) + " thousand" + (n % 1000 ? " " + k5Words(n % 1000) : "");
