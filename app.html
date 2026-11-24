@@ -2445,6 +2445,7 @@ window.MWB_TRIAL_DAYS = 14;
         <button type="button" role="tab" data-k5="trace" aria-selected="true"><span class="ti">✍️</span>Trace</button>
         <button type="button" role="tab" data-k5="blend" aria-selected="false"><span class="ti">🧩</span>Blend</button>
         <button type="button" role="tab" data-k5="sight" aria-selected="false"><span class="ti">🃏</span>Words</button>
+        <button type="button" role="tab" data-k5="books" aria-selected="false"><span class="ti">📚</span>Books</button>
         <button type="button" role="tab" data-k5="math" aria-selected="false"><span class="ti">🔟</span>Math</button>
         <button type="button" role="tab" data-k5="build" aria-selected="false"><span class="ti">🧱</span>Build</button>
         <button type="button" role="tab" data-k5="clock" aria-selected="false"><span class="ti">⏰</span>Clock</button>
@@ -2616,6 +2617,20 @@ window.MWB_TRIAL_DAYS = 14;
           <div class="k5-opts" id="k5-anopts"></div>
           <p class="k5-fb" id="k5-anfb" aria-live="polite"></p>
           <div class="k5-row"><button type="button" class="k5-btn alt" id="k5-anskip">⏭ Next animal</button></div></div>
+      </div>
+      <!-- 📚 read-along storybooks -->
+      <div class="k5-pane" data-pane="books" hidden>
+        <div class="k5-card" id="k5-bkshelf"><div class="k5-row sp"><b>📚 Story Books</b><small id="k5-bklvtip"></small></div>
+          <div class="k5-bklv" id="k5-bklv" role="group" aria-label="Reading level"></div>
+          <div class="k5-bkgrid" id="k5-bkgrid"></div></div>
+        <div class="k5-card k5-bkread" id="k5-bkread" hidden>
+          <div class="k5-row sp"><button type="button" class="k5-btn alt" id="k5-bkback">◀ Books</button><b id="k5-bktitle"></b><span class="k5-bkdots" id="k5-bkdots" aria-hidden="true"></span></div>
+          <div class="k5-bkstage" id="k5-bkstage"></div>
+          <div class="k5-bkctl" id="k5-bkctl">
+            <div class="k5-row"><button type="button" class="k5-btn alt" id="k5-bkprev">◀ Back</button><button type="button" class="k5-btn" id="k5-bksay">🔊 Read to me</button><button type="button" class="k5-btn alt" id="k5-bknext">Next ▶</button></div>
+            <label class="k5-bkautol"><input type="checkbox" id="k5-bkauto"> Read the whole book to me</label>
+            <small class="k5-bkhint">Tap any word to hear it.</small></div>
+          <div class="k5-bkquiz" id="k5-bkquiz" hidden></div></div>
       </div>
       <!-- 🦖 dinosaurs -->
       <div class="k5-pane" data-pane="dino" hidden>
@@ -38193,6 +38208,34 @@ function vtInit(){ if(!$("vt")) return; requestAnimationFrame(() => vtPlot()); i
 .k5-btn{font:inherit;font-size:16px;font-weight:700;padding:9px 14px;border-radius:14px;border:3px solid var(--line);background:var(--grass);color:#fff;cursor:pointer;box-shadow:0 3px 0 var(--line)}
 .k5-btn.alt{background:var(--paper);color:var(--ink)}
 .k5-big{font:inherit;font-size:19px;font-weight:800;padding:12px;border-radius:16px;border:3px solid var(--line);background:linear-gradient(135deg,#ec4899,#f43f5e);color:#fff;cursor:pointer;width:100%;box-shadow:0 4px 0 var(--line)}
+.k5-bklv{display:flex;flex-wrap:wrap;gap:6px}.k5-bklv button{font:inherit;font-weight:700;padding:6px 12px;border-radius:999px;border:3px solid var(--line);background:var(--paper);color:inherit;cursor:pointer}
+.k5-bklv button[aria-pressed="true"]{background:var(--grass);color:#fff}
+.k5-bkgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.k5-bkcov{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;padding:14px 10px 12px;border:3px solid var(--line);border-radius:16px;background:var(--c);color:#1f2937;font:inherit;cursor:pointer;box-shadow:0 4px 0 var(--line);text-align:center}
+.k5-bkcov:active{transform:translateY(2px);box-shadow:0 2px 0 var(--line)}.k5-bkcov b{font-size:16px;line-height:1.2}.k5-bkcov small{font-size:12px;opacity:.85}
+.k5-bkemo{font-size:56px;line-height:1.1}.k5-bkemo.big{font-size:84px}.k5-bkdone{position:absolute;top:6px;right:8px;font-style:normal;background:#16a34a;color:#fff;border-radius:50%;width:24px;height:24px;display:grid;place-items:center;font-size:14px}
+.k5-bkdots{display:flex;gap:4px;flex-wrap:wrap}.k5-bkdots i{width:10px;height:10px;border-radius:50%;background:#d1d5db;font-style:normal}.k5-bkdots i.done{background:#86efac}.k5-bkdots i.on{background:var(--grass);transform:scale(1.3)}
+.k5-bkdots i.q{width:auto;height:10px;font-size:9px;line-height:10px;padding:0 3px;border-radius:5px}
+.k5-bkstage{display:flex;flex-direction:column;gap:12px}
+.k5-bkpic{position:relative;width:100%;max-width:100%;aspect-ratio:16/10;max-height:46vh;border-radius:16px;overflow:hidden;border:3px solid var(--line);--bkw:600px}
+.k5-bkpic span{position:absolute;transform:translate(-50%,-50%);line-height:1;filter:drop-shadow(0 4px 3px rgba(0,0,0,.18))}
+.sc-farm{background:linear-gradient(#bfe3ff 0 58%,#8bc34a 58% 100%)}.sc-meadow{background:linear-gradient(#c7ecff 0 60%,#9ad66a 60% 100%)}
+.sc-sky{background:linear-gradient(#7cc4ff,#d6efff)}.sc-pond{background:linear-gradient(#c7ecff 0 42%,#86c77a 42% 52%,#4fa3d9 52% 100%)}
+.sc-sea{background:linear-gradient(#2a9fd6,#0b5e8e)}.sc-room{background:linear-gradient(#fff4d6 0 66%,#d9a066 66% 100%)}
+.sc-garden{background:linear-gradient(#d6f2ff 0 58%,#7cc55f 58% 100%)}.sc-road{background:linear-gradient(#cfeeff 0 56%,#8bc34a 56% 62%,#6b7280 62% 86%,#8bc34a 86%)}
+.sc-mud{background:linear-gradient(#bfe3ff 0 56%,#8bc34a 56% 64%,#7a4f2a 64% 100%)}.sc-savanna{background:linear-gradient(#ffe3a3 0 58%,#d9b45a 58% 100%)}
+.sc-sunset{background:linear-gradient(#ff9a76,#ffd38a 60%,#c9a35a 60%)}.sc-forest{background:linear-gradient(#cdeccf 0 60%,#4f8f3a 60% 100%)}
+.sc-path{background:linear-gradient(#cdeccf 0 56%,#5b9c45 56% 64%,#d6b47f 64% 80%,#5b9c45 80%)}.sc-hill{background:radial-gradient(ellipse at 40% 120%,#6dbb4f 0 55%,transparent 56%),linear-gradient(#9fd8ff,#e3f5ff)}
+.sc-snow{background:linear-gradient(#b9c9dd 0 58%,#f1f5f9 58% 100%)}
+.k5-bktext{margin:0;font-size:clamp(22px,4.4vw,32px);line-height:1.6;font-weight:700;text-align:center;color:inherit;min-width:0}
+.k5-bktext.lv0,.k5-bktext.lv1{font-size:clamp(26px,5.4vw,40px)}.k5-bktext.lv3{font-size:clamp(20px,3.8vw,28px);text-align:left}
+.k5-bkw{font:inherit;color:inherit;background:none;border:0;padding:0 2px;border-radius:8px;cursor:pointer;transition:background .12s}
+.k5-bkw:focus:not(:focus-visible){outline:none}.k5-bkw.read{color:inherit;opacity:.9}.k5-bkw.on{background:#fde047;color:#1f2937;box-shadow:0 0 0 3px #fde047}
+.k5-bkctl{display:flex;flex-direction:column;align-items:center;gap:6px}.k5-bkautol{font-weight:700}.k5-bkhint{opacity:.7}
+#k5-bksay.on{background:#e11d48}
+.k5-bkend{text-align:center}.k5-bkend h3{margin:6px 0}.k5-bkstars{font-size:40px;margin:4px 0}.k5-bkq{font-size:clamp(22px,4.4vw,30px);font-weight:800;margin:6px 0}
+.k5-bkopts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}.k5-bkopts .k5-btn{font-size:18px;padding:12px}
+.k5-bkopts .k5-btn.right{background:#16a34a;color:#fff}.k5-bkopts .k5-btn.wrong{background:#fecaca;color:#7f1d1d;opacity:.8}.k5-bkfb{text-align:center;font-weight:800;min-height:1.4em}
 .k5-card{border:3px solid var(--line);border-radius:18px;padding:10px 12px;display:flex;flex-direction:column;gap:8px;background:var(--paper)}
 .k5-fb{margin:0;text-align:center;font-weight:700;min-height:1.3em}
 .k5-seg{display:flex;gap:4px;justify-content:center}.k5-seg.k5-wrap{flex-wrap:wrap}
@@ -38589,12 +38632,14 @@ const K5_TITLES = ["Seedling", "Explorer", "Adventurer", "Star Scout", "Word Wiz
 const K5_ACC = ["", "🎀", "🧢", "🕶️", "🎩", "🦸", "🔬", "🏅", "🎓", "🚀", "👑", "💎"];
 const K5_BUDDIES = ["🐻", "🐱", "🐶", "🦊", "🐼", "🐸", "🦄", "🐙", "🦖", "🐰"];
 const K5_CHEERS = ["Awesome!", "You did it!", "Super star!", "Brilliant!", "Wow, great job!", "Keep going!", "High five! ✋", "You're on fire! 🔥"];
-const K5_TIPS = {trace: "Let's trace! Follow the dotted letter with your finger ✍️", blend: "Tap each letter to hear its sound, then blend them! 🧩", sight: "Flip the cards, then play Listen & match! 🃏", math: "Count, add and slice pizzas! 🍕", build: "Build big numbers with blocks! 🧱", clock: "Drag the clock hands to tell the time! ⏰", sci: "Make rain, light a bulb, grow a plant! 🧪", space: "Tap a planet to visit it! 🚀", matter: "Heat and cool the water. What happens? 🔬", money: "Count coins and give change! 💰", shapes: "Shapes, perimeter and angles! 📐", music: "Play the piano! 🎹", animals: "Where do animals live? 🐾", dino: "Travel back in time and meet the dinosaurs! 🦖", sparky: "Ask me anything! 🎤", stickers: "Look at all your stickers! 🏆"};
+const K5_TIPS = {books: "Pick a book! Tap 🔊 and I'll read it with you 📚", trace: "Let's trace! Follow the dotted letter with your finger ✍️", blend: "Tap each letter to hear its sound, then blend them! 🧩", sight: "Flip the cards, then play Listen & match! 🃏", math: "Count, add and slice pizzas! 🍕", build: "Build big numbers with blocks! 🧱", clock: "Drag the clock hands to tell the time! ⏰", sci: "Make rain, light a bulb, grow a plant! 🧪", space: "Tap a planet to visit it! 🚀", matter: "Heat and cool the water. What happens? 🔬", money: "Count coins and give change! 💰", shapes: "Shapes, perimeter and angles! 📐", music: "Play the piano! 🎹", animals: "Where do animals live? 🐾", dino: "Travel back in time and meet the dinosaurs! 🦖", sparky: "Ask me anything! 🎤", stickers: "Look at all your stickers! 🏆"};
 const K5_BADGES = [
   ["first", "⭐", "First Star", "Earn your very first star.", k => k.stars >= 1], ["s10", "🌟", "Star Collector", "Collect 10 stars.", k => k.stars >= 10],
   ["s25", "💫", "Star Shower", "Collect 25 stars.", k => k.stars >= 25], ["s50", "🌠", "Galaxy Glow", "Collect 50 stars.", k => k.stars >= 50], ["s100", "🏆", "Super Star", "Collect 100 stars.", k => k.stars >= 100],
   ["st3", "🔥", "On Fire", "Learn 3 days in a row.", k => k.streak >= 3], ["st7", "📅", "Week Warrior", "Learn 7 days in a row.", k => k.streak >= 7],
   ["lv3", "🦸", "Level 3 Hero", "Reach level 3.", k => k5Level(k.xp) >= 3], ["lv6", "👑", "Level 6 Champion", "Reach level 6.", k => k5Level(k.xp) >= 6],
+  ["book1", "📖", "First Book", "Finish a storybook.", k => Object.keys(k.books || {}).length >= 1], ["book6", "📚", "Bookworm", "Read 6 storybooks.", k => Object.keys(k.books || {}).length >= 6],
+  ["book12", "🏅", "Super Reader", "Read all 12 storybooks.", k => Object.keys(k.books || {}).length >= 12],
   ["daily", "🎯", "Daily Hero", "Earn 5 stars in one day.", k => k.day.n >= 5], ["explorer", "🧭", "Explorer", "Visit every activity.", k => k.seen.tabs.length >= 14],
   ["trace", "✍️", "Letter Pro", "Trace 5 letters well.", k => (k.wins.trace || 0) >= 5], ["blend", "🧩", "Word Builder", "Win 5 times in Blend.", k => (k.wins.blend || 0) >= 5],
   ["sight", "🃏", "Sight Star", "Win 5 sight-word matches.", k => (k.wins.sight || 0) >= 5], ["math", "🔟", "Math Whiz", "Win 5 times in Math.", k => (k.wins.math || 0) >= 5],
@@ -38609,7 +38654,7 @@ const k5Level = xp => { let l = 1; while(l < K5_LV.length && xp >= K5_LV[l]) l++
 const k5LvBounds = l => [l <= K5_LV.length ? K5_LV[l - 1] : K5_LV[K5_LV.length - 1] + (l - K5_LV.length) * 300, l < K5_LV.length ? K5_LV[l] : K5_LV[K5_LV.length - 1] + (l - K5_LV.length + 1) * 300];
 const k5Pick = a => a[Math.floor(Math.random() * a.length)];
 function k5Load(){ try { const s = JSON.parse(localStorage.getItem("wordbook-k5") || "{}"); k5.stars = s.stars || 0; k5.xp = s.xp || 0; k5.streak = s.streak || 1; k5.last = s.last || ""; k5.buddy = s.buddy || "🐻"; k5.lv = [0, 1, 2].includes(s.lv) ? s.lv : 0;
-    k5.day = s.day && s.day.k ? s.day : {k: "", n: 0}; k5.badges = s.badges || {}; k5.wins = s.wins || {}; k5.seen = Object.assign({tabs: [], planets: [], states: [], dinos: [], digs: 0}, s.seen || {}); k5.asks = s.asks || 0; } catch(e){}
+    k5.day = s.day && s.day.k ? s.day : {k: "", n: 0}; k5.badges = s.badges || {}; k5.wins = s.wins || {}; try { k5.books = k5BkRead(); } catch(e){ k5.books = {}; }; k5.seen = Object.assign({tabs: [], planets: [], states: [], dinos: [], digs: 0}, s.seen || {}); k5.asks = s.asks || 0; } catch(e){}
   const today = new Date().toDateString(), y = new Date(Date.now() - 864e5).toDateString(); if(k5.last !== today){ k5.streak = k5.last === y ? k5.streak + 1 : 1; k5.last = today; }
   if(k5.day.k !== today) k5.day = {k: today, n: 0}; k5.shownLevel = k5Level(k5.xp); k5Badges(true); k5Save(); }
 function k5Save(){ try { localStorage.setItem("wordbook-k5", JSON.stringify({stars: k5.stars, xp: k5.xp, streak: k5.streak, last: k5.last, buddy: k5.buddy, lv: k5.lv, day: k5.day, badges: k5.badges, wins: k5.wins, seen: k5.seen, asks: k5.asks})); } catch(e){} }
@@ -38640,8 +38685,213 @@ function k5Stickers(){ const got = K5_BADGES.filter(b => k5.badges[b[0]]).length
   $("k5-stk").innerHTML = K5_BADGES.map(b => k5.badges[b[0]] ? `<button type="button" class="k5-stk on" data-b="${b[0]}"><span>${b[1]}</span><small>${b[2]}</small></button>` : `<button type="button" class="k5-stk" data-b="${b[0]}" aria-label="Locked sticker. ${b[3]}"><span>🔒</span><small>???</small></button>`).join("");
   $("k5-stk").querySelectorAll("[data-b]").forEach(btn => btn.onclick = () => { const b = K5_BADGES.find(x => x[0] === btn.dataset.b), on = k5.badges[b[0]]; $("k5-stinfo").textContent = on ? `${b[1]} ${b[2]} — ${b[3]}` : `🔒 How to get it: ${b[3]}`; if(on) k5Say(`${b[2]}. ${b[3]}`); }); }
 function k5xTab(t){ if(t !== "stickers" && !k5.seen.tabs.includes(t)){ k5.seen.tabs.push(t); k5Badges(); k5Save(); }
-  k5Bubble(K5_TIPS[t] || "Let's play!"); if(t === "build"){ k5BuildDraw(); k5ArrDraw(); } if(t === "clock") k5ClockDraw(); if(t === "space") k5SpaceInit(); if(t === "matter") k5MatterStart(); if(t === "money") k5MoneyDraw(); if(t === "shapes"){ k5ShapeDraw(); k5GridDraw(); k5AngleDraw(); } if(t === "music") k5PianoDraw(); if(t === "animals" && !k5.anm) k5AnimalNext(); if(t === "dino") k5DinoInit(); if(t === "stickers") k5Stickers(); }
+  k5Bubble(K5_TIPS[t] || "Let's play!"); if(t === "build"){ k5BuildDraw(); k5ArrDraw(); } if(t === "clock") k5ClockDraw(); if(t === "space") k5SpaceInit(); if(t === "matter") k5MatterStart(); if(t === "money") k5MoneyDraw(); if(t === "shapes"){ k5ShapeDraw(); k5GridDraw(); k5AngleDraw(); } if(t === "music") k5PianoDraw(); if(t === "animals" && !k5.anm) k5AnimalNext(); if(t === "dino") k5DinoInit(); if(t === "stickers") k5Stickers(); if(t === "books") k5BooksInit(); else if(typeof kbk !== "undefined" && kbk.book){ kbk.auto = false; try { $("k5-bkauto").checked = false; } catch(e){} k5BkStop(); } }
 function k5xAsk(){ k5.asks++; k5Badges(); k5Save(); }
+// 📚 Read-along storybooks for K–5: original stories and classic fables retold in simple words.
+// Each page: t = text, s = scene, p = pictures [emoji, x%, y%, size% of picture width, flip?]
+// q = questions after the book: [question, [choices], index of the right answer]
+const K5_BOOKS = [
+  // ---------- ⭐ Starter: 3–4 word pattern sentences ----------
+  {id: "isee", lv: 0, title: "I See", cover: "🐱", c: "#fde68a", pages: [
+    {t: "I see a cat.", s: "farm", p: [["🐱", 50, 58, 30]]},
+    {t: "I see a dog.", s: "farm", p: [["🐶", 50, 58, 30]]},
+    {t: "I see a pig.", s: "farm", p: [["🐷", 50, 58, 30]]},
+    {t: "I see a hen.", s: "farm", p: [["🐔", 50, 58, 30]]},
+    {t: "I see the sun!", s: "sky", p: [["☀️", 50, 26, 30], ["🐱", 20, 78, 14], ["🐶", 40, 78, 14], ["🐷", 60, 78, 14], ["🐔", 80, 78, 14]]}],
+    q: [["What did we see at the end?", ["the sun", "a cow", "a fish"], 0], ["Which animal says oink?", ["the cat", "the pig", "the hen"], 1]]},
+  {id: "ican", lv: 0, title: "I Can", cover: "🐸", c: "#bbf7d0", pages: [
+    {t: "I can run.", s: "meadow", p: [["🐎", 50, 56, 32, 1]]},
+    {t: "I can hop.", s: "pond", p: [["🐸", 50, 50, 28]]},
+    {t: "I can swim.", s: "sea", p: [["🐟", 50, 50, 28, 1], ["🫧", 70, 32, 9]]},
+    {t: "I can fly.", s: "sky", p: [["🐦", 50, 42, 26, 1], ["☁️", 22, 22, 16], ["☁️", 80, 30, 14]]},
+    {t: "I can read!", s: "room", p: [["🧒", 42, 56, 30], ["📖", 66, 66, 16]]}],
+    q: [["Who can swim?", ["the fish", "the horse", "the bird"], 0], ["What can the bird do?", ["dig", "fly", "read"], 1]]},
+  {id: "ilike", lv: 0, title: "I Like", cover: "🍎", c: "#fecaca", pages: [
+    {t: "I like the red apple.", s: "garden", p: [["🍎", 50, 54, 30]]},
+    {t: "I like the blue car.", s: "road", p: [["🚙", 50, 60, 34]]},
+    {t: "I like the green frog.", s: "pond", p: [["🐸", 50, 50, 28]]},
+    {t: "I like the yellow duck.", s: "pond", p: [["🐤", 50, 48, 28]]},
+    {t: "I like them all!", s: "meadow", p: [["🍎", 18, 62, 15], ["🚙", 40, 64, 17], ["🐸", 62, 62, 15], ["🐤", 82, 62, 15]]}],
+    q: [["What color is the apple?", ["red", "blue", "green"], 0], ["Which one is green?", ["the duck", "the car", "the frog"], 2]]},
+
+  // ---------- 1️⃣ Level 1: short-vowel words ----------
+  {id: "pigdig", lv: 1, title: "The Pig Can Dig", cover: "🐷", c: "#fbcfe8", pages: [
+    {t: "The pig can dig.", s: "farm", p: [["🐷", 50, 56, 30]]},
+    {t: "The pig digs in the mud.", s: "mud", p: [["🐷", 50, 56, 30]]},
+    {t: "A cat sits on a mat.", s: "farm", p: [["🐱", 50, 58, 28]]},
+    {t: "Mud hits the cat!", s: "mud", p: [["🐷", 30, 58, 24], ["💦", 52, 44, 12], ["🙀", 72, 56, 24]]},
+    {t: "The cat is mad.", s: "farm", p: [["😾", 50, 54, 30]]},
+    {t: "The pig and the cat get in a tub.", s: "room", p: [["🛁", 50, 64, 40], ["🐷", 40, 50, 16], ["🐱", 60, 50, 16]]},
+    {t: "Rub, rub, rub! The cat is not mad.", s: "room", p: [["🛁", 50, 64, 40], ["🐷", 40, 50, 16], ["😸", 60, 50, 16], ["🫧", 28, 34, 10], ["🫧", 72, 30, 10]]}],
+    q: [["Where did the pig dig?", ["in the mud", "in a box", "on a mat"], 0], ["Why was the cat mad?", ["Mud hit the cat.", "The cat lost its hat.", "The cat was wet from rain."], 0]]},
+  {id: "tedcap", lv: 1, title: "Ted and the Cap", cover: "🧢", c: "#bfdbfe", pages: [
+    {t: "Ted has a big cap.", s: "meadow", p: [["🧒", 50, 52, 30], ["🧢", 50, 30, 14]]},
+    {t: "Ted naps in the sun.", s: "meadow", p: [["😴", 50, 58, 28], ["☀️", 82, 20, 14]]},
+    {t: "A pup sees the cap.", s: "meadow", p: [["🐶", 34, 58, 26, 1], ["🧢", 66, 64, 14]]},
+    {t: "The pup gets the cap and runs!", s: "meadow", p: [["🐕", 50, 60, 30], ["🧢", 38, 50, 10]]},
+    {t: "Ted runs and runs.", s: "meadow", p: [["🏃", 50, 56, 30, 1]]},
+    {t: "The pup sits. Ted gets his cap.", s: "meadow", p: [["🐶", 34, 60, 24], ["🧒", 64, 52, 28], ["🧢", 64, 30, 12]]},
+    {t: "Ted and the pup nap in the sun.", s: "meadow", p: [["😴", 38, 60, 22], ["🐶", 64, 62, 22], ["☀️", 82, 20, 14]]}],
+    q: [["What did the pup take?", ["Ted's cap", "a bun", "a pen"], 0], ["What did Ted and the pup do at the end?", ["nap in the sun", "swim in a pond", "dig in the mud"], 0]]},
+  {id: "bugrug", lv: 1, title: "A Bug on a Rug", cover: "🐞", c: "#fed7aa", pages: [
+    {t: "A bug is on a rug.", s: "room", p: [["🐞", 50, 66, 20]]},
+    {t: "The bug is red. It has dots.", s: "room", p: [["🐞", 50, 56, 36]]},
+    {t: "Mom gets a big box.", s: "room", p: [["👩", 40, 50, 30], ["📦", 66, 64, 20]]},
+    {t: "Can the bug hop in the box?", s: "room", p: [["🐞", 36, 66, 14], ["📦", 62, 64, 22]]},
+    {t: "Hop, bug, hop! The bug is in the box.", s: "room", p: [["📦", 50, 62, 28], ["🐞", 50, 42, 12]]},
+    {t: "Mom sets the bug on a log.", s: "garden", p: [["🪵", 50, 70, 34], ["🐞", 50, 56, 14]]},
+    {t: "The bug is not sad. It is glad!", s: "garden", p: [["🪵", 50, 70, 34], ["🐞", 50, 56, 14], ["🌼", 20, 72, 12], ["🌼", 82, 72, 12]]}],
+    q: [["What color is the bug?", ["red", "tan", "pink"], 0], ["Where did Mom put the bug?", ["on a log", "in the tub", "in a bag"], 0]]},
+
+  // ---------- 2️⃣ Level 2: blends, sh/ch/th and sight words ----------
+  {id: "fredfrog", lv: 2, title: "Fred the Frog", cover: "🐸", c: "#a7f3d0", pages: [
+    {t: "Fred the frog sat on a log in the pond.", s: "pond", p: [["🪵", 50, 64, 36], ["🐸", 50, 48, 20]]},
+    {t: "A fly zips past him. Zip, zip!", s: "pond", p: [["🐸", 40, 54, 22], ["🪰", 66, 30, 9]]},
+    {t: "Fred snaps at the fly, but he misses.", s: "pond", p: [["🐸", 40, 54, 22], ["🪰", 74, 24, 9]]},
+    {t: "The fly lands on a plant.", s: "pond", p: [["🌿", 72, 52, 26], ["🪰", 72, 34, 8], ["🐸", 30, 58, 18]]},
+    {t: "Fred jumps up, up, up!", s: "pond", p: [["🐸", 52, 26, 22], ["🌿", 74, 56, 24]]},
+    {t: "Splash! Fred lands in the pond.", s: "pond", p: [["💦", 50, 52, 30], ["🐸", 50, 62, 16]]},
+    {t: "The fly is still on the plant. Fred grins. \"Next time!\"", s: "pond", p: [["🐸", 34, 58, 22], ["🌿", 72, 54, 24], ["🪰", 72, 36, 8]]}],
+    q: [["What did Fred want to catch?", ["a fly", "a fish", "a duck"], 0], ["What happened when Fred jumped?", ["He landed in the pond.", "He caught the fly.", "He fell asleep."], 0]]},
+  {id: "chipfish", lv: 2, title: "Chip the Fish", cover: "🐠", c: "#a5f3fc", pages: [
+    {t: "Chip is a fish. He has a fin and a long tail.", s: "sea", p: [["🐠", 50, 50, 32]]},
+    {t: "Chip swims with his fish friends.", s: "sea", p: [["🐠", 34, 46, 20], ["🐟", 58, 56, 18], ["🐡", 76, 40, 16]]},
+    {t: "Then a big shark comes. Swish, swish!", s: "sea", p: [["🦈", 66, 44, 36], ["🐠", 20, 64, 14]]},
+    {t: "Chip and his friends swim fast to a rock.", s: "sea", p: [["🪨", 70, 70, 30], ["🐠", 36, 54, 14], ["🐟", 50, 62, 12]]},
+    {t: "They hide in a crack in the rock.", s: "sea", p: [["🪨", 50, 64, 46], ["🐠", 46, 64, 9], ["🐟", 56, 66, 8]]},
+    {t: "The shark cannot fit in the crack. It swims off.", s: "sea", p: [["🪨", 30, 66, 34], ["🦈", 72, 36, 26]]},
+    {t: "Chip and his friends swish their tails. Hooray!", s: "sea", p: [["🐠", 34, 46, 20], ["🐟", 58, 56, 18], ["🐡", 76, 40, 16], ["🫧", 50, 24, 10]]}],
+    q: [["Where did the fish hide?", ["in a crack in a rock", "in a ship", "under the sand"], 0], ["Why did the shark swim off?", ["It could not fit in the crack.", "It was full.", "It was sleepy."], 0]]},
+  {id: "lionmouse", lv: 2, title: "The Lion and the Mouse", cover: "🦁", c: "#fde68a", pages: [
+    {t: "A big lion was asleep in the sun.", s: "savanna", p: [["🦁", 50, 58, 34], ["💤", 70, 36, 10]]},
+    {t: "A little mouse ran right over his nose.", s: "savanna", p: [["🦁", 44, 58, 32], ["🐭", 70, 46, 12, 1]]},
+    {t: "The lion woke up and grabbed the mouse with his paw.", s: "savanna", p: [["🦁", 44, 56, 34], ["🐭", 72, 54, 12]]},
+    {t: "\"Please let me go!\" said the mouse. \"One day I will help you.\"", s: "savanna", p: [["🦁", 40, 56, 30], ["🐭", 70, 56, 14]]},
+    {t: "The lion laughed. But he let the mouse go.", s: "savanna", p: [["😹", 40, 54, 28], ["🐭", 76, 64, 12, 1]]},
+    {t: "Then one day, the lion got stuck in a net.", s: "savanna", p: [["🦁", 50, 58, 32], ["🕸️", 50, 50, 46]]},
+    {t: "The mouse ran up and chewed the net. Snip, snip, snip!", s: "savanna", p: [["🦁", 44, 58, 30], ["🕸️", 44, 52, 38], ["🐭", 72, 64, 12]]},
+    {t: "The lion was free! \"Thank you, little friend,\" he said.", s: "savanna", p: [["🦁", 40, 56, 32], ["🐭", 70, 58, 14], ["💛", 56, 30, 10]]},
+    {t: "Small friends can be big helpers.", s: "sunset", p: [["🦁", 40, 60, 26], ["🐭", 64, 64, 12]]}],
+    q: [["How did the mouse help the lion?", ["It chewed the net.", "It found a key.", "It called a bear."], 0], ["What does this story teach us?", ["Small friends can be big helpers.", "Lions are slow.", "Mice are scary."], 0]]},
+
+  // ---------- 3️⃣ Level 3: longer stories for Grades 2–3 ----------
+  {id: "tortoisehare", lv: 3, title: "The Tortoise and the Hare", cover: "🐢", c: "#d9f99d", pages: [
+    {t: "Hare was the fastest animal in the forest, and he liked to brag about it.", s: "forest", p: [["🐇", 50, 58, 30]]},
+    {t: "\"Nobody can beat me in a race,\" he boasted. \"Not even close!\"", s: "forest", p: [["🐇", 40, 58, 28], ["🦊", 68, 60, 18], ["🦉", 82, 30, 12]]},
+    {t: "Tortoise said quietly, \"I will race you.\" All the animals laughed.", s: "forest", p: [["🐢", 34, 64, 24], ["🐇", 66, 58, 24, 1]]},
+    {t: "The race began. Hare zoomed down the path and was soon far ahead.", s: "path", p: [["🐇", 74, 58, 22], ["🐢", 18, 66, 16]]},
+    {t: "\"Tortoise is so slow,\" Hare said. \"I have time for a nap.\" He lay down under a tree.", s: "path", p: [["🌳", 64, 46, 40], ["😴", 64, 66, 14]]},
+    {t: "Tortoise kept going, one slow step at a time. He did not stop.", s: "path", p: [["🐢", 50, 64, 24, 1]]},
+    {t: "He walked right past the sleeping Hare.", s: "path", p: [["🌳", 30, 46, 34], ["😴", 30, 66, 12], ["🐢", 70, 64, 20, 1]]},
+    {t: "Hare woke up and ran as fast as he could, but it was too late. Tortoise crossed the finish line!", s: "path", p: [["🏁", 70, 50, 22], ["🐢", 70, 70, 16, 1], ["🐇", 22, 60, 18, 1]]},
+    {t: "Slow and steady wins the race.", s: "sunset", p: [["🐢", 44, 62, 24], ["🏆", 66, 54, 16]]}],
+    q: [["Why did Hare lose the race?", ["He stopped to take a nap.", "He hurt his foot.", "He got lost."], 0], ["What does \"slow and steady\" mean?", ["Keep going and don't give up.", "Always walk very slowly.", "Never run in a race."], 0], ["How did Hare act at the start?", ["He bragged.", "He was shy.", "He was kind."], 0]]},
+  {id: "antgrass", lv: 3, title: "The Ant and the Grasshopper", cover: "🐜", c: "#fef08a", pages: [
+    {t: "All summer long, Grasshopper played his fiddle and danced in the sunshine.", s: "meadow", p: [["🦗", 50, 56, 30], ["🎻", 72, 44, 14], ["☀️", 84, 18, 12]]},
+    {t: "Ant was busy. She carried seeds and corn to her home, one piece at a time.", s: "meadow", p: [["🐜", 40, 64, 22], ["🌽", 66, 60, 18]]},
+    {t: "\"Why work so hard?\" laughed Grasshopper. \"Come and play with me!\"", s: "meadow", p: [["🦗", 34, 56, 24], ["🐜", 70, 64, 18]]},
+    {t: "\"I am saving food for winter,\" said Ant. \"You should too.\"", s: "meadow", p: [["🐜", 40, 62, 22], ["🌾", 70, 58, 20]]},
+    {t: "Then the cold winter came. Snow covered the fields, and there was no food to find.", s: "snow", p: [["❄️", 30, 28, 12], ["❄️", 70, 22, 10], ["🦗", 50, 62, 22]]},
+    {t: "Hungry and cold, Grasshopper knocked on Ant's door.", s: "snow", p: [["🚪", 62, 54, 30], ["🦗", 36, 62, 20]]},
+    {t: "Ant shared some of her food. \"Next summer,\" said Grasshopper, \"I will play AND get ready.\"", s: "room", p: [["🐜", 40, 62, 20], ["🦗", 64, 60, 22], ["🌽", 52, 74, 12]]},
+    {t: "It is smart to plan ahead for what you will need later.", s: "sunset", p: [["🐜", 40, 64, 20], ["🦗", 64, 62, 22]]}],
+    q: [["What did Ant do all summer?", ["She saved food for winter.", "She played music.", "She slept."], 0], ["Why did Grasshopper go to Ant's door?", ["He was hungry and cold.", "He wanted to dance.", "He lost his fiddle."], 0], ["What is the lesson of this story?", ["Plan ahead for later.", "Never play games.", "Ants don't share."], 0]]},
+  {id: "kite", lv: 3, title: "The Kite That Got Away", cover: "🪁", c: "#ddd6fe", pages: [
+    {t: "Maya had a bright new kite with a long rainbow tail.", s: "meadow", p: [["👧", 40, 58, 30], ["🪁", 68, 30, 18]]},
+    {t: "One windy morning, she ran up the hill and let the kite fly high into the sky.", s: "hill", p: [["👧", 34, 62, 24], ["🪁", 72, 20, 16]]},
+    {t: "Whoosh! A strong gust pulled the string right out of her hand.", s: "hill", p: [["😮", 30, 62, 22], ["🪁", 82, 14, 12], ["💨", 56, 30, 16]]},
+    {t: "The kite floated over the trees and was gone. Maya felt like crying.", s: "forest", p: [["😢", 50, 60, 26], ["🌳", 20, 44, 30], ["🌳", 82, 44, 30]]},
+    {t: "\"Have you seen my kite?\" she asked a squirrel. The squirrel pointed toward the old oak tree.", s: "forest", p: [["👧", 34, 60, 24], ["🐿️", 68, 56, 18]]},
+    {t: "An owl in the oak tree hooted. \"Look up, look up!\" There was the kite, caught on a high branch.", s: "forest", p: [["🌳", 50, 44, 56], ["🦉", 36, 30, 12], ["🪁", 62, 20, 12]]},
+    {t: "Maya's big brother brought a ladder, and together they carefully got the kite down.", s: "forest", p: [["🪜", 52, 56, 30], ["👦", 30, 60, 22], ["👧", 72, 62, 20], ["🪁", 52, 26, 12]]},
+    {t: "Back on the hill, Maya held the string tight with both hands, and the kite danced in the wind.", s: "hill", p: [["😄", 34, 62, 22], ["🪁", 72, 20, 16]]},
+    {t: "When something goes wrong, asking for help can make it right.", s: "sunset", p: [["👧", 40, 62, 22], ["👦", 62, 60, 22], ["🪁", 78, 24, 12]]}],
+    q: [["Why did the kite fly away?", ["A strong gust pulled the string.", "Maya let it go on purpose.", "A bird took it."], 0], ["Who helped Maya find the kite?", ["a squirrel and an owl", "a dog and a cat", "her teacher"], 0], ["What does this story teach?", ["Asking for help can make things right.", "Kites are bad toys.", "Never play outside."], 0]]}
+];
+// ---------- 📚 read-along storybooks ----------
+const K5_BKLV = ["⭐ Starter", "1️⃣ Level 1", "2️⃣ Level 2", "3️⃣ Level 3"];
+const K5_BKLVTIP = ["Short sentences for new readers (Pre-K & K)", "Short-vowel words like cat, pig and run (K–1)", "Blends and sight words (Grade 1–2)", "Longer stories (Grade 2–3)"];
+const kbk = {lv: -1, book: null, page: 0, auto: false, token: 0, raf: 0, utt: null, quiz: 0, right: 0};
+const k5BkWords = t => String(t).split(/\s+/).filter(Boolean);
+const k5BkClean = w => w.replace(/^[^\w']+|[^\w']+$/g, "");
+function k5BkRead(){ try { return JSON.parse(localStorage.getItem("wordbook-k5-books") || "{}"); } catch(e){ return {}; } }
+function k5BkMark(id, stars){ const r = k5BkRead(); r[id] = Math.max(r[id] || 0, stars); try { localStorage.setItem("wordbook-k5-books", JSON.stringify(r)); } catch(e){} k5.books = r; }
+function k5BkShelf(){ k5BkStop(); kbk.book = null; $("k5-bkshelf").hidden = false; $("k5-bkread").hidden = true; const r = k5BkRead();
+  $("k5-bklv").innerHTML = [`<button type="button" data-bklv="-1" aria-pressed="${kbk.lv === -1}">All</button>`].concat(K5_BKLV.map((n, i) => `<button type="button" data-bklv="${i}" aria-pressed="${kbk.lv === i}">${n}</button>`)).join("");
+  $("k5-bklv").querySelectorAll("[data-bklv]").forEach(b => b.onclick = () => { kbk.lv = +b.dataset.bklv; k5BkShelf(); });
+  $("k5-bklvtip").textContent = kbk.lv >= 0 ? K5_BKLVTIP[kbk.lv] : `${Object.keys(r).filter(k => K5_BOOKS.some(b => b.id === k)).length} of ${K5_BOOKS.length} books read`;
+  $("k5-bkgrid").innerHTML = K5_BOOKS.filter(b => kbk.lv < 0 || b.lv === kbk.lv).map(b => `<button type="button" class="k5-bkcov" data-id="${b.id}" style="--c:${b.c}">
+      <span class="k5-bkemo" aria-hidden="true">${b.cover}</span><b>${esc(b.title)}</b><small>${K5_BKLV[b.lv]}${r[b.id] ? ` · ${"⭐".repeat(r[b.id])}` : ""}</small>${r[b.id] ? '<i class="k5-bkdone" aria-label="read">✓</i>' : ""}</button>`).join("");
+  $("k5-bkgrid").querySelectorAll("[data-id]").forEach(b => b.onclick = () => k5BkOpen(b.dataset.id)); }
+function k5BkOpen(id){ const b = K5_BOOKS.find(x => x.id === id); if(!b) return; kbk.book = b; kbk.page = 0; kbk.quiz = 0; kbk.right = 0;
+  $("k5-bkshelf").hidden = true; $("k5-bkread").hidden = false; $("k5-bktitle").textContent = b.title; k5BkPage(); $("k5-bkread").scrollIntoView({behavior: "smooth", block: "start"}); }
+function k5BkPic(pg){ return `<div class="k5-bkpic sc-${pg.s}" aria-hidden="true">${(pg.p || []).map(([e, x, y, z, f]) => `<span style="left:${x}%;top:${y}%;font-size:calc(var(--bkw) * ${z / 100})${f ? ";transform:translate(-50%,-50%) scaleX(-1)" : ""}">${e}</span>`).join("")}</div>`; }
+function k5BkPage(){ k5BkStop(); const b = kbk.book, n = b.pages.length;
+  if(kbk.page >= n){ k5BkQuiz(); return; }
+  const pg = b.pages[kbk.page], words = k5BkWords(pg.t);
+  $("k5-bkstage").innerHTML = k5BkPic(pg) + `<p class="k5-bktext lv${b.lv}">${words.map((w, i) => `<button type="button" class="k5-bkw" data-i="${i}">${esc(w)}</button>`).join(" ")}</p>`;
+  k5BkSize();
+  $("k5-bkstage").querySelectorAll(".k5-bkw").forEach(w => w.onclick = () => { k5BkStop(); const word = k5BkClean(w.textContent); if(!word) return; w.classList.add("on"); setTimeout(() => w.classList.remove("on"), 700); k5Say(word, 0.75); });
+  $("k5-bkdots").innerHTML = b.pages.map((_, i) => `<i class="${i === kbk.page ? "on" : i < kbk.page ? "done" : ""}"></i>`).join("") + '<i class="q">?</i>';
+  $("k5-bkprev").disabled = kbk.page === 0; $("k5-bknext").textContent = kbk.page === n - 1 ? "Questions ▶" : "Next ▶";
+  $("k5-bkctl").hidden = false; $("k5-bkquiz").hidden = true;
+  // get the next page's voice ready while this one is read
+  try { if(k5BkAI() && b.pages[kbk.page + 1]) aiTTSUrl(b.pages[kbk.page + 1].t, "kids").catch(() => {}); } catch(e){}
+  if(kbk.auto) setTimeout(() => { if(kbk.book === b && kbk.auto) k5BkSay(); }, 400); }
+function k5BkSize(){ const pic = document.querySelector("#k5-bkstage .k5-bkpic"); if(pic) pic.style.setProperty("--bkw", pic.clientWidth + "px"); }
+const k5BkAI = () => typeof aiVoiceEverywhere === "function" && aiVoiceEverywhere() && !window.__aiTTSDown && typeof aiTTSUrl === "function";
+function k5BkLight(i){ $("k5-bkstage").querySelectorAll(".k5-bkw").forEach((w, j) => { w.classList.toggle("on", j === i); w.classList.toggle("read", j < i); }); }
+function k5BkStop(){ kbk.token++; cancelAnimationFrame(kbk.raf); try { if(window.speechSynthesis) speechSynthesis.cancel(); } catch(e){} try { if(typeof AI_AUDIO !== "undefined" && AI_AUDIO && AI_AUDIO.__bk){ AI_AUDIO.pause(); AI_AUDIO.__bk = false; } } catch(e){}
+  const b = $("k5-bksay"); if(b){ b.textContent = "🔊 Read to me"; b.classList.remove("on"); } document.querySelectorAll("#k5-bkstage .k5-bkw").forEach(w => w.classList.remove("on")); }
+function k5BkDone(tok){ if(tok !== kbk.token) return; k5BkLight(-1); document.querySelectorAll("#k5-bkstage .k5-bkw").forEach(w => w.classList.add("read"));
+  const b = $("k5-bksay"); b.textContent = "🔊 Read to me"; b.classList.remove("on");
+  if(kbk.auto) setTimeout(() => { if(tok === kbk.token && kbk.auto){ kbk.page++; k5BkPage(); } }, 1100); }
+// word timings: longer words and sentence ends take longer
+function k5BkTimes(words){ const w = words.map(x => k5BkClean(x).length + 2 + (/[.!?]["”]?$/.test(x) ? 7 : /[,;:]["”]?$/.test(x) ? 3 : 0)), tot = w.reduce((a, c) => a + c, 0); let acc = 0; return w.map(v => (acc += v) / tot); }
+async function k5BkSay(){ const b = kbk.book; if(!b || kbk.page >= b.pages.length) return;
+  if($("k5-bksay").classList.contains("on")){ kbk.auto = false; $("k5-bkauto").checked = false; k5BkStop(); return; }
+  k5BkStop(); try { stopAll(); } catch(e){} const tok = ++kbk.token, pg = b.pages[kbk.page], words = k5BkWords(pg.t), ends = k5BkTimes(words);
+  const btn = $("k5-bksay"); btn.textContent = "⏸ Stop"; btn.classList.add("on");
+  if(k5BkAI()){
+    try { const url = await aiTTSUrl(pg.t, "kids"); if(tok !== kbk.token) return; const a = AI_AUDIO; a.__bk = true; a.src = url; a.playbackRate = 1;
+      a.onended = () => { a.__bk = false; k5BkDone(tok); };
+      await a.play();
+      const lead = 0.3; // the clip starts with a short silence
+      const tick = () => { if(tok !== kbk.token) return; const d = a.duration, t = a.currentTime; if(d && isFinite(d)){ const f = (t - lead) / Math.max(0.5, d - lead - 0.15); k5BkLight(f < 0 ? -1 : ends.findIndex(e => f < e)); } kbk.raf = requestAnimationFrame(tick); };
+      tick(); return;
+    } catch(e){ if(tok !== kbk.token) return; }
+  }
+  if(!window.speechSynthesis){ k5BkDone(tok); return; }
+  // the device voice tells us which word it is on
+  const u = new SpeechSynthesisUtterance(pg.t), starts = []; let pos = 0; words.forEach(w => { const i = pg.t.indexOf(w, pos); starts.push(i); pos = i + w.length; });
+  try { if(typeof chosenVoice !== "undefined" && chosenVoice){ u.voice = chosenVoice; u.lang = chosenVoice.lang; } else u.lang = "en-US"; } catch(e){}
+  u.rate = b.lv === 0 ? 0.75 : 0.85; u.pitch = 1.1; kbk.utt = u; let gotB = false, t0 = 0;
+  u.onboundary = e => { if(tok !== kbk.token || e.name === "sentence") return; gotB = true; let k = 0; for(let i = 0; i < starts.length; i++) if(starts[i] <= e.charIndex) k = i; k5BkLight(k); };
+  u.onstart = () => { t0 = performance.now(); const est = words.length * 520 / u.rate; const tick = () => { if(tok !== kbk.token || gotB) return; k5BkLight(ends.findIndex(e => (performance.now() - t0) / est < e)); kbk.raf = requestAnimationFrame(tick); }; tick(); };
+  u.onend = u.onerror = () => k5BkDone(tok);
+  speechSynthesis.speak(u); }
+function k5BkQuiz(){ k5BkStop(); const b = kbk.book, q = b.q[kbk.quiz];
+  $("k5-bkctl").hidden = true; $("k5-bkquiz").hidden = false;
+  $("k5-bkdots").innerHTML = b.pages.map(() => '<i class="done"></i>').join("") + '<i class="q on">?</i>';
+  if(!q){ const stars = kbk.right === b.q.length ? 3 : kbk.right >= 1 ? 2 : 1; k5BkMark(b.id, stars); k5Badges(); k5Save();
+    $("k5-bkstage").innerHTML = `<div class="k5-bkend"><div class="k5-bkemo big">${b.cover}</div><h3>You read “${esc(b.title)}”!</h3><p class="k5-bkstars">${"⭐".repeat(stars)}</p><p>You got ${kbk.right} of ${b.q.length} questions right.</p></div>`;
+    $("k5-bkquiz").innerHTML = `<div class="k5-row"><button type="button" class="k5-btn" id="k5-bkagain">🔁 Read again</button><button type="button" class="k5-btn alt" id="k5-bkmore">📚 More books</button></div>`;
+    $("k5-bkagain").onclick = () => k5BkOpen(b.id); $("k5-bkmore").onclick = k5BkShelf; k5Say(`Great reading! You read ${b.title}!`); return; }
+  $("k5-bkstage").innerHTML = `<div class="k5-bkend"><div class="k5-bkemo big">${b.cover}</div><h3>Question ${kbk.quiz + 1} of ${b.q.length}</h3><p class="k5-bkq">${esc(q[0])}</p></div>`;
+  const order = q[1].map((_, i) => i).sort(() => Math.random() - 0.5);
+  $("k5-bkquiz").innerHTML = `<div class="k5-bkopts">${order.map(i => `<button type="button" class="k5-btn alt" data-o="${i}">${esc(q[1][i])}</button>`).join("")}</div><p class="k5-bkfb" id="k5-bkfb" aria-live="polite"></p>`;
+  let tries = 0;
+  $("k5-bkquiz").querySelectorAll("[data-o]").forEach(o => o.onclick = () => { const ok = +o.dataset.o === q[2];
+    if(ok){ if(!tries) kbk.right++; o.classList.add("right"); $("k5-bkquiz").querySelectorAll("[data-o]").forEach(x => x.disabled = true); $("k5-bkfb").textContent = "🎉 Yes!"; k5Win(3, o); setTimeout(() => { kbk.quiz++; k5BkQuiz(); }, 1300); }
+    else { tries++; o.classList.add("wrong"); o.disabled = true; $("k5-bkfb").textContent = "Not quite — try again!"; k5Say("Not quite. Try again!"); } });
+  k5Say(q[0]); }
+function k5BooksInit(){ if(!kbk.inited){ kbk.inited = true;
+    $("k5-bkback").onclick = k5BkShelf; $("k5-bksay").onclick = k5BkSay;
+    $("k5-bkprev").onclick = () => { if(kbk.page > 0){ kbk.page--; k5BkPage(); } };
+    $("k5-bknext").onclick = () => { kbk.page++; k5BkPage(); };
+    $("k5-bkauto").onchange = e => { kbk.auto = e.target.checked; if(kbk.auto) k5BkSay(); else k5BkStop(); };
+    addEventListener("resize", k5BkSize); }
+  if(!kbk.book) k5BkShelf(); }
 // ---------- 🧱 number blocks + arrays ----------
 const K5_ONES = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"], K5_TENS = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
 const k5Words = n => n < 20 ? K5_ONES[n] : n < 100 ? K5_TENS[Math.floor(n / 10)] + (n % 10 ? "-" + K5_ONES[n % 10] : "") : n < 1000 ? K5_ONES[Math.floor(n / 100)] + " hundred" + (n % 100 ? " " + k5Words(n % 100) : "") : k5Words(Math.floor(n / 1000)) + " thousand" + (n % 1000 ? " " + k5Words(n % 1000) : "");
