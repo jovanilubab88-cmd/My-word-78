@@ -2630,10 +2630,10 @@ window.MWB_TRIAL_DAYS = 14;
     <div style="display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin:0 0 6px">
       <div class="cell-toggle" role="group" aria-label="Sound category" style="display:inline-flex;flex-wrap:wrap;gap:6px;justify-content:center">
         <button class="chip" data-scat="abc" aria-pressed="true">🔤 ABC</button>
-        <button class="chip" data-scat="vowels" aria-pressed="false">🔵 Vowels</button>
-        <button class="chip" data-scat="consonants" aria-pressed="false">🟢 Consonants</button>
-        <button class="chip" data-scat="blends" aria-pressed="false">🟡 Blends</button>
-        <button class="chip" data-scat="digraphs" aria-pressed="false">🟠 Digraphs</button>
+        <button class="chip" data-scat="vowels" aria-pressed="false">🅰️ Vowels</button>
+        <button class="chip" data-scat="consonants" aria-pressed="false">🅱️ Consonants</button>
+        <button class="chip" data-scat="blends" aria-pressed="false">🧩 Blends</button>
+        <button class="chip" data-scat="digraphs" aria-pressed="false">🔗 Digraphs</button>
         <button class="chip" data-scat="sight" aria-pressed="false">⭐ Sight words</button>
         <button class="chip" data-scat="rhymes" aria-pressed="false">🎵 Rhymes</button>
       </div>
@@ -38390,6 +38390,30 @@ function vtInit(){ if(!$("vt")) return; requestAnimationFrame(() => vtPlot()); i
 @keyframes slWaveArm{0%,60%,100%{transform:rotate(0)}70%{transform:rotate(-22deg)}80%{transform:rotate(8deg)}90%{transform:rotate(-16deg)}}
 @keyframes slBlink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
 @media (prefers-reduced-motion:reduce){.sl-hero *,.sl-hero *::before{animation:none!important}}
+/* ABC tab: same calm look as the other K-5 sections (no rainbow colours) */
+.k5-abc #sounds-stage{background:transparent!important;padding:4px 0 0!important;max-width:none!important;margin-top:8px!important}
+.k5-abc #sounds-category-title{font-size:20px!important}.k5-abc #sounds-category-title span{color:var(--ink)!important;text-shadow:none!important;background:none!important;-webkit-text-fill-color:currentColor}
+.k5-abc .cell-toggle .chip{font:inherit;font-size:14.5px;font-weight:700;padding:6px 12px;border-radius:999px;border:2px solid var(--line)!important;background:var(--paper)!important;color:var(--ink)!important;box-shadow:none!important}
+.k5-abc .cell-toggle .chip[aria-pressed="true"]{background:#fde047!important;color:#1b2a4a!important}
+.k5-abc #sounds-quiz-toggle{background:var(--grass)!important;border:3px solid var(--line)!important;box-shadow:0 3px 0 var(--line)!important;color:#fff!important;border-radius:14px!important;transform:none!important}
+.k5-abc .pron-box{border:3px solid var(--line)!important;box-shadow:0 4px 0 var(--line)!important;border-radius:18px!important}
+.k5-abc .pron-btn{background:var(--grass)!important;border:3px solid var(--line)!important;box-shadow:0 3px 0 var(--line)!important;color:#fff!important;border-radius:14px!important}
+.k5-abc .pron-btn.alt{background:#fff!important;color:var(--ink)!important}
+.k5-abc .abc-stage{background:#fff!important;border:3px solid var(--line)!important;box-shadow:0 4px 0 var(--line)!important;border-radius:18px!important}
+.k5-abc .abc-up,.k5-abc .abc-lo{color:#1d4ed8!important;text-shadow:0 4px 0 rgba(30,58,138,.25)!important}
+.k5-abc .abc-pic{background:var(--paper)!important;border:2px solid var(--line)}
+.k5-abc .abc-arrow{background:#fff!important;color:var(--ink)!important;border:3px solid var(--line)!important;box-shadow:0 3px 0 var(--line)!important}
+.k5-abc .abc-btn{background:var(--grass)!important;border:3px solid var(--line)!important;box-shadow:0 3px 0 var(--line)!important;color:#fff!important;border-radius:14px!important}
+.k5-abc .abc-tile{background:#fff!important;border:3px solid var(--line)!important;box-shadow:0 4px 0 var(--line)!important;border-radius:16px!important}
+.k5-abc .abc-tile::before{display:none}.k5-abc .abc-tile[aria-pressed="true"]{background:#fde047!important;outline:none!important}
+.k5-abc .abc-tile *{text-shadow:none!important}.k5-abc .abc-tl{color:var(--tc,#1d4ed8)!important}
+.k5-abc #sounds-grid > div:has(> svg){box-shadow:none!important;border:3px solid var(--line);border-radius:18px!important}
+.k5-abc #sounds-grid > div:not(:has(> svg)):not(.abc-stage):not(.abc-grid){background:var(--paper)!important;border:3px solid var(--line)!important;border-radius:18px!important;box-shadow:none!important}
+.k5-abc #sounds-grid > div:not(:has(> svg)):not(.abc-stage):not(.abc-grid) > div:first-child{background:none!important;color:var(--ink)!important;box-shadow:none!important;text-shadow:none!important;font-size:18px!important;padding:0!important;border:0!important}
+.k5-abc #sounds-grid > div:not(:has(> svg)):not(.abc-stage):not(.abc-grid) > div > button{background:#fff!important;border:3px solid var(--line)!important;box-shadow:0 3px 0 var(--line)!important;color:var(--ink)!important;text-shadow:none!important}
+.k5-abc #sounds-grid > div:not(:has(> svg)):not(.abc-stage):not(.abc-grid) button span[style*="color:#"]{color:#ea580c!important;text-shadow:none!important}
+.k5-abc .snd-more{background:var(--grass)!important;color:#fff!important;border:3px solid var(--line)!important;box-shadow:0 3px 0 var(--line)!important;border-radius:14px!important}
+.k5-abc .journey{background:var(--paper)!important;border:3px solid var(--line)!important;border-radius:18px!important;box-shadow:none!important}
 .k5-card{border:3px solid var(--line);border-radius:18px;padding:10px 12px;display:flex;flex-direction:column;gap:8px;background:var(--paper)}
 .k5-fb{margin:0;text-align:center;font-weight:700;min-height:1.3em}
 .k5-seg{display:flex;gap:4px;justify-content:center}.k5-seg.k5-wrap{flex-wrap:wrap}
