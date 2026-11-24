@@ -2361,7 +2361,11 @@ window.MWB_TRIAL_DAYS = 14;
     <!-- Mascot hero banner -->
     <div id="sounds-hero" class="sl-hero" aria-label="Sounds Lab. Tap the letter balloons to hear their sounds.">
       <div class="sl-sky" aria-hidden="true">
-        <div class="sl-rainbow"></div>
+        <svg class="sl-atom" viewBox="0 0 100 100"><circle cx="50" cy="50" r="7" fill="#f472b6"/>
+          <g fill="none" stroke="#1e3a8a" stroke-width="2.2" opacity=".75"><ellipse cx="50" cy="50" rx="44" ry="15"/><ellipse cx="50" cy="50" rx="44" ry="15" transform="rotate(60 50 50)"/><ellipse cx="50" cy="50" rx="44" ry="15" transform="rotate(120 50 50)"/></g>
+          <g class="sl-e e1"><circle cx="94" cy="50" r="4.5" fill="#facc15"/></g><g class="sl-e e2"><circle cx="94" cy="50" r="4.5" fill="#34d399"/></g><g class="sl-e e3"><circle cx="94" cy="50" r="4.5" fill="#60a5fa"/></g></svg>
+        <span class="sl-sci sl-planet">🪐</span><span class="sl-sci sl-tube">🧪<i></i><i></i><i></i></span><span class="sl-sci sl-scope">🔬</span>
+        <span class="sl-twk t1">✦</span><span class="sl-twk t2">✦</span><span class="sl-twk t3">✦</span>
         <div class="sl-sun"><i></i></div>
         <div class="sl-cloud c1"></div><div class="sl-cloud c2"></div><div class="sl-cloud c3"></div>
         <span class="sl-fly f1">🦋</span><span class="sl-fly f2">🦋</span>
@@ -38347,24 +38351,35 @@ function vtInit(){ if(!$("vt")) return; requestAnimationFrame(() => vtPlot()); i
 .pf-gate{display:flex;flex-direction:column;gap:8px}.pf-q{font-size:24px;font-weight:800;margin:0}
 .pf-link{display:block;margin:8px auto 0;border:0;background:none;color:inherit;opacity:.75;font:inherit;font-size:14px;text-decoration:underline;cursor:pointer}
 .pf-open{width:100%;margin-top:14px}
-.sl-hero{position:relative;max-width:720px;margin:0 auto 10px;height:clamp(170px,32vw,230px);border-radius:24px;overflow:hidden;box-shadow:0 6px 20px rgba(0,0,0,.15);border:3px solid #fff;user-select:none;-webkit-user-select:none}
+.sl-hero{position:relative;width:100%;max-width:none;margin:0 0 12px;height:clamp(240px,40vw,400px);border-radius:24px;overflow:hidden;box-shadow:0 6px 20px rgba(0,0,0,.15);border:3px solid #fff;user-select:none;-webkit-user-select:none}
 .sl-sky{position:absolute;inset:0;background:linear-gradient(#7dd3fc,#bae6fd 55%,#fef9c3)}
-.sl-rainbow{position:absolute;left:50%;bottom:-62%;width:110%;aspect-ratio:1;transform:translateX(-50%);border-radius:50%;opacity:.45;background:radial-gradient(circle,transparent 52%,#a78bfa 52% 55%,#60a5fa 55% 58%,#34d399 58% 61%,#facc15 61% 64%,#fb923c 64% 67%,#f87171 67% 70%,transparent 70%)}
-.sl-sun{position:absolute;right:6%;top:10%;width:clamp(44px,8vw,62px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#fef08a,#facc15);box-shadow:0 0 24px #fde047}
+.sl-atom{position:absolute;z-index:1;left:3%;top:6%;width:clamp(60px,11vw,120px)}
+.sl-atom .sl-e{transform-origin:50px 50px;transform-box:view-box}.sl-atom .e1{animation:slOrb1 2.4s linear infinite}.sl-atom .e2{animation:slOrb2 3s linear infinite}.sl-atom .e3{animation:slOrb3 3.6s linear infinite}
+.sl-sci{position:absolute;z-index:1;line-height:1;filter:drop-shadow(0 3px 2px rgba(0,0,0,.2))}
+.sl-planet{left:22%;top:30%;font-size:clamp(30px,5.4vw,56px);animation:slTilt 6s ease-in-out infinite}
+.sl-tube{left:1%;bottom:4%;font-size:clamp(32px,5.8vw,60px);transform:rotate(-12deg)}
+.sl-tube i{position:absolute;left:46%;top:0;width:7px;height:7px;border-radius:50%;background:rgba(167,243,208,.9);border:1px solid #34d399;animation:slBub 2.4s ease-in infinite}.sl-tube i:nth-child(2){animation-delay:.8s;left:58%}.sl-tube i:nth-child(3){animation-delay:1.6s;left:38%}
+.sl-scope{right:1%;bottom:4%;font-size:clamp(32px,5.8vw,60px);animation:slScope 4s ease-in-out infinite}
+.sl-twk{position:absolute;color:#fff;font-size:16px;text-shadow:0 0 6px #fde047;animation:slTwk 2.2s ease-in-out infinite}.sl-twk.t1{left:40%;top:30%}.sl-twk.t2{left:62%;top:36%;animation-delay:.7s}.sl-twk.t3{left:18%;top:42%;animation-delay:1.4s}
+@keyframes slOrb1{to{transform:rotate(360deg)}}@keyframes slOrb2{from{transform:rotate(60deg)}to{transform:rotate(420deg)}}@keyframes slOrb3{from{transform:rotate(120deg)}to{transform:rotate(480deg)}}
+@keyframes slTilt{0%,100%{transform:rotate(-10deg) translateY(0)}50%{transform:rotate(10deg) translateY(-5px)}}
+@keyframes slBub{0%{transform:translateY(0) scale(.6);opacity:0}20%{opacity:1}100%{transform:translateY(-34px) scale(1.1);opacity:0}}
+@keyframes slScope{0%,100%{transform:rotate(0)}50%{transform:rotate(-8deg)}}@keyframes slTwk{0%,100%{opacity:.2;transform:scale(.6)}50%{opacity:1;transform:scale(1.2)}}
+.sl-sun{position:absolute;right:6%;top:9%;width:clamp(50px,9vw,96px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#fef08a,#facc15);box-shadow:0 0 24px #fde047}
 .sl-sun i{position:absolute;inset:-40%;border-radius:50%;background:repeating-conic-gradient(rgba(253,224,71,.55) 0 10deg,transparent 10deg 30deg);animation:slSpin 14s linear infinite;z-index:-1}
 .sl-cloud{position:absolute;width:90px;height:28px;border-radius:20px;background:#fff;opacity:.9;animation:slCloud linear infinite}.sl-cloud::before,.sl-cloud::after{content:"";position:absolute;background:#fff;border-radius:50%}
 .sl-cloud::before{width:44px;height:44px;left:12px;top:-20px}.sl-cloud::after{width:32px;height:32px;left:44px;top:-13px}
 .sl-cloud.c1{top:14%;animation-duration:38s;animation-delay:-8s}.sl-cloud.c2{top:30%;transform:scale(.7);animation-duration:52s;animation-delay:-30s}.sl-cloud.c3{top:8%;transform:scale(.55);animation-duration:64s;animation-delay:-45s}
-.sl-fly{position:absolute;font-size:22px;animation:slFly 16s ease-in-out infinite}.sl-fly.f2{animation-duration:21s;animation-delay:-9s;font-size:18px}
+.sl-fly{position:absolute;font-size:clamp(22px,3.4vw,34px);animation:slFly 16s ease-in-out infinite}.sl-fly.f2{animation-duration:21s;animation-delay:-9s;font-size:18px}
 .sl-hills{position:absolute;left:0;bottom:0;width:100%;height:42%}
-.sl-title{position:absolute;left:0;right:0;top:6px;margin:0;text-align:center;font-size:clamp(26px,5.6vw,40px);font-weight:900;letter-spacing:1px;z-index:3;-webkit-text-stroke:2px #1e3a8a;paint-order:stroke fill;text-shadow:0 3px 0 #1e3a8a}
+.sl-title{position:absolute;left:0;right:0;top:4%;margin:0;text-align:center;font-size:clamp(32px,6.4vw,64px);font-weight:900;letter-spacing:1px;z-index:3;-webkit-text-stroke:2px #1e3a8a;paint-order:stroke fill;text-shadow:0 3px 0 #1e3a8a}
 .sl-title span{display:inline-block;animation:slWave 2.2s ease-in-out infinite;animation-delay:calc(var(--d) * .11s)}
 .sl-title span:nth-child(6n+1){color:#f87171}.sl-title span:nth-child(6n+2){color:#fb923c}.sl-title span:nth-child(6n+3){color:#facc15}.sl-title span:nth-child(6n+4){color:#4ade80}.sl-title span:nth-child(6n+5){color:#60a5fa}.sl-title span:nth-child(6n){color:#c084fc}
 .sl-balloons{position:absolute;inset:0;z-index:2}
-.sl-bal{position:absolute;bottom:22%;width:clamp(40px,8vw,56px);height:clamp(48px,9.6vw,66px);margin-left:calc(clamp(40px,8vw,56px) / -2);border:0;padding:0;border-radius:50% 50% 48% 48%;color:#fff;font:inherit;font-size:clamp(22px,4.6vw,32px);font-weight:900;cursor:pointer;box-shadow:inset -6px -8px 0 rgba(0,0,0,.12),inset 5px 6px 0 rgba(255,255,255,.35);animation:slBob var(--t) ease-in-out infinite;animation-delay:var(--dl);text-shadow:0 2px 0 rgba(0,0,0,.2)}
-.sl-bal::after{content:"";position:absolute;left:50%;top:100%;width:2px;height:26px;background:rgba(30,41,59,.45);transform:translateX(-50%)}
+.sl-bal{position:absolute;bottom:22%;width:clamp(46px,8vw,78px);height:clamp(56px,9.6vw,94px);margin-left:calc(clamp(46px,8vw,78px) / -2);border:0;padding:0;border-radius:50% 50% 48% 48%;color:#fff;font:inherit;font-size:clamp(26px,4.6vw,46px);font-weight:900;cursor:pointer;box-shadow:inset -6px -8px 0 rgba(0,0,0,.12),inset 5px 6px 0 rgba(255,255,255,.35);animation:slBob var(--t) ease-in-out infinite;animation-delay:var(--dl);text-shadow:0 2px 0 rgba(0,0,0,.2)}
+.sl-bal::after{content:"";position:absolute;left:50%;top:100%;width:2px;height:clamp(26px,5vw,44px);background:rgba(30,41,59,.45);transform:translateX(-50%)}
 .sl-bal.pop{animation:slPop .35s ease-out forwards}.sl-bal.in{animation:slIn .7s ease-out,slBob var(--t) ease-in-out .7s infinite}
-.sl-bear{position:absolute;left:50%;bottom:-2px;width:clamp(86px,16vw,120px);transform:translateX(-50%);z-index:2;animation:slBear 3s ease-in-out infinite}
+.sl-bear{position:absolute;left:50%;bottom:-2px;width:clamp(110px,19vw,200px);transform:translateX(-50%);z-index:2;animation:slBear 3s ease-in-out infinite}
 .sl-arm{transform-origin:84px 86px;animation:slWaveArm 2.6s ease-in-out infinite}.sl-eyes{transform-origin:60px 44px;animation:slBlink 4.5s infinite}
 @keyframes slSpin{to{transform:rotate(360deg)}}@keyframes slCloud{from{left:-120px}to{left:110%}}
 @keyframes slFly{0%{left:-8%;top:55%}25%{left:25%;top:35%}50%{left:55%;top:50%}75%{left:80%;top:28%}100%{left:108%;top:45%}}
