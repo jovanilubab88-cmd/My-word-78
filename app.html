@@ -2658,6 +2658,7 @@ window.MWB_TRIAL_DAYS = 14;
           <div class="k5-row sp"><b>🎯 Drag &amp; Sound It Out</b>
             <div class="k5-seg" id="k5-simodes" role="group" aria-label="How to play"><button type="button" data-sim="slide" aria-pressed="true">🚗 Slide</button><button type="button" data-sim="build" aria-pressed="false">🧩 Build</button></div></div>
           <div class="k5-sibox" id="k5-sibox"></div>
+          <button type="button" class="pf-link" data-pfopen="1">👪 Grown-ups: fix a letter sound</button>
           <div class="k5-row"><div class="k5-seg" id="k5-silen" role="group" aria-label="Word length"><button type="button" data-sin="3" aria-pressed="true">3 letters</button><button type="button" data-sin="4" aria-pressed="false">4 letters</button></div>
             <button type="button" class="k5-btn alt" id="k5-sislow">🔊 Sound it out</button><button type="button" class="k5-btn" id="k5-sinext">Next word ▶</button></div>
         </div>
@@ -3820,6 +3821,7 @@ window.MWB_TRIAL_DAYS = 14;
     <p class="word" id="c-word"></p>
     <p class="syl" id="c-syl"></p>
     <button class="btn" id="c-say"><span aria-hidden="true">🔊</span> Hear it</button>
+    <button type="button" class="pf-link" data-pfopen="card">🔧 Said wrong? Grown-ups can fix it</button>
     <div class="section"><h2>What it means <span class="kind" id="c-kind"></span><span class="kind" id="c-grade" hidden></span></h2><p id="c-def"></p></div>
     <div class="section" id="c-ex-box"><h2>Use it in a sentence</h2><p><span id="c-ex"></span><button class="say" id="c-ex-say" aria-label="Hear the sentence">🔊</button></p></div>
     <div class="section" id="c-x-box"><h2>🌱 Learn more</h2><p><span id="c-x"></span><button class="say" id="c-x-say" aria-label="Hear the explanation">🔊</button></p></div>
@@ -3902,6 +3904,16 @@ lantern"></textarea></label>
       <button class="chip" data-speed="1.05">Quick</button>
     </div>
     <div class="tip" id="voice-tip"></div>
+    <button type="button" class="btn alt pf-open" data-pfopen="1">👪 Fix a sound or word (grown-ups)</button>
+  </div>
+</div>
+
+<div class="overlay" id="pf-overlay" role="dialog" aria-modal="true" aria-labelledby="pf-title">
+  <div class="card pf-cardwrap">
+    <div class="card-top"><button class="icon-btn" id="pf-close" aria-label="Close">✕</button><span></span></div>
+    <h2 class="form-title" id="pf-title">👪 Fix a sound or word</h2>
+    <div id="pf-body"></div>
+    <p class="pf-note">Fixes are saved on this device and used everywhere the app speaks.</p>
   </div>
 </div>
 
@@ -14366,10 +14378,108 @@ document.addEventListener("pointerdown", function unlockSpeech(){
 }, true);
 function stopAll(){ speakToken++; synthCancel(); try { if(typeof AI_AUDIO !== "undefined" && AI_AUDIO && AI_AUDIO.__speaking){ AI_AUDIO.pause(); AI_AUDIO.__speaking = false; } } catch(e){} }
 // parts: a string, or a list of [text, pace] to say one after another
+// ===== 👪 Parent pronunciation fixes: grown-ups can record a letter sound, or fix how a word is said =====
+// Respellings live in localStorage; recordings live in this device's IndexedDB. Both are used everywhere the app speaks.
+const PF = {words: {}, letters: {}, urls: {}, ready: false, bypass: false, db: null};
+const pfKey = w => String(w || "").toLowerCase().replace(/[^a-zÀ-ɏ' -]/g, "").replace(/\s+/g, " ").trim();
+function pfSaveText(){ try { localStorage.setItem("wordbook-pronfix", JSON.stringify({words: Object.fromEntries(Object.entries(PF.words).map(([k, v]) => [k, {w: v.w, say: v.say || "", rec: !!v.rec}])), letters: Object.fromEntries(Object.entries(PF.letters).map(([k, v]) => [k, {rec: !!v.rec}]))})); } catch(e){} }
+function pfDB(){ if(PF.db) return PF.db; PF.db = new Promise((res, rej) => { try { const r = indexedDB.open(window.wbDBName ? wbDBName("voice-fixes") : "voice-fixes", 1); r.onupgradeneeded = () => r.result.createObjectStore("clips"); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); } catch(e){ rej(e); } }); PF.db.catch(() => { PF.db = null; }); return PF.db; }
+async function pfPut(key, blob){ const db = await pfDB(); await new Promise((res, rej) => { const t = db.transaction("clips", "readwrite"); blob ? t.objectStore("clips").put(blob, key) : t.objectStore("clips").delete(key); t.oncomplete = res; t.onerror = () => rej(t.error); }); }
+async function pfLoad(){ try { const j = JSON.parse(localStorage.getItem("wordbook-pronfix") || "{}"); PF.words = j.words || {}; PF.letters = j.letters || {}; } catch(e){}
+  try { const db = await pfDB(); await new Promise(res => { const t = db.transaction("clips", "readonly"), st = t.objectStore("clips"), req = st.openCursor();
+      req.onsuccess = () => { const c = req.result; if(!c){ res(); return; } const k = String(c.key), url = URL.createObjectURL(c.value); PF.urls[k] = url;
+        if(k.startsWith("l:")){ const l = k.slice(2); PF.letters[l] = Object.assign(PF.letters[l] || {}, {rec: true, url}); } else if(k.startsWith("w:")){ const w = k.slice(2); PF.words[w] = Object.assign(PF.words[w] || {w}, {rec: true, url}); } c.continue(); };
+      req.onerror = () => res(); }); } catch(e){}
+  // a recording that is gone from this device can't be used
+  Object.values(PF.words).forEach(v => { if(v.rec && !v.url) v.rec = false; }); Object.values(PF.letters).forEach(v => { if(v.rec && !v.url) v.rec = false; });
+  PF.ready = true; }
+// recorded parent clips
+const pfLetterClip = l => (!PF.bypass && PF.letters[String(l).toLowerCase()] && PF.letters[String(l).toLowerCase()].url) || null;
+const pfWordClip = w => { const v = !PF.bypass && PF.words[pfKey(w)]; return (v && v.url) || null; };
+// "say it like" respellings, swapped into whatever the app is about to say
+function pfText(t){ if(PF.bypass || !t) return t; const fixes = Object.values(PF.words).filter(v => v.say && v.w); if(!fixes.length) return t;
+  let out = String(t); fixes.forEach(v => { const re = new RegExp("(^|[^A-Za-zÀ-ɏ'])(" + v.w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + ")(?=$|[^A-Za-zÀ-ɏ'])", "gi"); out = out.replace(re, (m, a) => a + v.say); }); return out; }
+// turn a list of speech parts into fixed parts: a lone word with a recording plays the recording, other text gets respellings
+function pfParts(parts){ if(PF.bypass || !parts) return parts; const out = parts.map(p => { if(!p || p[3] || p[4]) return p; const t = String(p[0] || ""), bare = t.replace(/^[^\w']+|[^\w']+$/g, "");
+    const clip = bare && !/\s/.test(bare) ? pfWordClip(bare) : null; if(clip) return [bare, 1, p[2], clip]; const ft = pfText(t); return ft === t ? p : [ft, p[1], p[2]]; });
+  ["device", "forceAI"].forEach(k => { if(parts[k] !== undefined) out[k] = k === "device" ? pfParts(parts.device) : parts[k]; }); return out; }
+// ----- the grown-ups panel -----
+const pfUI = {tab: "letters", letter: "a", word: "", rec: null, blob: null, blobUrl: "", gateOK: false, ans: 0};
+const pfMicOK = () => typeof IS_NETLIFY !== "undefined" && IS_NETLIFY && !!window.MediaRecorder && !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+function pfOpen(word){ if(word){ pfUI.tab = "words"; pfUI.word = String(word); } $("pf-overlay").classList.add("open"); if(!pfUI.gateOK) pfGate(); else pfDraw(); }
+function pfClose(){ pfRecStop(true); $("pf-overlay").classList.remove("open"); }
+function pfGate(){ const a = 6 + Math.floor(Math.random() * 4), b = 6 + Math.floor(Math.random() * 4); pfUI.ans = a + b;
+  $("pf-body").innerHTML = `<div class="pf-gate"><p class="pf-big">👪 For grown-ups</p><p>To change how the app says sounds and words, answer this:</p><p class="pf-q">What is ${a} + ${b}?</p>
+    <div class="pf-row"><input id="pf-gans" type="number" inputmode="numeric" aria-label="Answer"><button type="button" class="btn" id="pf-gok">Continue</button></div><p class="pf-msg" id="pf-gmsg" aria-live="polite"></p></div>`;
+  const go = () => { if(+$("pf-gans").value === pfUI.ans){ pfUI.gateOK = true; pfDraw(); } else { $("pf-gmsg").textContent = "That's not right. Please ask a grown-up."; pfGate(); } };
+  $("pf-gok").onclick = go; $("pf-gans").onkeydown = e => { if(e.key === "Enter") go(); }; setTimeout(() => { try { $("pf-gans").focus(); } catch(e){} }, 50); }
+function pfDraw(){ const b = $("pf-body");
+  b.innerHTML = `<div class="pf-tabs" role="tablist"><button type="button" role="tab" data-pft="letters" aria-selected="${pfUI.tab === "letters"}">🔤 Letter sounds</button><button type="button" role="tab" data-pft="words" aria-selected="${pfUI.tab === "words"}">📝 Words</button></div><div id="pf-pane"></div>`;
+  b.querySelectorAll("[data-pft]").forEach(t => t.onclick = () => { pfRecStop(true); pfUI.tab = t.dataset.pft; pfUI.blob = null; pfDraw(); });
+  pfUI.tab === "letters" ? pfDrawLetters() : pfDrawWords(); }
+function pfRecBox(id){ return pfMicOK() ? `<div class="pf-recrow"><button type="button" class="btn" id="${id}-rec">🎙️ Record</button><button type="button" class="btn alt" id="${id}-play" ${pfUI.blob ? "" : "hidden"}>▶ Play my recording</button></div>`
+  : `<p class="pf-note">🎙️ Recording works on the website version of the app.</p>`; }
+function pfDrawLetters(){ const l = pfUI.letter, ex = (typeof K5_ABC !== "undefined" ? K5_ABC.find(a => a[0].toLowerCase() === l) : null), has = PF.letters[l] && PF.letters[l].url;
+  $("pf-pane").innerHTML = `<p class="pf-tip">Pick a letter, listen to the app's sound, and if it's not right, record the correct sound in your own voice. Say only the sound (like <b>“sss”</b> for S), not the letter's name.</p>
+    <div class="pf-letters">${"abcdefghijklmnopqrstuvwxyz".split("").map(c => `<button type="button" data-pfl="${c}" aria-pressed="${c === l}" class="${PF.letters[c] && PF.letters[c].url ? "fixed" : ""}">${c}${PF.letters[c] && PF.letters[c].url ? "<i>✓</i>" : ""}</button>`).join("")}</div>
+    <div class="pf-card"><p class="pf-big">${l.toUpperCase()} ${l}${ex ? ` <small>as in ${esc(ex[2].toLowerCase())}</small>` : ""}</p>
+      <div class="pf-recrow"><button type="button" class="btn alt" id="pf-lapp">🔊 App's sound</button>${has ? `<button type="button" class="btn alt" id="pf-lmine">▶ Your saved sound</button>` : ""}</div>
+      ${pfRecBox("pf-l")}
+      <div class="pf-recrow"><button type="button" class="btn" id="pf-lsave" ${pfUI.blob ? "" : "hidden"}>💾 Use my recording</button>${has ? `<button type="button" class="btn alt" id="pf-ldel">🗑 Go back to the app's sound</button>` : ""}</div>
+      <p class="pf-msg" id="pf-lmsg" aria-live="polite">${has ? "✓ Your recording is used for this letter." : ""}</p></div>`;
+  $("pf-pane").querySelectorAll("[data-pfl]").forEach(x => x.onclick = () => { pfRecStop(true); pfUI.letter = x.dataset.pfl; pfUI.blob = null; pfDrawLetters(); });
+  $("pf-lapp").onclick = () => { PF.bypass = true; try { k5Line([{s: l}]); } finally { setTimeout(() => { PF.bypass = false; }, 50); } };
+  if(has) $("pf-lmine").onclick = () => clipPlay(PF.letters[l].url);
+  pfRecWire("pf-l", "pf-lmsg", 3000, () => { $("pf-lsave").hidden = false; });
+  $("pf-lsave").onclick = async () => { try { await pfPut("l:" + l, pfUI.blob); } catch(e){ $("pf-lmsg").textContent = "Couldn't save on this device."; return; }
+    if(PF.letters[l] && PF.letters[l].url) URL.revokeObjectURL(PF.letters[l].url); PF.letters[l] = {rec: true, url: URL.createObjectURL(pfUI.blob)}; pfUI.blob = null; pfSaveText(); pfChanged(); pfDrawLetters(); $("pf-lmsg").textContent = "✓ Saved! Your sound is now used for this letter."; };
+  if(has) $("pf-ldel").onclick = async () => { try { await pfPut("l:" + l, null); } catch(e){} URL.revokeObjectURL(PF.letters[l].url); delete PF.letters[l]; pfSaveText(); pfChanged(); pfDrawLetters(); $("pf-lmsg").textContent = "Back to the app's sound."; }; }
+function pfDrawWords(){ const k = pfKey(pfUI.word), cur = PF.words[k] || null, list = Object.values(PF.words).filter(v => v.say || v.url);
+  $("pf-pane").innerHTML = `<p class="pf-tip">Type a word the app says wrong. Then either write how it should sound, or record yourself saying it.</p>
+    <div class="pf-card"><label class="pf-lab">Word<input id="pf-w" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" value="${esc(pfUI.word)}" placeholder="e.g. Golgi"></label>
+      <div class="pf-recrow"><button type="button" class="btn alt" id="pf-wapp">🔊 How the app says it</button></div>
+      <label class="pf-lab">Say it like <small>(write it the way it sounds)</small><input id="pf-say" type="text" autocomplete="off" spellcheck="false" value="${esc(cur && cur.say || "")}" placeholder="e.g. goal-jee"></label>
+      <div class="pf-recrow"><button type="button" class="btn alt" id="pf-wtry">🔊 Try it</button></div>
+      ${pfRecBox("pf-w")}
+      <div class="pf-recrow"><button type="button" class="btn" id="pf-wsave">💾 Save fix</button>${cur ? `<button type="button" class="btn alt" id="pf-wdel">🗑 Remove fix</button>` : ""}</div>
+      <p class="pf-msg" id="pf-wmsg" aria-live="polite">${cur ? `✓ This word is fixed${cur.url ? " (your recording)" : ""}${cur.say ? ` — said like “${esc(cur.say)}”` : ""}.` : ""}</p></div>
+    ${list.length ? `<h3 class="pf-h">Fixed words</h3><div class="pf-list">${list.map(v => `<button type="button" data-pfw="${esc(v.w)}"><b>${esc(v.w)}</b> <small>${v.url ? "🎙️ recording" : "“" + esc(v.say) + "”"}</small></button>`).join("")}</div>` : ""}`;
+  const w = () => $("pf-w").value.trim();
+  $("pf-w").oninput = () => { pfUI.word = w(); };
+  $("pf-wapp").onclick = () => { if(!w()) return; PF.bypass = true; try { speak(w(), 0.9); } finally { setTimeout(() => { PF.bypass = false; }, 50); } };
+  $("pf-wtry").onclick = () => { const s = $("pf-say").value.trim() || w(); if(!s) return; PF.bypass = true; try { speak(s, 0.9); } finally { setTimeout(() => { PF.bypass = false; }, 50); } };
+  pfRecWire("pf-w", "pf-wmsg", 4000, () => { $("pf-wmsg").textContent = "Recorded. Tap 💾 Save fix to use it."; });
+  $("pf-wsave").onclick = async () => { const word = w(), key = pfKey(word), say = $("pf-say").value.trim().slice(0, 60);
+    if(!key){ $("pf-wmsg").textContent = "Type the word first."; return; } if(!say && !pfUI.blob && !(PF.words[key] && PF.words[key].url)){ $("pf-wmsg").textContent = "Write how it should sound, or record it."; return; }
+    const v = Object.assign(PF.words[key] || {}, {w: word, say});
+    if(pfUI.blob){ try { await pfPut("w:" + key, pfUI.blob); } catch(e){ $("pf-wmsg").textContent = "Couldn't save the recording on this device."; return; } if(v.url) URL.revokeObjectURL(v.url); v.url = URL.createObjectURL(pfUI.blob); v.rec = true; pfUI.blob = null; }
+    PF.words[key] = v; pfSaveText(); pfChanged(); pfUI.word = word; pfDrawWords(); $("pf-wmsg").textContent = `✓ Saved! The app will now say “${word}” your way.`; };
+  if(cur) $("pf-wdel").onclick = async () => { try { await pfPut("w:" + k, null); } catch(e){} if(cur.url) URL.revokeObjectURL(cur.url); delete PF.words[k]; pfSaveText(); pfChanged(); pfDrawWords(); $("pf-wmsg").textContent = "Fix removed."; };
+  $("pf-pane").querySelectorAll("[data-pfw]").forEach(x => x.onclick = () => { pfUI.word = x.dataset.pfw; pfUI.blob = null; pfDrawWords(); }); }
+// record up to a few seconds from the mic
+function pfRecWire(id, msgId, maxMs, after){ const rb = $(id + "-rec"), pb = $(id + "-play"); if(!rb) return;
+  if(pb) pb.onclick = () => { if(pfUI.blobUrl) clipPlay(pfUI.blobUrl); };
+  rb.onclick = async () => { if(pfUI.rec){ pfRecStop(); return; }
+    let stream; try { stream = await navigator.mediaDevices.getUserMedia({audio: {echoCancellation: true, noiseSuppression: true}}); } catch(e){ $(msgId).textContent = "Please allow the microphone, then try again."; return; }
+    const mime = ["audio/mp4", "audio/webm;codecs=opus", "audio/webm"].find(t => MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t)) || "";
+    const rec = new MediaRecorder(stream, mime ? {mimeType: mime} : undefined), chunks = [];
+    rec.ondataavailable = e => { if(e.data && e.data.size) chunks.push(e.data); };
+    rec.onstop = () => { stream.getTracks().forEach(t => t.stop()); clearTimeout(pfUI.recT); const was = pfUI.rec; pfUI.rec = null; rb.textContent = "🎙️ Record again"; rb.classList.remove("on");
+      if(was && was.cancel) return; const blob = new Blob(chunks, {type: (rec.mimeType || mime || "audio/mp4").split(";")[0]}); if(blob.size < 500){ $(msgId).textContent = "That was too short. Try again."; return; }
+      pfUI.blob = blob; if(pfUI.blobUrl) URL.revokeObjectURL(pfUI.blobUrl); pfUI.blobUrl = URL.createObjectURL(blob); if(pb) pb.hidden = false; after && after(); clipPlay(pfUI.blobUrl); };
+    pfUI.rec = {rec, cancel: false}; rec.start(); rb.textContent = "⏹ Stop"; rb.classList.add("on"); $(msgId).textContent = "🔴 Recording… say it now.";
+    pfUI.recT = setTimeout(() => pfRecStop(), maxMs); }; }
+function pfRecStop(cancel){ const r = pfUI.rec; if(!r) return; r.cancel = !!cancel; try { r.rec.stop(); } catch(e){} }
+// sounds that were cached for sliding must be reloaded after a change
+function pfChanged(){ try { if(typeof siA !== "undefined") siA.buf = {}; } catch(e){} }
+function pfInit(){ $("pf-close").onclick = pfClose; $("pf-overlay").onclick = e => { if(e.target === $("pf-overlay")) pfClose(); };
+  document.querySelectorAll("[data-pfopen]").forEach(b => b.onclick = () => pfOpen(b.dataset.pfopen === "card" ? ($("c-word") && $("c-word").textContent) : "")); }
+pfLoad(); try { pfInit(); } catch(e){ console.warn("pronfix", e); }
 function speak(text, pace, more, forceNow, style){
   window.__vcPaused = false; try { if("speechSynthesis" in window && speechSynthesis.paused) speechSynthesis.resume(); } catch(e){}
   try { if(window.__abcAudio){ window.__abcAudio.pause(); window.__abcAudio = null; } } catch(e){}
-  const parts = Array.isArray(text) ? text : [[text, pace || 1, style], ...(more || []).map(x => x.length > 2 || !style ? x : [x[0], x[1], style])];
+  let parts = Array.isArray(text) ? text : [[text, pace || 1, style], ...(more || []).map(x => x.length > 2 || !style ? x : [x[0], x[1], style])];
+  try { parts = pfParts(parts); } catch(e){}
   // on the website, read everything with the natural OpenAI voice (falls back to the device voice if it can't)
   if(typeof aiVoiceEverywhere === "function" && (aiVoiceEverywhere() || (parts.forceAI && k5AIok()))){ stopAll(); const token = speakToken; aiSpeakParts(parts, token, forceNow); return; }
   deviceSpeak(parts.device || parts, forceNow);
@@ -14627,6 +14737,8 @@ async function speakWithOpenAI(text, extra){
 
 async function speakWithAI(word, syllables, def){
   const b = $("c-say");
+  // a grown-up fixed this word: play their recording, or say it their way
+  try { const clip = pfWordClip(word); if(clip){ stopAll(); clipPlay(clip); return; } const fx = !PF.bypass && PF.words[pfKey(word)]; if(fx && fx.say){ speak(fx.say, 0.85, [[fx.say, 0.95]]); return; } } catch(e){}
   const syl = syllables && syllables.length > 1 ? syllables.join(" - ") : word;
 
   if(IS_NETLIFY){
@@ -21904,7 +22016,7 @@ function voiceURL(path){ if(!path) return null; if(VPACK.urls.has(path)) return 
 window.addEventListener("load", () => setTimeout(voicePrep, 6000));
 function abcStopClip(){ try { if(window.__abcAudio){ window.__abcAudio.pause(); window.__abcAudio = null; } } catch(e){} }
 // single letter sounds use the new real recordings; blends and everything else keep the voice pack
-const abcClipFor = k => (/^o:[a-z]$/.test(k) && typeof K5_PH !== "undefined" && K5_PH[k.slice(2)]) || null;
+const abcClipFor = k => (/^o:[a-z]$/.test(k) && ((typeof pfLetterClip === "function" && pfLetterClip(k.slice(2))) || (typeof K5_PH !== "undefined" && K5_PH[k.slice(2)]))) || null;
 function abcVoice(keys, fallback, pace){
   keys = [].concat(keys).filter(k => abcClipFor(k) || ABC_VO[k]);
   abcStopClip();
@@ -38262,6 +38374,20 @@ function vtInit(){ if(!$("vt")) return; requestAnimationFrame(() => vtPlot()); i
 .k5-sitiles{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
 .k5-sitile{width:clamp(52px,12vw,70px);height:clamp(58px,14vw,78px);border-radius:14px;border:3px solid var(--line);background:#fef3c7;color:#1d4ed8;font:inherit;font-size:clamp(32px,8vw,46px);font-weight:800;cursor:grab;touch-action:none;box-shadow:0 4px 0 var(--line);user-select:none;-webkit-user-select:none}
 .k5-sitile.drag{cursor:grabbing;position:relative;z-index:5;box-shadow:0 10px 18px rgba(0,0,0,.25)}
+.pf-cardwrap{max-width:560px}.pf-tabs{display:flex;gap:6px;margin:6px 0 10px}.pf-tabs button{flex:1;padding:9px;border-radius:12px;border:2px solid var(--line);background:#fff;color:#1f2937;font:inherit;font-weight:700;cursor:pointer}
+.pf-tabs button[aria-selected="true"]{background:var(--grass,#16a34a);color:#fff}
+.pf-tip{margin:0 0 10px;font-size:15px}.pf-letters{display:grid;grid-template-columns:repeat(auto-fill,minmax(42px,1fr));gap:6px;margin-bottom:10px}
+.pf-letters button{position:relative;height:44px;border-radius:10px;border:2px solid var(--line);background:#fff;color:#1d4ed8;font:inherit;font-size:22px;font-weight:800;cursor:pointer}
+.pf-letters button[aria-pressed="true"]{background:#fde047}.pf-letters button.fixed{border-color:#16a34a}.pf-letters i{position:absolute;top:-6px;right:-6px;font-style:normal;font-size:11px;background:#16a34a;color:#fff;border-radius:50%;width:17px;height:17px;display:grid;place-items:center}
+.pf-card{border:2px solid var(--line);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:8px;background:#fffdf5;color:#1f2937}
+.pf-big{font-size:26px;font-weight:800;margin:0}.pf-big small{font-size:15px;font-weight:600;opacity:.8}
+.pf-recrow,.pf-row{display:flex;flex-wrap:wrap;gap:8px}.pf-recrow .btn,.pf-row .btn{flex:1 1 auto}.pf-recrow .btn.on{background:#e11d48;color:#fff}
+.pf-lab{display:flex;flex-direction:column;gap:4px;font-weight:700}.pf-lab input,.pf-row input{font:inherit;font-size:18px;padding:9px 10px;border-radius:10px;border:2px solid var(--line);min-width:0;flex:1}
+.pf-msg{margin:0;min-height:1.3em;font-weight:700;color:#166534}.pf-note{font-size:13px;opacity:.75;margin:8px 0 0}
+.pf-h{margin:14px 0 6px;font-size:16px}.pf-list{display:flex;flex-direction:column;gap:6px}.pf-list button{text-align:left;padding:8px 10px;border-radius:10px;border:2px solid var(--line);background:#fff;color:#1f2937;font:inherit;cursor:pointer}
+.pf-gate{display:flex;flex-direction:column;gap:8px}.pf-q{font-size:24px;font-weight:800;margin:0}
+.pf-link{display:block;margin:8px auto 0;border:0;background:none;color:inherit;opacity:.75;font:inherit;font-size:14px;text-decoration:underline;cursor:pointer}
+.pf-open{width:100%;margin-top:14px}
 .k5-card{border:3px solid var(--line);border-radius:18px;padding:10px 12px;display:flex;flex-direction:column;gap:8px;background:var(--paper)}
 .k5-fb{margin:0;text-align:center;font-weight:700;min-height:1.3em}
 .k5-seg{display:flex;gap:4px;justify-content:center}.k5-seg.k5-wrap{flex-wrap:wrap}
@@ -38484,15 +38610,16 @@ const K5_AISND = {a: "ă", b: "b", c: "k", d: "d", e: "ĕ", f: "fff", g: "g", h:
 // letter sounds always use the natural AI teacher voice on the website (the recorded sounds are only the backup)
 function k5AIok(){ return typeof IS_NETLIFY !== "undefined" && IS_NETLIFY && !window.__aiTTSDown && typeof AI_AUDIO !== "undefined" && !!AI_AUDIO && navigator.onLine !== false && typeof aiTTSUrl === "function"; }
 function k5Line(bits, pace){
-  const device = bits.map(b => typeof b === "string" ? [b, pace || 0.82, "kids"] : (k5Clip(b.s) ? [b.s, 1, "kids", k5Clip(b.s)] : [K5_SND[String(b.s).toUpperCase()] || b.s, pace || 0.82, "kids"]));
+  const mine = b => typeof b !== "string" && pfLetterClip(b.s);
+  const device = bits.map(b => typeof b === "string" ? [b, pace || 0.82, "kids"] : mine(b) ? [b.s, 1, "kids", mine(b)] : (k5Clip(b.s) ? [b.s, 1, "kids", k5Clip(b.s)] : [K5_SND[String(b.s).toUpperCase()] || b.s, pace || 0.82, "kids"]));
   let parts = device;
   if(k5AIok()){
     const snd = b => String(b.s).toLowerCase(), slash = b => "/" + (K5_AISND[snd(b)] || snd(b)) + "/";
     const sounds = bits.filter(b => typeof b !== "string");
-    if(sounds.length === 1){ // one natural clip: "This is the letter S. It makes the sound /sss/, like sun!"
+    if(sounds.length === 1 && !mine(sounds[0])){ // one natural clip: "This is the letter S. It makes the sound /sss/, like sun!"
       const txt = bits.map(b => typeof b === "string" ? b : slash(b) + (b === bits[bits.length - 1] ? "" : ",")).join(" ");
       parts = [[txt, pace || 0.82, "kids", null, snd(sounds[0])]];
-    } else parts = bits.map(b => typeof b === "string" ? [b, pace || 0.82, "kids"] : [slash(b), 1, "kids", null, snd(b)]);
+    } else parts = bits.map(b => typeof b === "string" ? [b, pace || 0.82, "kids"] : mine(b) ? [b.s, 1, "kids", mine(b)] : [slash(b), 1, "kids", null, snd(b)]);
     parts.device = device; parts.forceAI = true;
   }
   try { speak(parts); } catch(e){} }
@@ -38936,16 +39063,18 @@ function k5SiTrim(ab){ const ch = ab.getChannelData(0), n = ch.length, th = 0.02
   while(a < n && Math.abs(ch[a]) < th) a++; while(b > a && Math.abs(ch[b]) < th) b--;
   a = Math.max(0, a - Math.round(sr * 0.012)); b = Math.min(n - 1, b + Math.round(sr * 0.04)); if(b - a < sr * 0.03) return ab;
   const out = siA.ctx.createBuffer(1, b - a, sr); out.getChannelData(0).set(ch.subarray(a, b)); return out; }
-async function k5SiLoad(l){ const key = (k5AIok() ? "ai:" : "rec:") + l; if(siA.buf[key]) return siA.buf[key];
+const k5SiKey = l => (pfLetterClip(l) ? "pf:" : k5AIok() ? "ai:" : "rec:") + l;
+async function k5SiLoad(l){ const key = k5SiKey(l); if(siA.buf[key]) return siA.buf[key];
   const ctx = k5SiCtx(); if(!ctx) return null;
   siA.buf[key] = (async () => { let bytes = null;
-    if(k5AIok()){ try { const url = await aiTTSUrl("/" + (K5_AISND[l] || l) + "/", "kids", l); bytes = await (await fetch(url)).arrayBuffer(); } catch(e){ bytes = null; } }
+    if(pfLetterClip(l)){ try { bytes = await (await fetch(pfLetterClip(l))).arrayBuffer(); } catch(e){ bytes = null; } }
+    if(!bytes && k5AIok()){ try { const url = await aiTTSUrl("/" + (K5_AISND[l] || l) + "/", "kids", l); bytes = await (await fetch(url)).arrayBuffer(); } catch(e){ bytes = null; } }
     if(!bytes && K5_PH[l]){ const b64 = K5_PH[l].split(",")[1], bin = atob(b64), u = new Uint8Array(bin.length); for(let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); bytes = u.buffer; }
     if(!bytes) return null;
     const ab = await new Promise((res, rej) => { const p = ctx.decodeAudioData(bytes, res, rej); if(p && p.then) p.then(res, rej); });
     return k5SiTrim(ab); })().catch(() => { delete siA.buf[key]; return null; });
   return siA.buf[key]; }
-function k5SiPlay(l){ const ctx = k5SiCtx(), key = (k5AIok() ? "ai:" : "rec:") + l, p = siA.buf[key];
+function k5SiPlay(l){ const ctx = k5SiCtx(), key = k5SiKey(l), p = siA.buf[key];
   const go = ab => { if(!ab || !ctx){ k5Sound(l); return; } try { stopAll(); } catch(e){}
     const t = ctx.currentTime;
     if(siA.cur){ try { siA.cur.g.gain.cancelScheduledValues(t); siA.cur.g.gain.setValueAtTime(siA.cur.g.gain.value, t); siA.cur.g.gain.linearRampToValueAtTime(0, t + 0.06); siA.cur.s.stop(t + 0.07); } catch(e){} }
