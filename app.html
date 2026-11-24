@@ -14593,7 +14593,7 @@ const AI_TTS_CACHE = new Map();
 const WB_TTS_DEVICE = "wb-tts-v1";
 async function ttsFetch(init){
   let key = null;
-  try { const b = JSON.parse(init.body || "{}"); key = "https://tts.cache/" + encodeURIComponent([b.voice || "nova", b.style || "", String(b.text || "").replace(/\s+/g, " ").trim()].concat(b.snd ? ["s:" + b.snd] : [], b.w ? ["w:" + b.w] : [], b.hint ? ["h:" + b.hint] : [], b.take ? ["t:" + b.take] : []).join("|")).slice(0, 1800); } catch(e){}
+  try { const b = JSON.parse(init.body || "{}"); key = "https://tts.cache/" + encodeURIComponent([b.voice || "nova", b.style || "", String(b.text || "").replace(/\s+/g, " ").trim()].concat(b.snd ? ["s2:" + b.snd] : [], b.w ? ["w:" + b.w] : [], b.hint ? ["h:" + b.hint] : [], b.take ? ["t:" + b.take] : []).join("|")).slice(0, 1800); } catch(e){}
   if(key && typeof caches !== "undefined"){ try { const c = await caches.open(WB_TTS_DEVICE), hit = await c.match(key); if(hit) return hit; } catch(e){} }
   const res = await fetch("/.netlify/functions/tts", init);
   if(res.ok && key && typeof caches !== "undefined"){ try { const copy = res.clone(), blob = await copy.blob(); if(blob.size > 200){ const c = await caches.open(WB_TTS_DEVICE); await c.put(key, new Response(blob, {headers: {"Content-Type": "audio/mpeg"}})); } } catch(e){} }

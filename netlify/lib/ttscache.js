@@ -71,13 +71,44 @@ function cacheStore(event) {
   try { blobs.connectLambda(event); } catch (e) {}
   try { return blobs.getStore("tts-cache"); } catch (e) { return null; }
 }
+// Letter sounds: the plain text-to-speech voice reads "/llll/" as the letter NAME ("el"). A speaking AI model is told
+// what sound to make instead of reading letters, so it says the real sound. SOUND_VOICE_MODEL in Netlify can pick the model.
+const SOUND_MODELS = [process.env.SOUND_VOICE_MODEL, "gpt-audio-mini", "gpt-audio", "gpt-4o-mini-audio-preview", "gpt-4o-audio-preview"].filter(Boolean);
+async function soundSpeech(apiKey, req) {
+  const sound = PHONICS[req.snd] + (req.hint ? `. A parent listened and says it should be: ${req.hint} (follow the parent)` : "");
+  const sys = "You are a warm, cheerful kindergarten phonics teacher recording audio for a children's learning app. You speak ONLY the script you are given, once, " +
+    "slowly and clearly with a bright smiling voice, and nothing else: no greeting, no extra words, no explanation, no questions. " +
+    "In the script, a letter SOUND is written between slashes, like /llll/. Where you see it, make only that pure speech sound, exactly as described. " +
+    "Never say the letter's name there (for L never say 'el', for M never say 'em', for S never say 'ess').";
+  const user = `The letter sound in this script: ${sound}.\nScript to speak: ${req.text}`;
+  let last = "";
+  for (const model of SOUND_MODELS) {
+    try {
+      const r = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST", headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ model, modalities: ["text", "audio"], audio: { voice: req.voice || "coral", format: "mp3" }, temperature: 0.8,
+          messages: [{ role: "system", content: sys }, { role: "user", content: user }] })
+      });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) { last = `${model} ${r.status} ${d.error && d.error.message}`; if (r.status === 401 || r.status === 429) break; continue; }
+      const a = d.choices && d.choices[0] && d.choices[0].message && d.choices[0].message.audio;
+      const said = String((a && a.transcript) || "");
+      // the model sometimes chats ("Sure! Here it is...") — a much longer answer than the script means it went off-script
+      if (!a || !a.data || said.length > req.text.length * 1.6 + 30) { last = `${model} off-script: ${said.slice(0, 80)}`; continue; }
+      return Buffer.from(a.data, "base64");
+    } catch (e) { last = `${model} ${e.message}`; }
+  }
+  console.warn("letter sound via speaking model failed, using text-to-speech:", last);
+  return null;
+}
 // returns {buf, hit} — hit = true when the clip came from storage (no OpenAI call)
 async function getClip(event, apiKey, req) {
-  const st = cacheStore(event), key = clipKey(req.model, req.voice, req.style, req.text, req.snd, req.w, req.hint, req.take);
+  const st = cacheStore(event), key = clipKey(req.snd ? "snd2" : req.model, req.voice, req.style, req.text, req.snd, req.w, req.hint, req.take);
   if (st) {
     try { const saved = await st.get(key, { type: "arrayBuffer" }); if (saved && saved.byteLength > 200) return { buf: Buffer.from(saved), hit: true, key }; } catch (e) {}
   }
   if (!apiKey) throw { status: 500, message: "OpenAI API key not configured" };
+  if (req.snd) { const buf = await soundSpeech(apiKey, req); if (buf && buf.length > 200) { if (st) { try { await st.set(key, buf, { metadata: { voice: req.voice, style: req.style, model: "snd2", chars: req.text.length } }); } catch (e) {} } return { buf, hit: false, key }; } }
   const speech = payload => fetch("https://api.openai.com/v1/audio/speech", {
     method: "POST", headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" }, body: JSON.stringify(payload)
   });
