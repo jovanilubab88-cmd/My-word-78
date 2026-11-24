@@ -14371,8 +14371,8 @@ function speak(text, pace, more, forceNow, style){
   try { if(window.__abcAudio){ window.__abcAudio.pause(); window.__abcAudio = null; } } catch(e){}
   const parts = Array.isArray(text) ? text : [[text, pace || 1, style], ...(more || []).map(x => x.length > 2 || !style ? x : [x[0], x[1], style])];
   // on the website, read everything with the natural OpenAI voice (falls back to the device voice if it can't)
-  if(typeof aiVoiceEverywhere === "function" && aiVoiceEverywhere()){ stopAll(); const token = speakToken; aiSpeakParts(parts, token, forceNow); return; }
-  deviceSpeak(parts, forceNow);
+  if(typeof aiVoiceEverywhere === "function" && (aiVoiceEverywhere() || (parts.forceAI && k5AIok()))){ stopAll(); const token = speakToken; aiSpeakParts(parts, token, forceNow); return; }
+  deviceSpeak(parts.device || parts, forceNow);
 }
 // play a recorded clip (a real letter sound) inside a spoken line, on the already-unlocked audio player
 function clipPlay(url){ return new Promise(res => { try { const a = AI_AUDIO || new Audio(); a.onended = () => res(true); a.onerror = () => res(false); a.src = url; a.playbackRate = 1; a.__speaking = true; const p = a.play(); if(p && p.catch) p.catch(() => res(false)); setTimeout(() => res(true), 4000); } catch(e){ res(false); } }).then(ok => { try { AI_AUDIO.__speaking = false; } catch(e){} return ok; }); }
@@ -38481,17 +38481,19 @@ const k5Clip = l => K5_PH[String(l).toLowerCase()];
 const K5_AISND = {a: "ă", b: "b", c: "k", d: "d", e: "ĕ", f: "fff", g: "g", h: "h", i: "ĭ", j: "j", k: "k", l: "lll", m: "mmm", n: "nnn", o: "ŏ", p: "p", q: "kw", r: "rrr", s: "sss", t: "t", u: "ŭ", v: "vvv", w: "w", x: "ks", y: "y", z: "zzz"};
 // on the website the AI voice says the whole line, letter sound included (told exactly which pure sound to make);
 // the recorded sounds are the backup when the AI voice isn't available
+// letter sounds always use the natural AI teacher voice on the website (the recorded sounds are only the backup)
+function k5AIok(){ return typeof IS_NETLIFY !== "undefined" && IS_NETLIFY && !window.__aiTTSDown && typeof AI_AUDIO !== "undefined" && !!AI_AUDIO && navigator.onLine !== false && typeof aiTTSUrl === "function"; }
 function k5Line(bits, pace){
   const device = bits.map(b => typeof b === "string" ? [b, pace || 0.82, "kids"] : (k5Clip(b.s) ? [b.s, 1, "kids", k5Clip(b.s)] : [K5_SND[String(b.s).toUpperCase()] || b.s, pace || 0.82, "kids"]));
   let parts = device;
-  if(typeof aiVoiceEverywhere === "function" && aiVoiceEverywhere() && !window.__aiTTSDown){
+  if(k5AIok()){
     const snd = b => String(b.s).toLowerCase(), slash = b => "/" + (K5_AISND[snd(b)] || snd(b)) + "/";
     const sounds = bits.filter(b => typeof b !== "string");
     if(sounds.length === 1){ // one natural clip: "This is the letter S. It makes the sound /sss/, like sun!"
       const txt = bits.map(b => typeof b === "string" ? b : slash(b) + (b === bits[bits.length - 1] ? "" : ",")).join(" ");
       parts = [[txt, pace || 0.82, "kids", null, snd(sounds[0])]];
     } else parts = bits.map(b => typeof b === "string" ? [b, pace || 0.82, "kids"] : [slash(b), 1, "kids", null, snd(b)]);
-    parts.device = device;
+    parts.device = device; parts.forceAI = true;
   }
   try { speak(parts); } catch(e){} }
 const k5Sound = l => k5Line([{s: l}]);
@@ -38927,7 +38929,7 @@ const K5_SIW = {
 };
 const siw = {mode: "slide", n: 3, i: -1, word: "", pic: "", at: -1, done: false, built: [], won: false};
 // get every letter sound of this word ready, so sliding is instant
-function k5SiWarm(w){ try { if(typeof aiVoiceEverywhere === "function" && aiVoiceEverywhere() && !window.__aiTTSDown) [...new Set(w)].forEach(l => aiTTSUrl("/" + (K5_AISND[l] || l) + "/", "kids", l).catch(() => {})); } catch(e){} }
+function k5SiWarm(w){ try { if(k5AIok()) [...new Set(w)].forEach(l => aiTTSUrl("/" + (K5_AISND[l] || l) + "/", "kids", l).catch(() => {})); } catch(e){} }
 function k5SiNew(){ const L = K5_SIW[siw.n]; let i; do { i = Math.floor(Math.random() * L.length); } while(L.length > 1 && i === siw.i); siw.i = i;
   [siw.word, siw.pic] = L[i]; siw.at = -1; siw.done = false; siw.won = false; siw.built = Array(siw.word.length).fill(null); k5SiWarm(siw.word); k5SiDraw(); }
 function k5SiDraw(){ const w = siw.word, box = $("k5-sibox");
