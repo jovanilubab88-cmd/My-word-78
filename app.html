@@ -2443,6 +2443,7 @@ window.MWB_TRIAL_DAYS = 14;
       </div>
       <div class="k5-tabs" role="tablist" aria-label="Learning studio activities">
         <button type="button" role="tab" data-k5="trace" aria-selected="true"><span class="ti">✍️</span>Trace</button>
+        <button type="button" role="tab" data-k5="abc" aria-selected="false"><span class="ti">🔤</span>ABC</button>
         <button type="button" role="tab" data-k5="blend" aria-selected="false"><span class="ti">🧩</span>Blend</button>
         <button type="button" role="tab" data-k5="sight" aria-selected="false"><span class="ti">🃏</span>Words</button>
         <button type="button" role="tab" data-k5="books" aria-selected="false"><span class="ti">📚</span>Books</button>
@@ -2651,12 +2652,9 @@ window.MWB_TRIAL_DAYS = 14;
           <p class="k5-fb" id="k5-dqfb" aria-live="polite"></p>
           <div class="k5-row"><button type="button" class="k5-btn alt" id="k5-dqskip">⏭ Next question</button></div></div>
       </div>
-      <!-- 🏆 stickers -->
-      <div class="k5-pane" data-pane="stickers" hidden>
-        <div class="k5-card"><div class="k5-row sp"><b>🏆 My sticker book</b><span class="k5-frac" id="k5-stcount">0/22</span></div>
-          <div class="k5-stickers" id="k5-stk"></div><p class="k5-fb" id="k5-stinfo" aria-live="polite">Earn stars to unlock stickers!</p></div>
-      </div>
-    </div>
+      <!-- 🔤 ABC alphabet and letter sounds -->
+      <div class="k5-pane" data-pane="abc" hidden>
+        <div class="k5-card k5-abc">
     <p class="cell-intro" style="text-align:center;font-size:.95rem">Tap any word to hear it! The coloured letters show the special sound. ✨ Use AI to discover more words!</p>
     <div style="display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin:0 0 6px">
       <div class="cell-toggle" role="group" aria-label="Sound category" style="display:inline-flex;flex-wrap:wrap;gap:6px;justify-content:center">
@@ -2693,7 +2691,15 @@ window.MWB_TRIAL_DAYS = 14;
       <div class="jdots" id="sj-dots"></div>
       <div class="jnav"><button class="btn alt" id="sj-back">‹ Back</button><button class="btn alt" id="sj-say">🔊 Listen</button><button class="btn" id="sj-next">Next ›</button></div>
     </div>
-  </section>
+        </div>
+      </div>
+      <!-- 🏆 stickers -->
+      <div class="k5-pane" data-pane="stickers" hidden>
+        <div class="k5-card"><div class="k5-row sp"><b>🏆 My sticker book</b><span class="k5-frac" id="k5-stcount">0/22</span></div>
+          <div class="k5-stickers" id="k5-stk"></div><p class="k5-fb" id="k5-stinfo" aria-live="polite">Earn stars to unlock stickers!</p></div>
+      </div>
+    </div>
+    </section>
 
   <section id="view-bacteria" hidden>
     <div class="cell-head"><button class="icon-btn" id="bact-back" aria-label="Back to Bacteria folder">‹</button><h2>🦠 Bacteria Lab</h2></div>
@@ -38632,7 +38638,7 @@ const K5_TITLES = ["Seedling", "Explorer", "Adventurer", "Star Scout", "Word Wiz
 const K5_ACC = ["", "🎀", "🧢", "🕶️", "🎩", "🦸", "🔬", "🏅", "🎓", "🚀", "👑", "💎"];
 const K5_BUDDIES = ["🐻", "🐱", "🐶", "🦊", "🐼", "🐸", "🦄", "🐙", "🦖", "🐰"];
 const K5_CHEERS = ["Awesome!", "You did it!", "Super star!", "Brilliant!", "Wow, great job!", "Keep going!", "High five! ✋", "You're on fire! 🔥"];
-const K5_TIPS = {books: "Pick a book! Tap 🔊 and I'll read it with you 📚", trace: "Let's trace! Follow the dotted letter with your finger ✍️", blend: "Tap each letter to hear its sound, then blend them! 🧩", sight: "Flip the cards, then play Listen & match! 🃏", math: "Count, add and slice pizzas! 🍕", build: "Build big numbers with blocks! 🧱", clock: "Drag the clock hands to tell the time! ⏰", sci: "Make rain, light a bulb, grow a plant! 🧪", space: "Tap a planet to visit it! 🚀", matter: "Heat and cool the water. What happens? 🔬", money: "Count coins and give change! 💰", shapes: "Shapes, perimeter and angles! 📐", music: "Play the piano! 🎹", animals: "Where do animals live? 🐾", dino: "Travel back in time and meet the dinosaurs! 🦖", sparky: "Ask me anything! 🎤", stickers: "Look at all your stickers! 🏆"};
+const K5_TIPS = {abc: "Tap a letter to hear its name and sound! Then try the sound groups 🔤", books: "Pick a book! Tap 🔊 and I'll read it with you 📚", trace: "Let's trace! Follow the dotted letter with your finger ✍️", blend: "Tap each letter to hear its sound, then blend them! 🧩", sight: "Flip the cards, then play Listen & match! 🃏", math: "Count, add and slice pizzas! 🍕", build: "Build big numbers with blocks! 🧱", clock: "Drag the clock hands to tell the time! ⏰", sci: "Make rain, light a bulb, grow a plant! 🧪", space: "Tap a planet to visit it! 🚀", matter: "Heat and cool the water. What happens? 🔬", money: "Count coins and give change! 💰", shapes: "Shapes, perimeter and angles! 📐", music: "Play the piano! 🎹", animals: "Where do animals live? 🐾", dino: "Travel back in time and meet the dinosaurs! 🦖", sparky: "Ask me anything! 🎤", stickers: "Look at all your stickers! 🏆"};
 const K5_BADGES = [
   ["first", "⭐", "First Star", "Earn your very first star.", k => k.stars >= 1], ["s10", "🌟", "Star Collector", "Collect 10 stars.", k => k.stars >= 10],
   ["s25", "💫", "Star Shower", "Collect 25 stars.", k => k.stars >= 25], ["s50", "🌠", "Galaxy Glow", "Collect 50 stars.", k => k.stars >= 50], ["s100", "🏆", "Super Star", "Collect 100 stars.", k => k.stars >= 100],
@@ -38685,7 +38691,7 @@ function k5Stickers(){ const got = K5_BADGES.filter(b => k5.badges[b[0]]).length
   $("k5-stk").innerHTML = K5_BADGES.map(b => k5.badges[b[0]] ? `<button type="button" class="k5-stk on" data-b="${b[0]}"><span>${b[1]}</span><small>${b[2]}</small></button>` : `<button type="button" class="k5-stk" data-b="${b[0]}" aria-label="Locked sticker. ${b[3]}"><span>🔒</span><small>???</small></button>`).join("");
   $("k5-stk").querySelectorAll("[data-b]").forEach(btn => btn.onclick = () => { const b = K5_BADGES.find(x => x[0] === btn.dataset.b), on = k5.badges[b[0]]; $("k5-stinfo").textContent = on ? `${b[1]} ${b[2]} — ${b[3]}` : `🔒 How to get it: ${b[3]}`; if(on) k5Say(`${b[2]}. ${b[3]}`); }); }
 function k5xTab(t){ if(t !== "stickers" && !k5.seen.tabs.includes(t)){ k5.seen.tabs.push(t); k5Badges(); k5Save(); }
-  k5Bubble(K5_TIPS[t] || "Let's play!"); if(t === "build"){ k5BuildDraw(); k5ArrDraw(); } if(t === "clock") k5ClockDraw(); if(t === "space") k5SpaceInit(); if(t === "matter") k5MatterStart(); if(t === "money") k5MoneyDraw(); if(t === "shapes"){ k5ShapeDraw(); k5GridDraw(); k5AngleDraw(); } if(t === "music") k5PianoDraw(); if(t === "animals" && !k5.anm) k5AnimalNext(); if(t === "dino") k5DinoInit(); if(t === "stickers") k5Stickers(); if(t === "books") k5BooksInit(); else if(typeof kbk !== "undefined" && kbk.book){ kbk.auto = false; try { $("k5-bkauto").checked = false; } catch(e){} k5BkStop(); } }
+  k5Bubble(K5_TIPS[t] || "Let's play!"); if(t === "build"){ k5BuildDraw(); k5ArrDraw(); } if(t === "clock") k5ClockDraw(); if(t === "space") k5SpaceInit(); if(t === "matter") k5MatterStart(); if(t === "money") k5MoneyDraw(); if(t === "shapes"){ k5ShapeDraw(); k5GridDraw(); k5AngleDraw(); } if(t === "music") k5PianoDraw(); if(t === "animals" && !k5.anm) k5AnimalNext(); if(t === "dino") k5DinoInit(); if(t === "stickers") k5Stickers(); if(t === "abc"){ try { renderSoundsGrid(); } catch(e){} } else { try { abcStop(); if(soundsQuizActive) stopSoundsQuiz(); } catch(e){} } if(t === "books") k5BooksInit(); else if(typeof kbk !== "undefined" && kbk.book){ kbk.auto = false; try { $("k5-bkauto").checked = false; } catch(e){} k5BkStop(); } }
 function k5xAsk(){ k5.asks++; k5Badges(); k5Save(); }
 // 📚 Read-along storybooks for K–5: original stories and classic fables retold in simple words.
 // Each page: t = text, s = scene, p = pictures [emoji, x%, y%, size% of picture width, flip?]
