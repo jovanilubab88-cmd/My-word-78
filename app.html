@@ -14394,16 +14394,18 @@ function pfRecBox(id){ return pfMicOK() ? `<div class="pf-recrow"><button type="
   : `<p class="pf-note">🎙️ Recording works on the website version of the app.</p>`; }
 function pfDrawLetters(){ const l = pfUI.letter, ex = (typeof K5_ABC !== "undefined" ? K5_ABC.find(a => a[0].toLowerCase() === l) : null), has = PF.letters[l] && PF.letters[l].url, ai = typeof k5AIok === "function" && k5AIok();
   if(pfUI.tryL !== l){ pfUI.tryL = l; pfUI.take = 0; pfUI.tryUrl = ""; }
-  $("pf-pane").innerHTML = `<p class="pf-tip">Pick a letter and listen. If the sound isn't right, tell the AI how it should sound and let it try again. When you hear a good one, tap <b>Use this sound</b>. The AI's voice is then used for this letter everywhere in K–5.</p>
+  $("pf-pane").innerHTML = `<p class="pf-tip">Pick a letter and listen. If the sound isn't right, tap <b>Say it</b> and say the correct sound. The AI listens, learns how it should sound, and says it in its own voice. When you hear a good one, tap <b>Use this sound</b>. It's then used for this letter everywhere in K–5. Your recording is never played to the kids.</p>
     <div class="pf-letters">${"abcdefghijklmnopqrstuvwxyz".split("").map(c => `<button type="button" data-pfl="${c}" aria-pressed="${c === l}" class="${PF.letters[c] && PF.letters[c].url ? "fixed" : ""}">${c}${PF.letters[c] && PF.letters[c].url ? "<i>✓</i>" : ""}</button>`).join("")}</div>
     <div class="pf-card"><p class="pf-big">${l.toUpperCase()} ${l}${ex ? ` <small>as in ${esc(ex[2].toLowerCase())}</small>` : ""}</p>
       <div class="pf-recrow"><button type="button" class="btn alt" id="pf-lapp">🔊 App's sound now</button></div>
-      <label class="pf-lab">How should it sound? <small>(optional)</small><input id="pf-lhint" type="text" maxlength="120" autocomplete="off" spellcheck="false" value="${esc(pfUI.hint && pfUI.hintL === l ? pfUI.hint : "")}" placeholder="e.g. a long llll like the start of lion, not 'el'"></label>
+      ${ai && pfMicOK() ? `<div class="pf-recrow"><button type="button" class="btn" id="pf-l-rec">🎙️ Say it, and the AI learns</button></div>` : ""}
+      <label class="pf-lab">How should it sound? <small>(the AI fills this in from your recording, or you can type it)</small><input id="pf-lhint" type="text" maxlength="120" autocomplete="off" spellcheck="false" value="${esc(pfUI.hint && pfUI.hintL === l ? pfUI.hint : "")}" placeholder="e.g. a long llll like the start of lion, not 'el'"></label>
       <div class="pf-recrow"><button type="button" class="btn alt" id="pf-ltry" ${ai ? "" : "disabled"}>🤖 AI, try again</button><button type="button" class="btn" id="pf-luse" ${pfUI.tryUrl ? "" : "hidden"}>✅ Use this sound</button>${has ? `<button type="button" class="btn alt" id="pf-ldel">↩️ Go back to the app's sound</button>` : ""}</div>
       <p class="pf-msg" id="pf-lmsg" aria-live="polite">${!ai ? "The AI voice only works on your website, so open the app there to fix letter sounds." : has ? "✓ A chosen AI sound is used for this letter." : ""}</p></div>`;
   $("pf-pane").querySelectorAll("[data-pfl]").forEach(x => x.onclick = () => { pfUI.letter = x.dataset.pfl; pfDrawLetters(); });
   $("pf-lhint").oninput = e => { pfUI.hint = e.target.value; pfUI.hintL = l; };
   $("pf-lapp").onclick = () => { try { k5Line([{s: l}]); } catch(e){} };
+  pfRecWire("pf-l", "pf-lmsg", 4000, () => { pfLearn(l, ex ? ex[2] : ""); return true; });
   $("pf-ltry").onclick = async () => { const msg = $("pf-lmsg"), btn = $("pf-ltry"); btn.disabled = true; msg.textContent = "The AI is trying…"; pfUI.take = (pfUI.take || 0) + 1;
     try { const url = await aiTTSUrl("/" + (K5_AISND[l] || l) + "/", "kids", l, {hint: $("pf-lhint").value.trim(), take: pfUI.take}); if(pfUI.letter !== l) return;
       pfUI.tryUrl = url; clipPlay(url); msg.textContent = `Try ${pfUI.take}. Good? Tap ✅ Use this sound. Not yet? Change the description or tap “AI, try again”.`; $("pf-luse").hidden = false;
@@ -14416,6 +14418,21 @@ function pfDrawLetters(){ const l = pfUI.letter, ex = (typeof K5_ABC !== "undefi
     pfUI.tryUrl = ""; pfSaveText(); pfChanged(); try { if(typeof siA !== "undefined" && siA.buf) Object.keys(siA.buf).forEach(k => { if(k.endsWith(":" + l)) delete siA.buf[k]; }); } catch(e){}
     pfDrawLetters(); $("pf-lmsg").textContent = "✓ Saved! This AI sound is now used for this letter."; };
   if(has) $("pf-ldel").onclick = async () => { try { await pfPut("a:" + l, null); } catch(e){} URL.revokeObjectURL(PF.letters[l].url); delete PF.letters[l]; pfSaveText(); pfChanged(); pfDrawLetters(); $("pf-lmsg").textContent = "Back to the app's sound."; }; }
+// the AI listens to the grown-up's recording and describes the sound; then it says the sound that way in its own voice
+async function pfWav(blob){ const AC = window.AudioContext || window.webkitAudioContext, ctx = new AC(); let buf;
+  try { buf = await new Promise((res, rej) => { blob.arrayBuffer().then(ab => { const p = ctx.decodeAudioData(ab, res, rej); if(p && p.then) p.then(res, rej); }, rej); }); } finally { try { ctx.close(); } catch(e){} }
+  const src = buf.getChannelData(0), rate = 16000, step = buf.sampleRate / rate, n = Math.min(Math.floor(src.length / step), rate * 5), pcm = new Int16Array(n);
+  let peak = 0; for(let i = 0; i < src.length; i++) peak = Math.max(peak, Math.abs(src[i])); const g = peak > 0.01 ? Math.min(4, 0.9 / peak) : 1;
+  for(let i = 0; i < n; i++){ const v = Math.max(-1, Math.min(1, src[Math.floor(i * step)] * g)); pcm[i] = v < 0 ? v * 0x8000 : v * 0x7fff; }
+  const out = new DataView(new ArrayBuffer(44 + n * 2)), w = (o, t) => { for(let i = 0; i < t.length; i++) out.setUint8(o + i, t.charCodeAt(i)); };
+  w(0, "RIFF"); out.setUint32(4, 36 + n * 2, true); w(8, "WAVE"); w(12, "fmt "); out.setUint32(16, 16, true); out.setUint16(20, 1, true); out.setUint16(22, 1, true); out.setUint32(24, rate, true); out.setUint32(28, rate * 2, true); out.setUint16(32, 2, true); out.setUint16(34, 16, true); w(36, "data"); out.setUint32(40, n * 2, true);
+  new Int16Array(out.buffer, 44).set(pcm); let bin = ""; const bytes = new Uint8Array(out.buffer); for(let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000)); return btoa(bin); }
+async function pfLearn(l, example){ const msg = $("pf-lmsg"), blob = pfUI.blob; pfUI.blob = null; if(!blob) return; msg.textContent = "🎧 The AI is listening to your sound…";
+  let hint = "";
+  try { const audio = await pfWav(blob), r = await fetch("/.netlify/functions/sound-learn", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({audio, letter: l, example})}), d = await r.json().catch(() => ({}));
+    if(!r.ok || !d.hint){ if(pfUI.letter === l) msg.textContent = d.message || "The AI couldn't listen to that recording. Try again, or type how it should sound."; return; } hint = d.hint;
+  } catch(e){ if(pfUI.letter === l) msg.textContent = "The AI couldn't listen to that recording. Check the internet and try again."; return; }
+  if(pfUI.letter !== l || !$("pf-lhint")) return; $("pf-lhint").value = hint; pfUI.hint = hint; pfUI.hintL = l; $("pf-ltry").click(); }
 function pfDrawWords(){ const k = pfKey(pfUI.word), cur = PF.words[k] || null, list = Object.values(PF.words).filter(v => v.say || v.url);
   $("pf-pane").innerHTML = `<p class="pf-tip">Type a word the app says wrong. Then either write how it should sound, or record yourself saying it.</p>
     <div class="pf-card"><label class="pf-lab">Word<input id="pf-w" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" value="${esc(pfUI.word)}" placeholder="e.g. Golgi"></label>
@@ -14448,7 +14465,7 @@ function pfRecWire(id, msgId, maxMs, after){ const rb = $(id + "-rec"), pb = $(i
     rec.ondataavailable = e => { if(e.data && e.data.size) chunks.push(e.data); };
     rec.onstop = () => { stream.getTracks().forEach(t => t.stop()); clearTimeout(pfUI.recT); const was = pfUI.rec; pfUI.rec = null; rb.textContent = "🎙️ Record again"; rb.classList.remove("on");
       if(was && was.cancel) return; const blob = new Blob(chunks, {type: (rec.mimeType || mime || "audio/mp4").split(";")[0]}); if(blob.size < 500){ $(msgId).textContent = "That was too short. Try again."; return; }
-      pfUI.blob = blob; if(pfUI.blobUrl) URL.revokeObjectURL(pfUI.blobUrl); pfUI.blobUrl = URL.createObjectURL(blob); if(pb) pb.hidden = false; after && after(); clipPlay(pfUI.blobUrl); };
+      pfUI.blob = blob; if(pfUI.blobUrl) URL.revokeObjectURL(pfUI.blobUrl); pfUI.blobUrl = URL.createObjectURL(blob); if(pb) pb.hidden = false; const quiet = after && after(); if(!quiet) clipPlay(pfUI.blobUrl); };
     pfUI.rec = {rec, cancel: false}; rec.start(); rb.textContent = "⏹ Stop"; rb.classList.add("on"); $(msgId).textContent = "🔴 Recording… say it now.";
     pfUI.recT = setTimeout(() => pfRecStop(), maxMs); }; }
 function pfRecStop(cancel){ const r = pfUI.rec; if(!r) return; r.cancel = !!cancel; try { r.rec.stop(); } catch(e){} }
