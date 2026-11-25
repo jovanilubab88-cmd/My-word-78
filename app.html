@@ -1,8 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light only">
+<meta name="theme-color" content="#CDEBFF">
+<script>/* the app always uses its bright look, even when the phone is in dark mode */ try { document.documentElement.setAttribute("data-theme", "light"); } catch(e){}</script>
 <title>My Word Book</title>
 <script>
 // friendly human AI helper face (inline SVG); blinks, and its mouth moves while the app is talking
@@ -61,6 +64,7 @@ window.AIF = function(cls){ const k = "aif" + (window.__aifN = (window.__aifN ||
 <link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Fredoka:wght@500;700&family=Patrick+Hand&display=swap" rel="stylesheet">
 <style>
 :root{
+  color-scheme:light;
   --sky:#CDEBFF; --ink:#1B2A4A; --sun:#FFC93C; --grass:#2FA85F; --berry:#E8456B; --paper:#FFFFFF;
   --soft:#E9F5FF; --muted:#4E5D7A; --line:#1B2A4A;
   box-sizing:border-box;
@@ -78,7 +82,7 @@ window.AIF = function(cls){ const k = "aif" + (window.__aifN = (window.__aifN ||
   --soft:#26375A; --muted:#B5C1DA; --line:#0A1224;
 }
 *,*::before,*::after{box-sizing:inherit}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px);background:var(--sky)}
 body{
   margin:0; background:var(--sky); color:var(--ink);
   font-family:"Andika","Comic Sans MS","Trebuchet MS",system-ui,sans-serif;
@@ -18279,9 +18283,9 @@ function cv3Select(id){
   cv3AskSuggest();
 }
 function cv3Loop(){
-  cv3.raf = requestAnimationFrame(cv3Loop);
   const mount = $("cv3-view");
-  if(!cv3.ready || !mount.offsetParent) return;
+  if(!cv3.ready || !mount.offsetParent || document.hidden){ cv3.raf = setTimeout(() => { if(cv3.raf) cv3.raf = requestAnimationFrame(cv3Loop); }, 500); return; }
+  cv3.raf = requestAnimationFrame(cv3Loop);
   const t = cv3.clock.getElapsedTime(), still = typeof motionOn !== "undefined" && !motionOn;
   if(cv3.model){ if(!still) cv3.model.anim.forEach(f => f(t)); if(!cv3.dragging && !still) cv3.model.g.rotation.y += 0.0025; }
   cv3.controls.update(); cv3.renderer.render(cv3.scene, cv3.camera);
@@ -18587,9 +18591,9 @@ function ptMakeAtom(){
   ptAtom = {electrons, t: 0, clear: true};
 }
 function ptDraw(){
-  ptRaf = requestAnimationFrame(ptDraw);
   const cv = $("pt-canvas");
-  if(!cv || !cv.offsetParent || !ptAtom) return;           // hidden → do nothing
+  if(!cv || !cv.offsetParent || !ptAtom || document.hidden){ ptRaf = setTimeout(() => { if(ptRaf) ptRaf = requestAnimationFrame(ptDraw); }, 500); return; }
+  ptRaf = requestAnimationFrame(ptDraw);           // hidden → do nothing
   if(cv.width === 0) ptResize();
   if(ptPaused) return;
   const ctx = cv.getContext("2d"), w = cv.clientWidth, h = cv.clientHeight, cx = w / 2, cy = h / 2;
@@ -19316,7 +19320,7 @@ function studioWords(sel){ return wordsForChoice($(sel).value); }
 function fillListSelect(sel){ fillChoices(sel); }
 function setupStudio(){
   fillListSelect("st-list"); fillListSelect("qz-list");
-  $("st-all").innerHTML = allWords().map(x => `<option value="${esc(x.w)}">`).join("");
+  $("st-all").innerHTML = "";   // suggestions are filled as you type (a list of every word made iPhones slow)
   updateAIFeatures(); renderPicks();
 }
 function renderPicks(){
@@ -19333,6 +19337,9 @@ function addPick(){
   storyPick.push(v); renderPicks();
 }
 $("st-add-btn").onclick = addPick;
+$("st-add").addEventListener("input", e => { const q = e.target.value.trim().toLowerCase(); const dl = $("st-all"); if(q.length < 2){ dl.innerHTML = ""; return; }
+  const hits = []; for(const x of allWords()){ if(x.w.toLowerCase().startsWith(q)){ hits.push(x.w); if(hits.length >= 25) break; } }
+  dl.innerHTML = hits.map(w => `<option value="${esc(w)}">`).join(""); });
 $("st-add").addEventListener("keydown", e => { if(e.key === "Enter"){ e.preventDefault(); addPick(); } });
 function highlight(story, words){
   let html = esc(story);
@@ -20107,8 +20114,8 @@ function bxReset(){
   cam.position.set(0, 0.6, d); bx.controls.target.set(0, 0.1, 0); bx.controls.minDistance = 2; bx.controls.maxDistance = d * 1.6; cam.updateProjectionMatrix();
 }
 function bxLoop(){
+  const mount = $("bx-view"); if(!bx.ready || !mount.offsetParent || document.hidden){ bx.raf = setTimeout(() => { if(bx.raf) bx.raf = requestAnimationFrame(bxLoop); }, 500); return; }
   bx.raf = requestAnimationFrame(bxLoop);
-  const mount = $("bx-view"); if(!bx.ready || !mount.offsetParent) return;
   const t = bx.clock.getElapsedTime();
   if(bx.heart && !(typeof motionOn !== "undefined" && !motionOn)){ const ph = (t * 1.2) % 1, s = 1 + (ph < 0.15 ? Math.sin(ph / 0.15 * Math.PI) * 0.08 : 0); bx.heart.scale.setScalar(s); }
   bx.controls.update(); bx.renderer.render(bx.scene, bx.camera);
@@ -20449,8 +20456,8 @@ function eyLabels(){
   svg.innerHTML = out;
 }
 function eyLoop(){
+  const mount = $("ey-view"); if(!EY.ready || !mount.offsetParent || document.hidden){ EY.raf = setTimeout(() => { if(EY.raf) EY.raf = requestAnimationFrame(eyLoop); }, 500); return; }
   EY.raf = requestAnimationFrame(eyLoop);
-  const mount = $("ey-view"); if(!EY.ready || !mount.offsetParent) return;
   const t = EY.clock.getElapsedTime(), m = EY.model, moving = !(typeof motionOn !== "undefined" && !motionOn);
   const dt = Math.min(0.1, t - (EY.lt || t)); EY.lt = t; if(EY.tw){ const T = EY.tw; T.k = Math.min(1, T.k + Math.max(dt, 0.016) / 0.9); const e = T.k < 0.5 ? 2 * T.k * T.k : 1 - Math.pow(-2 * T.k + 2, 2) / 2; EY.camera.position.lerpVectors(T.p0, T.p1, e); EY.controls.target.lerpVectors(T.t0, T.t1, e); if(T.k >= 1) EY.tw = null; }
   const tp = EY.bright ? 0.065 : 0.15; if(Math.abs(EY.pr - tp) > 0.0008){ EY.pr += (tp - EY.pr) * (moving ? 0.07 : 1); eyPupil(); }
@@ -20653,7 +20660,7 @@ function brLabels(){
   svg.innerHTML = out;
 }
 function brLoop(){
-  BR.raf = requestAnimationFrame(brLoop); const mount = $("br-view"); if(!BR.ready || !mount.offsetParent) return;
+  const mount = $("br-view"); if(!BR.ready || !mount.offsetParent || document.hidden){ BR.raf = setTimeout(() => { if(BR.raf) BR.raf = requestAnimationFrame(brLoop); }, 500); return; } BR.raf = requestAnimationFrame(brLoop);
   const t = BR.clock.getElapsedTime(), dt = Math.min(0.1, t - (BR.lt || t)); BR.lt = t;
   if(BR.tw){ const T = BR.tw; T.k = Math.min(1, T.k + Math.max(dt, 0.016) / 0.9); const e = T.k < 0.5 ? 2 * T.k * T.k : 1 - Math.pow(-2 * T.k + 2, 2) / 2; BR.camera.position.lerpVectors(T.p0, T.p1, e); BR.controls.target.lerpVectors(T.t0, T.t1, e); if(T.k >= 1) BR.tw = null; }
   if(BR.sel && !(typeof motionOn !== "undefined" && !motionOn)) (BR.model.parts[BR.sel] || []).forEach(m => { m.material.emissiveIntensity = 0.22 + 0.15 * Math.sin(t * 4); });
@@ -20944,7 +20951,7 @@ function htLabels(){
   svg.innerHTML = out;
 }
 function htLoop(){
-  HT.raf = requestAnimationFrame(htLoop); const mount = $("ht-view"); if(!HT.ready || !mount.offsetParent) return;
+  const mount = $("ht-view"); if(!HT.ready || !mount.offsetParent || document.hidden){ HT.raf = setTimeout(() => { if(HT.raf) HT.raf = requestAnimationFrame(htLoop); }, 500); return; } HT.raf = requestAnimationFrame(htLoop);
   const t = HT.clock.getElapsedTime(), dt = Math.min(0.1, t - (HT.lt || t)); HT.lt = t; const M = HT.model, still = typeof motionOn !== "undefined" && !motionOn;
   if(HT.tw){ const T = HT.tw; T.k = Math.min(1, T.k + Math.max(dt, 0.016) / 0.9); const e = T.k < 0.5 ? 2 * T.k * T.k : 1 - Math.pow(-2 * T.k + 2, 2) / 2; HT.camera.position.lerpVectors(T.p0, T.p1, e); HT.controls.target.lerpVectors(T.t0, T.t1, e); if(T.k >= 1) HT.tw = null; }
   // heartbeat: about 70 beats a minute — atria squeeze first, then the ventricles
@@ -39796,7 +39803,7 @@ function k5DnBg(W, H, dpr){ const E = K5_ERAS[k5Dn.era], c = document.createElem
   for(let i = 0; i < 520; i++){ const u = R(), v = R(), y = hz + (H - hz) * v * v * .98 + 3, s = (.4 + v * 1.6) * dpr; if(Math.hypot((u * W - px) / pw, (y - py) / ph) < 1.05) continue; if(k5Dn.era === 0){ x.fillStyle = R() < .5 ? "rgba(90,50,25,.22)" : "rgba(255,225,180,.2)"; x.beginPath(); x.ellipse(u * W, y, s * 1.6, s * .7, 0, 0, 7); x.fill(); } else { x.strokeStyle = R() < .5 ? "rgba(30,70,25,.3)" : "rgba(200,230,140,.26)"; x.lineWidth = Math.max(1, s * .6); x.beginPath(); x.moveTo(u * W, y); x.lineTo(u * W + (R() - .5) * s * 2, y - s * (2 + R() * 3)); x.stroke(); if(E.flowers && i % 9 === 0){ x.fillStyle = ["#f472b6", "#fde047", "#fff", "#c084fc"][i % 4]; x.beginPath(); x.arc(u * W, y - s * 3, s * .9, 0, 7); x.fill(); } } }
   for(let i = 0; i < 7; i++){ const u = R(), v = .15 + R() * .8, y = hz + (H - hz) * v, s = (3 + v * 9) * dpr; if(Math.hypot((u * W - px) / pw, (y - py) / ph) < 1.2) continue; g = x.createLinearGradient(0, y - s, 0, y + s * .4); g.addColorStop(0, "#a39c90"); g.addColorStop(1, "#5c564d"); x.fillStyle = g; x.beginPath(); x.ellipse(u * W, y, s * 1.5, s * .8, 0, Math.PI, 0); x.fill(); x.fillStyle = "rgba(0,0,0,.2)"; x.beginPath(); x.ellipse(u * W, y, s * 1.6, s * .22, 0, 0, 7); x.fill(); }
   k5Dn.ferns = Array.from({length: E.ferns}, (_, i) => [i % 2 ? R() * .3 : .7 + R() * .3, .9 + R() * .12, .7 + R() * .6]).concat([[.02, 1.02, 1.5], [.97, 1.03, 1.6]]); k5Dn.clouds = Array.from({length: 5}, () => [R(), .06 + R() * .22, .6 + R() * .9, .004 + R() * .006]); return c; }
-function k5DnDraw(ts){ const D = k5Dn, cv = $("k5-dn"); D.raf = 0; if(!cv || !cv.isConnected || cv.offsetParent === null) return; if(D.last && ts - D.last < 30){ D.raf = requestAnimationFrame(k5DnDraw); return; } if(D.dvOpen){ const d0 = D.last ? Math.min(.07, (ts - D.last) / 1000) : 0; D.last = ts; D.t += d0; k5DvDraw(d0); D.raf = requestAnimationFrame(k5DnDraw); return; } k5DnSize(); const x = cv.getContext("2d"), W = cv.width, H = cv.height, dpr = cv._d, dt = D.last ? Math.min(.07, (ts - D.last) / 1000) : 0; D.last = ts; D.t += dt; const t = D.t, E = K5_ERAS[D.era], hz = H * .47, key = D.era + ":" + W + ":" + H;
+function k5DnDraw(ts){ const D = k5Dn, cv = $("k5-dn"); D.raf = 0; if(!cv || !cv.isConnected || cv.offsetParent === null) return; if(document.hidden){ D.last = 0; D.raf = setTimeout(() => { if(D.raf) D.raf = requestAnimationFrame(k5DnDraw); }, 500); return; } if(D.last && ts - D.last < 45){ D.raf = requestAnimationFrame(k5DnDraw); return; } if(D.dvOpen){ const d0 = D.last ? Math.min(.07, (ts - D.last) / 1000) : 0; D.last = ts; D.t += d0; k5DvDraw(d0); D.raf = requestAnimationFrame(k5DnDraw); return; } k5DnSize(); const x = cv.getContext("2d"), W = cv.width, H = cv.height, dpr = cv._d, dt = D.last ? Math.min(.07, (ts - D.last) / 1000) : 0; D.last = ts; D.t += dt; const t = D.t, E = K5_ERAS[D.era], hz = H * .47, key = D.era + ":" + W + ":" + H;
   if(D.bgKey !== key){ D.bg = k5DnBg(W, H, dpr); D.bgKey = key; } const ev = D.ev, et = ev ? t - ev.t0 : 0, shake = ev && et > 3 && et < 4.2 ? (4.2 - et) * 7 * dpr : 0; const shx = shake ? (Math.random() - .5) * shake : 0, shy = shake ? (Math.random() - .5) * shake : 0; x.save(); if(shake) x.translate(shx, shy); x.drawImage(D.bg, 0, 0);
   D.clouds.forEach(c => { c[0] = (c[0] + c[3] * dt) % 1.3; const cx = (c[0] - .15) * W, cy = c[1] * H, s = c[2] * H * .09; for(let i = 0; i < 5; i++){ const ox = (i - 2) * s * .75, oy = Math.sin(i * 2.1) * s * .22, r = s * (1 - Math.abs(i - 2) * .17); const g = x.createRadialGradient(cx + ox, cy + oy, 0, cx + ox, cy + oy, r); g.addColorStop(0, "rgba(255,255,255,.85)"); g.addColorStop(.6, "rgba(255,255,255,.5)"); g.addColorStop(1, "rgba(255,255,255,0)"); x.fillStyle = g; x.beginPath(); x.arc(cx + ox, cy + oy, r, 0, 7); x.fill(); } });
   if(D.vol){ if(Math.random() < dt * 5) D.smoke.push({x: D.vol[0] + (Math.random() - .5) * W * .02, y: D.vol[1], r: H * .02, a: .55, vx: W * .006 + Math.random() * W * .008, vy: -H * (.03 + Math.random() * .03)}); D.smoke = D.smoke.filter(s => s.a > .01); D.smoke.forEach(s => { s.x += s.vx * dt; s.y += s.vy * dt; s.r += H * .018 * dt; s.a -= dt * .055; const g = x.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r); g.addColorStop(0, `rgba(90,85,90,${s.a})`); g.addColorStop(1, "rgba(90,85,90,0)"); x.fillStyle = g; x.beginPath(); x.arc(s.x, s.y, s.r, 0, 7); x.fill(); }); const gl = .5 + .5 * Math.sin(t * 2.3); x.fillStyle = `rgba(255,150,40,${.25 + gl * .3})`; x.beginPath(); x.ellipse(D.vol[0], D.vol[1], W * .022, H * .012, 0, 0, 7); x.fill(); }
@@ -39893,6 +39900,8 @@ function k5SysStars(W, H){ const c = document.createElement("canvas"); c.width =
   let s = 11; const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647; g = x.createRadialGradient(W * .78, H * .2, 0, W * .78, H * .2, W * .45); g.addColorStop(0, "rgba(120,80,200,.16)"); g.addColorStop(1, "rgba(120,80,200,0)"); x.fillStyle = g; x.fillRect(0, 0, W, H);
   const n = Math.round(W * H / 2600); for(let i = 0; i < n; i++){ const r = rnd() < .08 ? 1.6 : rnd() < .3 ? 1 : .6, a = .35 + rnd() * .65; x.fillStyle = `rgba(${rnd() < .2 ? "255,236,190" : rnd() < .25 ? "190,215,255" : "255,255,255"},${a})`; x.beginPath(); x.arc(rnd() * W, rnd() * H, r * (W / 700 + .5), 0, 7); x.fill(); } return c; }
 function k5SysDraw(ts){ const S = k5Sys, cv = $("k5-solar"); S.raf = 0; if(!cv || !cv.isConnected || cv.offsetParent === null) return;   // tab hidden: stop until it is opened again
+  if(document.hidden){ S.last = 0; S.raf = setTimeout(() => { if(S.raf) S.raf = requestAnimationFrame(k5SysDraw); }, 500); return; }
+  if(S.last && ts - S.last < 40 && !(S.still && S.drawn <= 8)){ S.raf = requestAnimationFrame(k5SysDraw); return; }   // about 25 pictures a second is smooth and much lighter on phones
   k5SysSize(); const ctx = cv.getContext("2d"), W = cv.width, H = cv.height, dpr = cv._d, dt = S.last ? Math.min(.05, (ts - S.last) / 1000) : 0; S.last = ts; if(!S.paused) S.t += dt; S.tilt += (S.tiltTo - S.tilt) * Math.min(1, dt * 5);
   if(S.warmI < 8 && !S.warming){ S.warming = true; setTimeout(() => { K5_PR.warm(S.warmI); S.warmI++; S.warming = false; }, 30); }   // build the planet surfaces one at a time so the page never freezes
   if(!S.stars) S.stars = k5SysStars(W, H); ctx.drawImage(S.stars, 0, 0);
@@ -40047,7 +40056,7 @@ const K5_PR = (() => {
     const ctx = cv.getContext("2d"), N = Math.round(Math.min(380, d * dpr)), sph = document.createElement("canvas"); sph.width = sph.height = N; const sx = sph.getContext("2d"), img = sx.createImageData(N, N), out = img.data, px = [0, 0, 0];
     const L = [-.52, -.4, .75], ln = Math.hypot(...L); L[0] /= ln; L[1] /= ln; L[2] /= ln; let rot = idx === 2 ? 2.7 : 0, last = 0, alive = true, still = window.matchMedia && matchMedia("(prefers-reduced-motion:reduce)").matches; const spin = [-.05, .03, -.09, -.09, -.26, -.23, -.12, -.15][idx], at = P0.atm || [150, 190, 255], rim = P0.rim || .3;
     const ax = tilt || 0, ca = Math.cos(ax), sa = Math.sin(ax);
-    function frame(ts){ if(!alive) return; if(!cv.isConnected){ alive = false; return; } const dt = last ? Math.min(.05, (ts - last) / 1000) : 0; last = ts; if(!still) rot += dt * spin;
+    function frame(ts){ if(!alive) return; if(!cv.isConnected){ alive = false; return; } if(cv.offsetParent === null || document.hidden){ last = 0; setTimeout(() => { if(alive) requestAnimationFrame(frame); }, 500); return; } if(last && ts - last < 48){ requestAnimationFrame(frame); return; } const dt = last ? Math.min(.05, (ts - last) / 1000) : 0; last = ts; if(!still) rot += dt * spin;
       for(let j = 0; j < N; j++){ const ny = (j + .5) / N * 2 - 1; for(let i = 0; i < N; i++){ const nx = (i + .5) / N * 2 - 1, r2 = nx * nx + ny * ny, k = (j * N + i) * 4; if(r2 >= 1){ out[k + 3] = 0; continue; } const nz = Math.sqrt(1 - r2), sy = -ny * ca + nz * sa, sz = ny * sa + nz * ca, lat = Math.asin(Math.max(-1, Math.min(1, sy))), lon = Math.atan2(nx, sz) + rot, u = lon / (Math.PI * 2) + 1, v = .5 - lat / Math.PI;
         sample(t, u, v, px); if(t.cl){ const c = cloudAt(t, u * 1.0 - rot * .08 / (Math.PI * 2), v); px[0] = px[0] * (1 - c * .72) + 252 * c * .72; px[1] = px[1] * (1 - c * .72) + 252 * c * .72; px[2] = px[2] * (1 - c * .72) + 255 * c * .72; }
         const dif = nx * L[0] + ny * L[1] + nz * L[2], lit = Math.max(0, dif), sh = .035 + .965 * Math.pow(Math.min(1, lit * 1.08), .85) , limb = .55 + .45 * Math.pow(nz, .45), rm = Math.pow(1 - nz, 3) * rim * (.25 + .75 * lit);
@@ -40088,7 +40097,7 @@ const K5_PR = (() => {
     ctx.save(); ctx.globalCompositeOperation = "lighter"; ctx.lineCap = "round"; for(let j = 0; j < 4; j++){ const b = j * 1.63 + .5 + t * .015, sp = .13 + .04 * Math.sin(t * .8 + j), h = R * (1.2 + .12 * Math.sin(t * 1.3 + j * 2)), ax = cx + Math.cos(b - sp) * R * .98, ay = cy + Math.sin(b - sp) * R * .98, bx = cx + Math.cos(b + sp) * R * .98, by = cy + Math.sin(b + sp) * R * .98; ctx.beginPath(); ctx.moveTo(ax, ay); ctx.quadraticCurveTo(cx + Math.cos(b) * h * 1.12, cy + Math.sin(b) * h * 1.12, bx, by); ctx.strokeStyle = "rgba(255,90,20,.5)"; ctx.lineWidth = Math.max(1, R * .045); ctx.stroke(); ctx.strokeStyle = "rgba(255,170,70,.4)"; ctx.lineWidth = Math.max(.5, R * .016); ctx.stroke(); }
     g = ctx.createRadialGradient(cx, cy, R * .86, cx, cy, R * 1.14); g.addColorStop(0, "rgba(255,150,30,0)"); g.addColorStop(.5, "rgba(255,170,50,.5)"); g.addColorStop(1, "rgba(255,120,20,0)"); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, R * 1.14, 0, 7); ctx.fill(); ctx.restore(); }
   function mountSun(host, d){ const dpr = Math.min(2, window.devicePixelRatio || 1), size = d * 2.7, cv = document.createElement("canvas"); cv.className = "k5-pl-cv"; cv.width = cv.height = Math.round(size * dpr); cv.style.width = cv.style.height = size + "px"; host.appendChild(cv); const ctx = cv.getContext("2d"), still = window.matchMedia && matchMedia("(prefers-reduced-motion:reduce)").matches, N = Math.round(Math.min(230, d * dpr * .62)); let alive = true, t0 = 0, last = -1e9;
-    function frame(ts){ if(!alive) return; if(!cv.isConnected){ alive = false; return; } if(!t0) t0 = ts; if(ts - last >= 45){ last = ts; const t = (ts - t0) / 1000 + 20; ctx.clearRect(0, 0, cv.width, cv.height); sunDraw(ctx, cv.width / 2, cv.height / 2, d * dpr / 2, t, "big", N, 2.6); } if(!still) requestAnimationFrame(frame); }
+    function frame(ts){ if(!alive) return; if(!cv.isConnected){ alive = false; return; } if(cv.offsetParent === null || document.hidden){ setTimeout(() => { if(alive) requestAnimationFrame(frame); }, 500); return; } if(!t0) t0 = ts; if(ts - last >= 45){ last = ts; const t = (ts - t0) / 1000 + 20; ctx.clearRect(0, 0, cv.width, cv.height); sunDraw(ctx, cv.width / 2, cv.height / 2, d * dpr / 2, t, "big", N, 2.6); } if(!still) requestAnimationFrame(frame); }
     requestAnimationFrame(frame); return () => { alive = false; }; }
   return {mount, ball, ready, warm, sunDraw, mountSun, rings: ringBands};
 })();
