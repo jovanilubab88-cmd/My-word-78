@@ -2532,6 +2532,30 @@ window.MWB_TRIAL_DAYS = 14;
           <p class="k5-fb k5-mexp" id="k5-mexp" aria-live="polite"></p>
           <div class="k5-spd" id="k5-spd" hidden>Particle speed <span class="k5-spbar"><i id="k5-spfill"></i></span> <small id="k5-ftxt"></small></div>
           <button type="button" class="k5-big" id="k5-mlab">🎯 Lab challenge</button><p class="k5-fb" id="k5-mfb3" aria-live="polite"></p></div>
+        <div class="k5-card"><div class="k5-row sp"><b>🗂️ Solid, liquid or gas?</b><small id="k5-mxsn"></small></div>
+          <div class="mx-item" id="k5-mxsit" aria-live="polite"></div>
+          <div class="mx-bins" role="group" aria-label="Sort it"><button type="button" class="mx-bin" data-mxs="solid">🧱<b>Solid</b></button><button type="button" class="mx-bin" data-mxs="liquid">💧<b>Liquid</b></button><button type="button" class="mx-bin" data-mxs="gas">💨<b>Gas</b></button></div>
+          <p class="k5-fb" id="k5-mxsfb" aria-live="polite"></p></div>
+        <div class="k5-card"><b>🫙 Pour it in! What shape does it take?</b>
+          <div class="k5-row" role="group" aria-label="Kind of matter"><button type="button" class="k5-btn alt" data-mxp="solid">🧱 Solid</button><button type="button" class="k5-btn alt" data-mxp="liquid">💧 Liquid</button><button type="button" class="k5-btn alt" data-mxp="gas">💨 Gas</button></div>
+          <div class="mx-jars" id="k5-mxjars"></div>
+          <div class="mx-facts" id="k5-mxfacts"></div></div>
+        <div class="k5-card"><b>🔄 Changing states</b>
+          <div class="mx-cycle" id="k5-mxcyc"></div>
+          <p class="k5-fb mx-cyctxt" id="k5-mxcyct" aria-live="polite">Tap an arrow to see how matter changes!</p></div>
+        <div class="k5-card"><div class="k5-row sp"><b>↩️ Can it change back?</b><small id="k5-mxrn"></small></div>
+          <div class="mx-item" id="k5-mxrit" aria-live="polite"></div>
+          <div class="k5-row mx-two"><button type="button" class="k5-btn" data-mxr="1">↩️ Yes, it can change back</button><button type="button" class="k5-btn alt" data-mxr="0">🚫 No, it can't</button></div>
+          <p class="k5-fb" id="k5-mxrfb" aria-live="polite"></p></div>
+        <div class="k5-card"><div class="k5-row sp"><b>🛟 Sink or float?</b><small>Guess first!</small></div>
+          <div class="mx-tank" id="k5-mxtank"><div class="mx-water"></div><span class="mx-obj" id="k5-mxobj"></span></div>
+          <div class="k5-row mx-two"><button type="button" class="k5-btn" data-mxf="1">🛟 It will float</button><button type="button" class="k5-btn alt" data-mxf="0">⬇️ It will sink</button></div>
+          <p class="k5-fb" id="k5-mxffb" aria-live="polite"></p></div>
+        <div class="k5-card"><b>🥄 Does it dissolve in water?</b>
+          <div class="mx-mix" id="k5-mxmix"></div>
+          <div class="mx-chips" id="k5-mxmixb" role="group" aria-label="Put something in the water"></div>
+          <p class="k5-fb" id="k5-mxmfb" aria-live="polite">Tap something to stir it into the water.</p></div>
+        <div class="k5-card"><b>📖 Matter words</b><div class="mx-words" id="k5-mxwords"></div><p class="k5-fb mx-wdef" id="k5-mxwdef" aria-live="polite">Tap a word to learn what it means.</p></div>
       </div>
       <!-- 💰 money -->
       <div class="k5-pane" data-pane="money" hidden>
@@ -38488,6 +38512,36 @@ function vtInit(){ if(!$("vt")) return; requestAnimationFrame(() => vtPlot()); i
 .k5-abc #sounds-grid > div:not(:has(> svg)):not(.abc-stage):not(.abc-grid) button span[style*="color:#"]{color:#ea580c!important;text-shadow:none!important}
 .k5-abc .snd-more{background:var(--grass)!important;color:#fff!important;border:3px solid var(--line)!important;box-shadow:0 3px 0 var(--line)!important;border-radius:14px!important}
 .k5-abc .journey{background:var(--paper)!important;border:3px solid var(--line)!important;border-radius:18px!important;box-shadow:none!important}
+.mx-item{display:flex;flex-direction:column;align-items:center;gap:2px;min-height:110px;justify-content:center}.mx-item .e{font-size:64px;line-height:1}.mx-item b{font-size:22px;text-align:center}
+.mx-bins{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.mx-bin{font:inherit;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:34px;padding:10px 4px;border-radius:16px;border:3px solid var(--line);background:var(--soft);color:inherit;cursor:pointer;box-shadow:0 3px 0 var(--line)}.mx-bin b{font-size:17px}
+.mx-bin.ok{background:#bbf7d0}.mx-bin.no{background:#fecaca}
+[data-mxp][aria-pressed="true"]{background:#fde047;color:#1f2937}
+.mx-jars{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;align-items:end;padding:6px 0}
+.mx-jar{position:relative;margin:0 auto;border:4px solid #64748b;border-top:none;border-radius:0 0 16px 16px;background:#f8fafc;overflow:hidden}
+.mx-jar.tall{width:60px;height:130px}.mx-jar.wide{width:120px;max-width:100%;height:70px;border-radius:0 0 40px 40px}.mx-jar.box{width:90px;height:95px;border-top:4px solid #64748b;border-radius:10px}
+.mx-jar .liq{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(#60a5fa,#2563eb);transition:height .8s}
+.mx-jar .sol{position:absolute;left:50%;bottom:0;width:40px;height:40px;margin-left:-20px;background:#a16207;border-radius:6px;border:3px solid #713f12}
+.mx-jar .gas{position:absolute;width:12px;height:12px;border-radius:50%;background:#a78bfa;animation:mxGas 2.4s ease-in-out infinite alternate}
+@keyframes mxGas{to{transform:translate(var(--gx),var(--gy))}}
+.mx-jarl{text-align:center;font-size:14px;font-weight:700;margin-top:4px}
+.mx-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.mx-facts div{border:2px solid var(--line);border-radius:12px;padding:6px;text-align:center;font-size:14px;background:var(--soft)}.mx-facts b{display:block;font-size:13px;opacity:.75}
+.mx-cycle{display:grid;grid-template-columns:1fr auto 1fr;gap:6px;align-items:center;justify-items:center}
+.mx-st{font-size:40px;display:flex;flex-direction:column;align-items:center;font-weight:800;line-height:1.1}.mx-st small{font-size:15px}
+.mx-arws{display:flex;flex-direction:column;gap:6px;align-items:center}
+.mx-arw{font:inherit;font-size:14px;font-weight:800;padding:6px 10px;border-radius:999px;border:3px solid var(--line);background:#fde047;color:#1f2937;cursor:pointer;box-shadow:0 3px 0 var(--line);white-space:nowrap}
+.mx-arw[aria-pressed="true"]{background:#f97316;color:#fff}
+.mx-cyctxt,.mx-wdef{font-weight:600}
+.mx-two{justify-content:center}
+.mx-tank{position:relative;height:150px;border:4px solid #64748b;border-top:none;border-radius:0 0 18px 18px;background:#f0f9ff;overflow:hidden}
+.mx-water{position:absolute;left:0;right:0;bottom:0;height:70%;background:linear-gradient(rgba(96,165,250,.55),rgba(37,99,235,.75))}
+.mx-obj{position:absolute;left:50%;top:6px;font-size:48px;line-height:1;transform:translateX(-50%);transition:top 1.3s cubic-bezier(.3,.9,.4,1.2)}
+.mx-mix{position:relative;margin:0 auto;width:140px;height:130px;border:4px solid #64748b;border-top:none;border-radius:0 0 20px 20px;background:linear-gradient(transparent 18%,#bfdbfe 18%);overflow:hidden}
+.mx-mix i{position:absolute;border-radius:50%;transition:opacity 2.2s,top 2s}
+.mx-mix .oil{position:absolute;left:0;right:0;top:18%;height:14px;background:#facc15;transition:opacity .8s}
+.mx-chips,.mx-words{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.mx-chips button,.mx-words button{font:inherit;font-weight:700;font-size:16px;padding:7px 12px;border-radius:999px;border:3px solid var(--line);background:var(--soft);color:inherit;cursor:pointer;box-shadow:0 3px 0 var(--line)}
+.mx-words button[aria-pressed="true"],.mx-chips button[aria-pressed="true"]{background:#fde047;color:#1f2937}
+@media (prefers-reduced-motion:reduce){.mx-jar .gas{animation:none}.mx-obj{transition:none}}
 .k5-card{border:3px solid var(--line);border-radius:18px;padding:10px 12px;display:flex;flex-direction:column;gap:8px;background:var(--paper)}
 .k5-fb{margin:0;text-align:center;font-weight:700;min-height:1.3em}
 .k5-seg{display:flex;gap:4px;justify-content:center}.k5-seg.k5-wrap{flex-wrap:wrap}
@@ -38940,7 +38994,7 @@ function k5Stickers(){ const got = K5_BADGES.filter(b => k5.badges[b[0]]).length
   $("k5-stk").innerHTML = K5_BADGES.map(b => k5.badges[b[0]] ? `<button type="button" class="k5-stk on" data-b="${b[0]}"><span>${b[1]}</span><small>${b[2]}</small></button>` : `<button type="button" class="k5-stk" data-b="${b[0]}" aria-label="Locked sticker. ${b[3]}"><span>🔒</span><small>???</small></button>`).join("");
   $("k5-stk").querySelectorAll("[data-b]").forEach(btn => btn.onclick = () => { const b = K5_BADGES.find(x => x[0] === btn.dataset.b), on = k5.badges[b[0]]; $("k5-stinfo").textContent = on ? `${b[1]} ${b[2]} — ${b[3]}` : `🔒 How to get it: ${b[3]}`; if(on) k5Say(`${b[2]}. ${b[3]}`); }); }
 function k5xTab(t){ if(t !== "stickers" && !k5.seen.tabs.includes(t)){ k5.seen.tabs.push(t); k5Badges(); k5Save(); }
-  k5Bubble(K5_TIPS[t] || "Let's play!"); if(t === "build"){ k5BuildDraw(); k5ArrDraw(); } if(t === "clock") k5ClockDraw(); if(t === "space") k5SpaceInit(); if(t === "matter") k5MatterStart(); if(t === "money") k5MoneyDraw(); if(t === "shapes"){ k5ShapeDraw(); k5GridDraw(); k5AngleDraw(); } if(t === "music") k5PianoDraw(); if(t === "animals" && !k5.anm) k5AnimalNext(); if(t === "dino") k5DinoInit(); if(t === "stickers") k5Stickers(); if(t === "abc"){ try { renderSoundsGrid(); } catch(e){} try { k5SiInit(); } catch(e){ console.warn("sound it out", e); } } else { try { abcStop(); if(soundsQuizActive) stopSoundsQuiz(); } catch(e){} } if(t === "books") k5BooksInit(); else if(typeof kbk !== "undefined" && kbk.book){ kbk.auto = false; try { $("k5-bkauto").checked = false; } catch(e){} k5BkStop(); } }
+  k5Bubble(K5_TIPS[t] || "Let's play!"); if(t === "build"){ k5BuildDraw(); k5ArrDraw(); } if(t === "clock") k5ClockDraw(); if(t === "space") k5SpaceInit(); if(t === "matter"){ k5MatterStart(); k5MxInit(); } if(t === "money") k5MoneyDraw(); if(t === "shapes"){ k5ShapeDraw(); k5GridDraw(); k5AngleDraw(); } if(t === "music") k5PianoDraw(); if(t === "animals" && !k5.anm) k5AnimalNext(); if(t === "dino") k5DinoInit(); if(t === "stickers") k5Stickers(); if(t === "abc"){ try { renderSoundsGrid(); } catch(e){} try { k5SiInit(); } catch(e){ console.warn("sound it out", e); } } else { try { abcStop(); if(soundsQuizActive) stopSoundsQuiz(); } catch(e){} } if(t === "books") k5BooksInit(); else if(typeof kbk !== "undefined" && kbk.book){ kbk.auto = false; try { $("k5-bkauto").checked = false; } catch(e){} k5BkStop(); } }
 function k5xAsk(){ k5.asks++; k5Badges(); k5Save(); }
 // 📚 Read-along storybooks for K–5: original stories and classic fables retold in simple words.
 // Each page: t = text, s = scene, p = pictures [emoji, x%, y%, size% of picture width, flip?]
@@ -40166,6 +40220,66 @@ function k5SpaceQ(){ let q = k5Pick(K5_SQ.slice(0, k5.lv === 0 ? 9 : 10)); k5.sq
 // ---------- 🧊 matter lab ----------
 const k5MState = T => T <= 0 ? "solid" : T >= 100 ? "gas" : "liquid";
 function k5MatterParts(){ if(k5.parts) return; k5.parts = []; for(let r = 0; r < 5; r++) for(let c = 0; c < 8; c++){ const hx = 0.14 + c * 0.104, hy = 0.5 + r * 0.095; k5.parts.push({x: hx, y: hy, hx, hy, vx: 0, vy: 0, c, r}); } }
+// ---------- 🧪 more matter: sort, shapes in containers, changing states, change back?, sink or float, dissolving, words ----------
+const MX_SORT = [["🪨", "a rock", "solid", "A rock keeps its own shape. It is a solid."], ["🧃", "juice", "liquid", "Juice flows and takes the shape of its cup. It is a liquid."], ["♨️", "steam", "gas", "Steam is water as a gas. It spreads out to fill the space."],
+  ["🧊", "an ice cube", "solid", "Ice is frozen water. It keeps its shape, so it is a solid."], ["🥛", "milk", "liquid", "Milk can be poured. It is a liquid."], ["🎈", "the air in a balloon", "gas", "Air is a gas. It fills up the whole balloon."],
+  ["🪵", "a log of wood", "solid", "Wood is hard and keeps its shape. It is a solid."], ["🍯", "honey", "liquid", "Honey is a thick liquid. It flows slowly, but it still flows!"], ["🫧", "the air in bubbles", "gas", "Bubbles are full of air, and air is a gas."],
+  ["🥄", "a spoon", "solid", "A spoon keeps its shape. It is a solid."], ["🌧️", "rain", "liquid", "Rain is liquid water falling from clouds."], ["🌬️", "wind", "gas", "Wind is moving air. Air is a gas."],
+  ["🧸", "a teddy bear", "solid", "A teddy bear is soft, but it keeps its own shape. It is a solid."], ["🫗", "water", "liquid", "Water flows and takes the shape of its container. It is a liquid."], ["🚗💨", "car smoke", "gas", "Smoke from a car is a gas that spreads into the air."], ["🧂", "salt", "solid", "Salt can be poured, but each tiny grain is a solid that keeps its shape!"]];
+const MX_REV = [["🧊➡️💧", "Ice melts into water", 1, "Yes! Put the water in the freezer and it turns back into ice."], ["🍳", "Cooking an egg", 0, "No. Once an egg is cooked, it can never be a raw egg again."],
+  ["🍫", "Melting chocolate", 1, "Yes! When melted chocolate cools down, it becomes solid again."], ["🔥🪵", "Burning wood", 0, "No. Burning turns wood into ash and smoke. It can't become wood again."],
+  ["🧃➡️🧊", "Freezing juice into a popsicle", 1, "Yes! The popsicle melts back into juice."], ["🎂", "Baking a cake", 0, "No. Baking changes the mixture into cake. You can't get the eggs and flour back."],
+  ["💧➡️♨️", "Boiling water into steam", 1, "Yes! When steam cools, it turns back into water drops."], ["🍞", "Toasting bread", 0, "No. Toast can never turn back into soft bread."],
+  ["🕯️", "Melting candle wax", 1, "Yes! The wax gets hard again when it cools."], ["🍎", "An apple going brown", 0, "No. The brown part of the apple can't change back."]];
+const MX_FLOAT = [["🪵", "a piece of wood", 1, "Wood floats! It is light for its size."], ["🪨", "a rock", 0, "A rock sinks. It is heavy for its size."], ["🦆", "a rubber duck", 1, "The duck floats. It is full of air!"], ["🔑", "a key", 0, "A metal key sinks. Metal is heavy for its size."],
+  ["🍎", "an apple", 1, "Apples float! They have tiny pockets of air inside."], ["🪙", "a coin", 0, "A coin sinks, even though it is small, because metal is heavy for its size."], ["🏐", "a ball", 1, "A ball is full of air, so it floats."], ["🥚", "an egg", 0, "A fresh egg sinks to the bottom."],
+  ["🧽", "a sponge", 1, "A dry sponge floats. It has lots of air holes."], ["📎", "a paper clip", 0, "A metal paper clip sinks."], ["🍊", "an orange with its peel", 1, "An orange with its peel floats. The peel is full of tiny air pockets, like a life jacket!"], ["🧱", "a brick", 0, "A brick sinks. It is very heavy for its size."]];
+const MX_MIX = [["🍬", "sugar", 1, "#ffffff", "Sugar dissolves! It breaks into pieces so tiny you can't see them, but the water tastes sweet."], ["🧂", "salt", 1, "#f1f5f9", "Salt dissolves! The water looks clear again, but now it tastes salty."],
+  ["🏖️", "sand", 0, "#d6a756", "Sand does not dissolve. It sinks to the bottom."], ["🫒", "oil", 2, "#facc15", "Oil does not dissolve. It floats on top of the water in a layer."],
+  ["🧃", "drink powder", 1, "#f472b6", "Drink powder dissolves and colours the water. Yum!"], ["🪨", "pebbles", 0, "#78716c", "Pebbles don't dissolve. They sink to the bottom."]];
+const MX_WORDS = [["Matter", "Matter is anything that takes up space and has mass. You, your desk and the air are all matter!"], ["Solid", "A solid keeps its own shape, like a block of wood or an ice cube."], ["Liquid", "A liquid flows and takes the shape of its container, like water or milk."],
+  ["Gas", "A gas spreads out to fill all the space it has, like the air in a balloon."], ["Particles", "Particles are tiny bits that all matter is made of. They are too small to see!"], ["Mass", "Mass is how much matter something has. A heavy rock has more mass than a feather."],
+  ["Melt", "To melt means to change from a solid to a liquid when it gets warm, like ice cream on a hot day."], ["Freeze", "To freeze means to change from a liquid to a solid when it gets very cold, like water turning into ice."],
+  ["Evaporate", "To evaporate means a liquid turns into a gas, like a puddle drying up in the sun."], ["Condense", "To condense means a gas turns into a liquid, like water drops on a cold glass."], ["Dissolve", "To dissolve means to mix into a liquid and disappear, like sugar in water."], ["Float", "To float means to stay on top of the water, like a boat."]];
+const MX_CYC = {melt: ["🧊", "💧", "Melting", "When a solid gets warm, it melts into a liquid. Ice melts into water, and ice cream melts on a hot day!"], freeze: ["💧", "🧊", "Freezing", "When a liquid gets very cold, it freezes into a solid. Water freezes into ice at zero degrees."],
+  evap: ["💧", "♨️", "Evaporating", "When a liquid gets hot, it evaporates into a gas. That's why puddles dry up in the sun!"], cond: ["♨️", "💧", "Condensing", "When a gas cools down, it condenses into liquid drops. Look for drops on a cold glass of water!"]};
+const mx = {s: null, sn: 0, r: null, rn: 0, f: null, fBusy: false, inited: false};
+const mxPick = (L, last) => { let x; do { x = L[Math.floor(Math.random() * L.length)]; } while(L.length > 1 && x === last); return x; };
+function mxSortNew(){ mx.s = mxPick(MX_SORT, mx.s); $("k5-mxsit").innerHTML = `<span class="e">${mx.s[0]}</span><b>${esc(mx.s[1])}</b>`; $("k5-mxsfb").textContent = "Is it a solid, a liquid or a gas?"; document.querySelectorAll("[data-mxs]").forEach(b => b.classList.remove("ok", "no")); mx.sLock = false; }
+function mxSortPick(b){ if(!mx.s || mx.sLock) return; const ok = b.dataset.mxs === mx.s[2];
+  b.classList.add(ok ? "ok" : "no"); $("k5-mxsfb").textContent = (ok ? "🎉 Yes! " : "Not quite. ") + mx.s[3]; k5Say((ok ? "Yes! " : "Not quite. ") + mx.s[3]);
+  if(ok){ mx.sLock = true; mx.sn++; $("k5-mxsn").textContent = `✅ ${mx.sn} sorted`; k5Win(5, $("k5-mxsit")); setTimeout(mxSortNew, 2600); } }
+function mxPour(kind, quiet){ document.querySelectorAll("[data-mxp]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.mxp === kind)));
+  const jars = [["tall", "Tall glass"], ["wide", "Bowl"], ["box", "Closed box"]];
+  $("k5-mxjars").innerHTML = jars.map(([c, n]) => `<div><div class="mx-jar ${c}">${kind === "solid" ? '<i class="sol"></i>' : kind === "liquid" ? '<i class="liq" style="height:0"></i>' : Array.from({length: 9}, (_, i) => `<i class="gas" style="left:${8 + (i * 37) % 78}%;top:${8 + (i * 53) % 80}%;--gx:${(i % 3 - 1) * 14}px;--gy:${((i + 1) % 3 - 1) * 16}px;animation-delay:-${i * .3}s"></i>`).join("")}</div><div class="mx-jarl">${n}</div></div>`).join("");
+  if(kind === "liquid") setTimeout(() => { const h = {tall: "38%", wide: "64%", box: "50%"}; document.querySelectorAll("#k5-mxjars .mx-jar").forEach((j, i) => { j.querySelector(".liq").style.height = h[jars[i][0]]; }); }, 60);
+  const F = {solid: ["Keeps its own shape", "Keeps its size", "Packed tight, they just wiggle"], liquid: ["Takes the shape of its container", "Keeps its size", "Close together, they slide past each other"], gas: ["Fills the whole container", "Spreads out to fill any space", "Far apart, they zoom around"]}[kind];
+  $("k5-mxfacts").innerHTML = `<div><b>Shape</b>${F[0]}</div><div><b>Size (volume)</b>${F[1]}</div><div><b>Particles</b>${F[2]}</div>`;
+  if(!quiet) k5Say({solid: "A solid keeps its own shape, whatever container it is in.", liquid: "A liquid takes the shape of its container, but it keeps the same amount.", gas: "A gas spreads out to fill the whole container!"}[kind]); }
+function mxCycle(){ $("k5-mxcyc").innerHTML = `<div class="mx-st">🧊<small>Solid</small></div><div class="mx-arws"><button type="button" class="mx-arw" data-mxc="melt">Melting ➡️</button><button type="button" class="mx-arw" data-mxc="freeze">⬅️ Freezing</button></div><div class="mx-st">💧<small>Liquid</small></div>
+    <div></div><div></div><div class="mx-arws"><button type="button" class="mx-arw" data-mxc="evap">⬇️ Evaporating</button><button type="button" class="mx-arw" data-mxc="cond">⬆️ Condensing</button></div>
+    <div></div><div></div><div class="mx-st">♨️<small>Gas</small></div>`;
+  document.querySelectorAll("[data-mxc]").forEach(b => b.onclick = () => { const c = MX_CYC[b.dataset.mxc]; document.querySelectorAll("[data-mxc]").forEach(x => x.setAttribute("aria-pressed", String(x === b))); $("k5-mxcyct").textContent = `${c[0]} ➡️ ${c[1]}  ${c[2]}: ${c[3]}`; k5Say(`${c[2]}. ${c[3]}`); }); }
+function mxRevNew(){ mx.r = mxPick(MX_REV, mx.r); $("k5-mxrit").innerHTML = `<span class="e">${mx.r[0]}</span><b>${esc(mx.r[1])}</b>`; $("k5-mxrfb").textContent = "Can it change back?"; mx.rLock = false; }
+function mxRevPick(v){ if(!mx.r || mx.rLock) return; const ok = +v === mx.r[2]; $("k5-mxrfb").textContent = (ok ? "🎉 " : "Hmm, not quite. ") + mx.r[3]; k5Say((ok ? "" : "Not quite. ") + mx.r[3]);
+  if(ok){ mx.rLock = true; mx.rn++; $("k5-mxrn").textContent = `✅ ${mx.rn} right`; k5Win(5, $("k5-mxrit")); setTimeout(mxRevNew, 3200); } }
+function mxFloatNew(){ mx.f = mxPick(MX_FLOAT, mx.f); const o = $("k5-mxobj"); o.style.transition = "none"; o.style.top = "6px"; o.textContent = mx.f[0]; void o.offsetWidth; o.style.transition = ""; $("k5-mxffb").textContent = `Will ${mx.f[1]} float or sink?`; mx.fBusy = false; }
+function mxFloatPick(v){ if(!mx.f || mx.fBusy) return; mx.fBusy = true; const ok = +v === mx.f[2], o = $("k5-mxobj"); o.style.top = mx.f[2] ? "40px" : "96px";
+  setTimeout(() => { $("k5-mxffb").textContent = (ok ? "🎉 Good guess! " : "Surprise! ") + mx.f[3]; k5Say((ok ? "Good guess! " : "Surprise! ") + mx.f[3]); if(ok) k5Win(5, $("k5-mxtank")); setTimeout(mxFloatNew, 3400); }, 1300); }
+function mxMixInit(){ $("k5-mxmixb").innerHTML = MX_MIX.map((m, i) => `<button type="button" data-mxm="${i}">${m[0]} ${esc(m[1])}</button>`).join("");
+  document.querySelectorAll("[data-mxm]").forEach(b => b.onclick = () => mxMix(+b.dataset.mxm, b)); }
+function mxMix(i, btn){ const m = MX_MIX[i], box = $("k5-mxmix"), tok = mx.mixTok = (mx.mixTok || 0) + 1; document.querySelectorAll("[data-mxm]").forEach(x => x.setAttribute("aria-pressed", String(x === btn)));
+  box.style.background = ""; box.innerHTML = m[2] === 2 ? '<div class="oil" style="opacity:0"></div>' : Array.from({length: 18}, (_, k) => `<i style="left:${10 + (k * 41) % 78}%;top:4%;width:${m[2] ? 6 : 9}px;height:${m[2] ? 6 : 9}px;background:${m[3]};border:1px solid rgba(0,0,0,.25)"></i>`).join("");
+  $("k5-mxmfb").textContent = "Stirring… 🥄";
+  setTimeout(() => { if(tok !== mx.mixTok) return; if(m[2] === 2) box.querySelector(".oil").style.opacity = ".85"; else box.querySelectorAll("i").forEach((d, k) => { if(m[2] === 1){ d.style.top = (30 + (k * 23) % 55) + "%"; d.style.opacity = "0"; } else d.style.top = (84 + (k % 3) * 4) + "%"; });
+    if(m[1] === "drink powder") box.style.background = "linear-gradient(transparent 18%,#fbcfe8 18%)";
+    setTimeout(() => { if(tok !== mx.mixTok) return; $("k5-mxmfb").textContent = m[4]; k5Say(m[4]); }, 900); }, 150); }
+function mxWordsInit(){ $("k5-mxwords").innerHTML = MX_WORDS.map((w, i) => `<button type="button" data-mxw="${i}">${w[0]}</button>`).join("");
+  document.querySelectorAll("[data-mxw]").forEach(b => b.onclick = () => { const w = MX_WORDS[+b.dataset.mxw]; document.querySelectorAll("[data-mxw]").forEach(x => x.setAttribute("aria-pressed", String(x === b))); $("k5-mxwdef").textContent = `${w[0]}: ${w[1]}`; k5Say(`${w[0]}. ${w[1]}`); }); }
+function k5MxInit(){ if(mx.inited || !$("k5-mxsit")) return; mx.inited = true;
+  document.querySelectorAll("[data-mxs]").forEach(b => b.onclick = () => mxSortPick(b)); document.querySelectorAll("[data-mxp]").forEach(b => b.onclick = () => mxPour(b.dataset.mxp));
+  document.querySelectorAll("[data-mxr]").forEach(b => b.onclick = () => mxRevPick(b.dataset.mxr)); document.querySelectorAll("[data-mxf]").forEach(b => b.onclick = () => mxFloatPick(b.dataset.mxf));
+  mxSortNew(); mxPour("solid", true); mxCycle(); mxRevNew(); mxFloatNew(); mxMixInit(); mxWordsInit(); }
 function k5MatterStart(){ k5MatterParts(); k5MatterUpdate(true); if(!k5.mraf) k5.mraf = requestAnimationFrame(k5MatterFrame); }
 function k5MatterUpdate(quiet){ const T = k5.T, st = k5MState(T), name = {solid: "🧊 Solid (ice)", liquid: "💧 Liquid (water)", gas: "♨️ Gas (steam)"}[st];
   $("k5-temp").value = T; $("k5-tn").textContent = `${T}°C`; $("k5-mstate").textContent = name; $("k5-mer").style.height = Math.max(4, (T + 20) / 140 * 100) + "%";
@@ -40307,7 +40421,7 @@ function k5xInit(){ if(k5.wired) return; k5.wired = true;
   k5ClockWire(); k5MatterWire(); k5yInit(); k5xRefresh(); }
 function k5xRefresh(){ k5BuildDraw(); k5ArrDraw(); k5ClockDraw(); if($("k5-solar").dataset.built && k5.pi !== -2) k5Planet(k5.pi, true); k5MatterUpdate(true); try { k5yRefresh(); } catch(e){ console.warn("k5y", e); } if(k5.tab === "stickers") k5Stickers(); }
 // ---------- set up ----------
-function k5Init(){ if(!$("k5")) return; if(k5.inited){ k5Score(); if(k5.tab === "trace") requestAnimationFrame(k5TraceDraw); if(k5.tab === "matter") k5MatterStart(); return; } k5.inited = true; k5Load(); k5Score();
+function k5Init(){ if(!$("k5")) return; if(k5.inited){ k5Score(); if(k5.tab === "trace") requestAnimationFrame(k5TraceDraw); if(k5.tab === "matter"){ k5MatterStart(); k5MxInit(); } return; } k5.inited = true; k5Load(); k5Score();
   document.querySelectorAll("[data-k5]").forEach(b => b.onclick = () => k5Tab(b.dataset.k5));
   k5Letters(); k5TraceSetup(); requestAnimationFrame(k5TraceDraw);
   k5.bw = Math.floor(Math.random() * K5_CVC.length); k5Blend(); $("k5-bslow").onclick = () => k5BlendSay(false); $("k5-bfast").onclick = () => k5BlendSay(true); $("k5-bnext").onclick = () => { k5.bw = (k5.bw + 1 + Math.floor(Math.random() * (K5_CVC.length - 1))) % K5_CVC.length; k5Blend(); k5Say(K5_CVC[k5.bw][0]); };
