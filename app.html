@@ -14243,13 +14243,18 @@ let custom = [], db = null, canAdd = false, sampler = null;
 // ---- Helpers ----
 const slug = w => w.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "word";
 const esc = t => String(t ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-function allWords(){
+// the full word list is built once and reused until the end of the current task (screens ask for it many times in a row; rebuilding 10,000 words each time made iPhones slow)
+var AW_CACHE = null, AW_LOWER = null;
+function allWordsBuild(){
+  if(AW_CACHE) return AW_CACHE;
   const m = new Map();
   WORDS.forEach(x => m.set(x.w, x));
   custom.forEach(x => m.set(x.w, x));   // your words replace a built-in word with the same spelling
   folders.forEach(f => (f.custom || []).forEach(x => { if(!m.has(x.w)) m.set(x.w, {...x, c: "My words", folderId: f.id}); }));
-  return [...m.values()];
+  AW_CACHE = [...m.values()]; AW_LOWER = null; setTimeout(() => { AW_CACHE = null; AW_LOWER = null; }, 0); return AW_CACHE;
 }
+function allWords(){ return allWordsBuild().slice(); }
+function wordByLower(k){ const L = allWordsBuild(); if(!AW_LOWER){ AW_LOWER = new Map(); L.forEach(x => { const lk = x.w.toLowerCase(); if(!AW_LOWER.has(lk)) AW_LOWER.set(lk, x); }); } return AW_LOWER.get(String(k).toLowerCase()); }
 function cleanWord(x){
   const w = String(x.w || "").trim().toLowerCase();
   const syl = Array.isArray(x.s) ? x.s : String(x.s || "").split(/[-·\s]+/).filter(Boolean);
@@ -14271,7 +14276,7 @@ let stars = loadStars();
 
 // ---- Your words: shared online when available, otherwise kept on this device ----
 function loadLocal(){ try { return JSON.parse(localStorage.getItem("wordbook-custom") || "[]"); } catch(e){ return []; } }
-function saveLocal(){ try { localStorage.setItem("wordbook-custom", JSON.stringify(custom)); } catch(e){} }
+function saveLocal(){ AW_CACHE = null; AW_LOWER = null; try { localStorage.setItem("wordbook-custom", JSON.stringify(custom)); } catch(e){} }
 custom = loadLocal(); canAdd = true;
 
 async function saveWord(x){
@@ -14311,7 +14316,7 @@ async function removeWord(x){
       }
     } catch(e){}
     db.collection("words").onSnapshot(snap => {
-      custom = snap.docs.map(doc => doc.data()).filter(x => x && x.w);
+      custom = snap.docs.map(doc => doc.data()).filter(x => x && x.w); AW_CACHE = null; AW_LOWER = null;
       refresh();
     }, () => {});
   } catch(e){}
@@ -14746,6 +14751,11 @@ function wordClip(text, extra){
   return pr; }
 const wordCardText = (word, syllables) => syllables && syllables.length > 1 ? word + ". " + syllables.join(" - ") + ". " + word + "." : word + ". " + word + ".";
 // start making a word's clip the moment a finger touches its tile, before the tap even finishes
+// get a word's voice ready when a finger rests on its tile — but not for every tile a finger slides over while scrolling
+function warmOnPress(el, x){ let t = 0, sx = 0, sy = 0; const stop = () => { clearTimeout(t); t = 0; };
+  el.addEventListener("pointerdown", e => { sx = e.clientX; sy = e.clientY; stop(); t = setTimeout(() => { t = 0; wordWarm(x); }, e.pointerType === "touch" ? 140 : 0); }, {passive: true});
+  el.addEventListener("pointermove", e => { if(t && Math.hypot(e.clientX - sx, e.clientY - sy) > 10) stop(); }, {passive: true});
+  el.addEventListener("pointercancel", stop, {passive: true}); }
 function wordWarm(x){ try { if(x && x.w && IS_NETLIFY && useAiVoice && !window.__aiTTSDown) wordClip(wordCardText(x.w, x.s), {style: "word", w: x.w}).catch(() => {}); } catch(e){} }
 async function speakWithOpenAI(text, extra){
   try {
@@ -14881,7 +14891,7 @@ function tile(x){
   const seq = tileSeq++; if(!tileSeqReset) tileSeqReset = requestAnimationFrame(() => { tileSeq = 0; tileSeqReset = 0; });
   b.style.setProperty("--i", Math.min(seq, 18));
   b.innerHTML = `<span class="pic" aria-hidden="true">${esc(x.p)}</span><b>${esc(x.w)}</b><small>${x.n ? "#" + x.n + " · " : ""}${esc(x.c)}${x.builtIn ? "" : ' <span class="mine">new</span>'}</small>`;
-  b.onclick = () => { wiggle(b.querySelector(".pic"), x); openCard(x); }; b.addEventListener("pointerdown", () => wordWarm(x), {passive: true});
+  b.onclick = () => { wiggle(b.querySelector(".pic"), x); openCard(x); }; warmOnPress(b, x);
   const pic = b.querySelector(".pic");
   b.addEventListener("pointerenter", e => { if(e.pointerType === "mouse") wiggle(pic, x); });
   b.addEventListener("focus", () => wiggle(pic, x));
@@ -14914,7 +14924,7 @@ function renderStars(){
   } else list.forEach(x => g.appendChild(tile(x)));
 }
 
-function refresh(){
+function refresh(){ AW_CACHE = null; AW_LOWER = null;
   buildGroups(); render(); renderStars(); renderFolders(); renderWotd(); renderStarsBar();
   if($("view-folder") && !$("view-folder").hidden) renderFolderView();
   if($("tofolder") && $("tofolder").classList.contains("open")) renderToFolder();
@@ -18520,7 +18530,7 @@ function cellRound(keep){
 
 // ---- Science labs engine ----
 let labKey = "", labGroup = "All", labLabelsOn = true, lg = null, lsStep = 0;
-function labWord(w){ const k = String(w).toLowerCase(); return allWords().find(x => x.w.toLowerCase() === k); }
+function labWord(w){ return wordByLower(w); }
 function labWords(k){ const L = LABS[k]; if(!L) return []; return [...new Set([...L.parts.map(p => p[0]), ...L.extra])].map(labWord).filter(Boolean); }
 // ---- Periodic Table (Chemistry Lab) ----
 const PT_CAT = {
@@ -18776,7 +18786,7 @@ function renderCellTypes(){
     const grp = cellGrp(x);
     b.innerHTML = `<span class="pic" aria-hidden="true">${esc(x.p)}</span><span class="ct-txt"><b>${esc(x.w)}</b><span class="ct-job"><em>Job:</em> ${esc(cellJob(x))}</span>${grp ? `<span class="where ${grp}">${CT_LABEL[grp]}</span>` : ""}</span>`;
     const pic = b.querySelector(".pic");
-    b.onclick = () => { wiggle(pic, x); openCard(x); }; b.addEventListener("pointerdown", () => wordWarm(x), {passive: true});
+    b.onclick = () => { wiggle(pic, x); openCard(x); }; warmOnPress(b, x);
     pic.addEventListener("animationend", () => { pic.classList.remove("mv1"); pic.style.animationName = ""; });
     g.appendChild(b);
   });
@@ -22374,7 +22384,7 @@ function cleanFolder(f){
     words: [...new Set((f.words || []).map(String))].slice(0, 500), custom: (f.custom || []).slice(0, 200).map(x => ({...cleanWord(x), c: "My words"})),
     updated: f.updated || Date.now()};
 }
-function persistFolders(){ try { localStorage.setItem(FOLDERS_KEY, JSON.stringify(folders)); } catch(e){} }
+function persistFolders(){ AW_CACHE = null; AW_LOWER = null; try { localStorage.setItem(FOLDERS_KEY, JSON.stringify(folders)); } catch(e){} }
 async function saveFolder(f){
   f = cleanFolder({...f, updated: Date.now()});
   const i = folders.findIndex(x => x.id === f.id); if(i >= 0) folders[i] = f; else folders.push(f);
@@ -25103,7 +25113,7 @@ function renderWotd(){
   const el = $("wotd-banner"), emo = $("wotd-emo"), ww = $("wotd-word"), wd = $("wotd-def");
   if(!el) return;
   emo.textContent = w.p; ww.textContent = w.w; wd.textContent = w.d;
-  el.onclick = () => { openCard(w); }; el.addEventListener("pointerdown", () => wordWarm(w), {passive: true});
+  el.onclick = () => { openCard(w); }; warmOnPress(el, w);
   el.onkeydown = e => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); openCard(w); } };
 }
 function renderStarsBar(){
@@ -39623,7 +39633,7 @@ const K5D = (() => {
     if(capStart) P = cap(P[0], P[1], true).concat(P); if(capEnd) P = P.concat(cap(P[P.length - 1], P[P.length - 2], false)); return P; }
   const blob = (ctx, pts) => { const n = pts.length, mid = (a, b) => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2]; let m0 = mid(pts[n - 1], pts[0]); ctx.beginPath(); ctx.moveTo(m0[0], m0[1]); for(let i = 0; i < n; i++){ const m1 = mid(pts[i], pts[(i + 1) % n]); ctx.quadraticCurveTo(pts[i][0], pts[i][1], m1[0], m1[1]); } ctx.closePath(); };
   // ---- skin texture: scales + mottling + the animal's markings, tileable ----
-  function skinTex(m){ if(m.tex) return m.tex; const N = 256, cv = document.createElement("canvas"); cv.width = cv.height = N; const cx = cv.getContext("2d"), im = cx.createImageData(N, N), d = im.data, seed = m.seed * 131;
+  function skinTex(m){ if(m.tex) return m.tex; const N = Math.min(screen.width || 1000, screen.height || 1000) < 600 ? 128 : 256, cv = document.createElement("canvas"); cv.width = cv.height = N; const cx = cv.getContext("2d"), im = cx.createImageData(N, N), d = im.data, seed = m.seed * 131;
     const h = (i, j, s) => { let n = (i * 374761393 + j * 668265263 + s * 2147483647) | 0; n = (n ^ (n >>> 13)) * 1274126177 | 0; return ((n ^ (n >>> 16)) >>> 0) / 4294967295; }, sm = t => t * t * (3 - 2 * t);
     const vn = (x, y, px, py, s) => { const xi = Math.floor(x), yi = Math.floor(y), fx = sm(x - xi), fy = sm(y - yi), w = (a, p) => ((a % p) + p) % p; return lerp(lerp(h(w(xi, px), w(yi, py), s), h(w(xi + 1, px), w(yi, py), s), fx), lerp(h(w(xi, px), w(yi + 1, py), s), h(w(xi + 1, px), w(yi + 1, py), s), fx), fy); };
     const fb = (x, y, px, py, s) => (vn(x, y, px, py, s) * .5 + vn(x * 2, y * 2, px * 2, py * 2, s + 1) * .3 + vn(x * 4, y * 4, px * 4, py * 4, s + 2) * .2);
