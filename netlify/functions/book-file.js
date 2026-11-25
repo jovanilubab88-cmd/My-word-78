@@ -3,7 +3,7 @@
 // so a book opens on its real pages on every device — whatever its size.
 // Files are stored in pieces of up to 3 MB in Netlify Blobs, under the signed-in person's own ID.
 //   POST   ?book=ID&n=K   body = one piece (binary)   → saves piece K
-//   GET    ?book=ID&n=K                              → returns piece K
+//   GET    ?book=ID&n=K[&off=B&len=B]                → returns piece K (or a slice of it)
 //   DELETE ?book=ID                                  → removes every piece of that book
 const { caller, reply } = require("../lib/fb.js");
 let blobs = null; try { blobs = require("@netlify/blobs"); } catch (e) {}
@@ -40,7 +40,11 @@ exports.handler = async function (event) {
       if (n < 0) return reply(400, { error: "bad_piece" });
       const data = await st.get(prefix + n, { type: "arrayBuffer" });
       if (!data) return reply(404, { error: "not_found" });
-      return { statusCode: 200, headers: { "Content-Type": "application/octet-stream", "Cache-Control": "private, max-age=31536000, immutable" }, body: Buffer.from(data).toString("base64"), isBase64Encoded: true };
+      // phones on weak connections download a piece in smaller slices: ?off=BYTES&len=BYTES (at most 1 MB)
+      const q = event.queryStringParameters || {}, full = Buffer.from(data);
+      let part = full;
+      if (q.len != null) { const off = Math.max(0, parseInt(q.off, 10) || 0), len = Math.max(1, Math.min(1024 * 1024, parseInt(q.len, 10) || 0)); part = full.subarray(off, off + len); }
+      return { statusCode: 200, headers: { "Content-Type": "application/octet-stream", "Cache-Control": "no-store", "X-Piece-Size": String(full.length) }, body: part.toString("base64"), isBase64Encoded: true };
     }
     if (event.httpMethod === "DELETE") {
       const { blobs: list } = await st.list({ prefix });
