@@ -785,6 +785,10 @@ body.sr-full.sr-focus #sr-reader.sr-pages{height:calc(100vh - 186px);height:calc
 .sr-pgb{min-width:52px;min-height:44px;border:2px solid var(--line);border-radius:999px;background:var(--paper);color:var(--ink);font:800 26px/1 system-ui,sans-serif;cursor:pointer}
 .sr-pgb:disabled{opacity:.35;cursor:default}
 .sr-sumdel{color:#b91c1c!important;border-color:#fca5a5!important}.sr-sumdel.sure{background:#dc2626!important;color:#fff!important;border-color:#dc2626!important}
+.sr-libhead{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}
+.sr-chkbtn{font:700 14px/1 system-ui,sans-serif;min-height:38px;padding:6px 14px;border-radius:999px;border:2px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
+.sr-pgchk{margin:8px 0 12px;padding:10px 14px;border-radius:14px;border:2px solid var(--line);background:var(--paper);color:var(--ink);font:500 14.5px/1.5 system-ui,sans-serif}
+.sr-pgchk ul{margin:6px 0;padding-left:18px}.sr-pgchk li{margin:4px 0}.sr-pgchk button{font:700 13.5px/1 system-ui,sans-serif;padding:6px 10px;margin-left:6px;border-radius:999px;border:2px solid var(--line);background:#fde047;color:#1f2937;cursor:pointer}
 .sr-origbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:6px 0 8px;padding:10px 14px;border-radius:14px;background:#fef3c7;color:#78350f;font:600 14.5px/1.4 system-ui,sans-serif}
 .sr-origbtn{display:inline-flex;align-items:center;min-height:42px;padding:6px 14px;border-radius:999px;background:#f59e0b;color:#fff;font-weight:800;cursor:pointer}
 .sr-pgnum{font:700 14.5px system-ui,sans-serif;color:var(--muted,#64748b);min-width:120px;text-align:center}
@@ -2208,7 +2212,7 @@ window.MWB_TRIAL_DAYS = 14;
         <p class="sr-status" id="sr-status" aria-live="polite"></p>
         <div class="sr-paste" id="sr-paste" hidden><input id="sr-paste-title" placeholder="Title (optional)" maxlength="120"><textarea id="sr-paste-ta" rows="6" placeholder="Paste any text here…"></textarea><button type="button" class="btn" id="sr-paste-go">Read this ›</button></div>
       </div>
-      <div class="sr-lib" id="sr-lib" hidden><h3 class="cell-sub">📚 My books</h3><div id="sr-libl"></div></div>
+      <div class="sr-lib" id="sr-lib" hidden><div class="sr-libhead"><h3 class="cell-sub">📚 My books</h3><button type="button" class="sr-chkbtn" id="sr-pgchk">☁️ Check book pages</button></div><div class="sr-pgchk" id="sr-pgchkout" hidden></div><div id="sr-libl"></div></div>
       <div class="sr-panel" id="sr-panel" hidden>
         <div class="sr-top"><div><b id="sr-title"></b><small id="sr-meta"></small></div><button type="button" class="sr-x" id="sr-bmbtn" aria-label="Bookmark this spot" title="Bookmark this spot">🔖</button><button type="button" class="sr-x" id="sr-close" aria-label="Close the document" title="Close (your place is saved)">✕</button></div>
         <div class="sr-progw"><span class="sr-pbar"><i id="sr-prog"></i></span><small id="sr-progt">0%</small></div>
@@ -34285,10 +34289,30 @@ async function srCoverBackfill(ids){ if(SR.coverBusy) return; SR.coverBusy = tru
         else if(o.kind === "epub" || o.kind === "docx"){ const JSZip = await bkZip(), zip = await JSZip.loadAsync(o.buf); data = await srCoverZip(o.kind, zip); }
         srCoverSave(id, data); } catch(e){ console.warn("cover backfill", e); }
       await new Promise(r => setTimeout(r, 300)); } } finally { SR.coverBusy = false; } }
+document.addEventListener("click", e => { if(e.target && e.target.id === "sr-pgchk") srPagesCheck(); });
 function srCoverArt(d){ let h = 0; for(const ch of String(d.title)) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
   const pal = [["#2563eb", "#1e3a8a"], ["#db2777", "#831843"], ["#059669", "#064e3b"], ["#ea580c", "#7c2d12"], ["#7c3aed", "#3b0764"], ["#0891b2", "#164e63"], ["#ca8a04", "#713f12"], ["#dc2626", "#7f1d1d"]][h % 8];
   const icon = {PDF: "📕", EPUB: "📗", DOCX: "📘", HTML: "🌐"}[String(d.fmt || "").toUpperCase()] || "📙";
   return `<span class="sr-cvgen" style="background:linear-gradient(150deg,${pal[0]},${pal[1]})"><b>${esc(d.title)}</b><span><i>${icon}</i><br><em>SMART READER</em></span></span>`; }
+// ☁️ "Check book pages": shows, for every book, whether its real pages are on this device and in the account, tests the account file storage, and can upload now
+const APP_VERSION = "2026-11-25a";
+async function srPagesCheck(){ const out = $("sr-pgchkout"); out.hidden = false; out.innerHTML = "Checking…"; const L = [];
+  const user = window.MWB && MWB.user && MWB.user(); L.push(`App version: <b>${APP_VERSION}</b>`); L.push(`Signed in: ${user ? "✅ yes" + (user.email ? " (" + esc(user.email) + ")" : "") : "❌ no — sign in so books can be shared between devices"}`);
+  L.push(`Account connected to Smart Reader: ${SR.rdocs ? "✅ yes" : "❌ no"}`);
+  let store = "not tested";
+  if(!IN_CLAUDE && user){ try { const t = "zz-test-" + Date.now().toString(36), r1 = await fetch(`${SR_NF}?book=${t}&n=0`, {method: "POST", headers: {"Content-Type": "application/octet-stream"}, body: new Blob([new Uint8Array(64)])}); let j1 = {}; try { j1 = await r1.clone().json(); } catch(e){}
+      if(!r1.ok) store = `❌ can't save files (error ${r1.status}${j1.error ? " " + esc(j1.error) : ""}${j1.message ? ": " + esc(j1.message) : ""})`;
+      else { const r2 = await fetch(`${SR_NF}?book=${t}&n=0`); store = r2.ok ? "✅ working" : `❌ saved but can't read back (error ${r2.status})`; fetch(`${SR_NF}?book=${t}`, {method: "DELETE"}).catch(() => {}); } } catch(e){ store = "❌ couldn't reach it (network)"; } }
+  L.push(`Account file storage: ${store}`);
+  const all = await srLibList(), rows = [];
+  for(const d of all){ let m = SR.remoteMeta.get(d.id); if(SR.rdocs){ try { const c = await SR.rdocs.doc(d.id).get(); if(c && c.exists && c.data()) m = c.data(); } catch(e){} }
+    const loc = await srOrigLocal(d.id), inAcc = !!(m && m.orig && m.orig.enc), real = /^(pdf|epub|docx|html?)$/i.test(d.fmt || "");
+    rows.push(`<li>${esc(d.title)} <small>(${esc(d.fmt || "TEXT")})</small><br>${!real ? "Text only (no pages to save)" : `On this device: ${loc ? "✅ real pages" : "❌ text only"} · In account: ${inAcc ? "✅ pages saved" : "❌ not saved"}${loc && !inAcc && user && !IN_CLAUDE ? ` <button type="button" data-pgup="${esc(d.id)}">⬆️ Save pages now</button>` : ""}${!loc && !inAcc ? " — open this book's file again on the device where you added it" : ""}`}<span data-pgmsg="${esc(d.id)}"></span></li>`); }
+  out.innerHTML = L.join("<br>") + (rows.length ? `<ul>${rows.join("")}</ul>` : "") + `<small>If something shows ❌, tell us exactly what it says so we can fix it.</small>`;
+  out.querySelectorAll("[data-pgup]").forEach(b => b.onclick = async () => { const id = b.dataset.pgup, msg = out.querySelector(`[data-pgmsg="${CSS.escape(id)}"]`); b.disabled = true; msg.textContent = " ⏳ Saving…";
+    try { const loc = await srOrigLocal(id); SR.nfErr = ""; await srOrigSave(id, new File([loc.blob], loc.name || "book", {type: loc.type || ""}), loc.kind, true);
+      const ok = !!srOrigKnown(id); msg.textContent = ok ? " ✅ Saved! It will open with its real pages on your other devices." : ` ❌ Couldn't save (${SR.nfErr || "unknown error"})`; if(!ok) b.disabled = false;
+    } catch(e){ msg.textContent = " ❌ Couldn't save (" + (e && e.message || e) + ")"; b.disabled = false; } }); }
 async function srLibRender(){
   const box = $("sr-lib"), all = await srLibList(); box.hidden = !all.length; if(!all.length){ $("sr-libl").innerHTML = ""; return; }
   $("sr-libl").innerHTML = all.map(d => { const st = d.st, pct = d.n ? Math.min(100, Math.round(((st.pos || 0) + 1) / d.n * 100)) : 0, extras = [(st.hl || []).length ? `${st.hl.length} highlight${st.hl.length === 1 ? "" : "s"}` : "", (st.chat || []).length ? `${st.chat.length} question${st.chat.length === 1 ? "" : "s"}` : "", (st.bm || []).length ? `${st.bm.length} bookmark${st.bm.length === 1 ? "" : "s"}` : ""].filter(Boolean).join(" · ");
@@ -34803,14 +34827,15 @@ async function srOrigSave(id, file, kind, quiet){
 // ☁️ website: keep the original book file in the account (Netlify function "book-file"), in 3 MB pieces, any size
 const SR_NF = "/.netlify/functions/book-file", SR_NF_PIECE = 3 * 1048576;
 async function srNFUpload(id, file, info){
-  if(!(window.MWB && MWB.user && MWB.user()) || file.size > 600 * 1048576) return null;
+  if(!(window.MWB && MWB.user && MWB.user())){ SR.nfErr = "not signed in"; return null; } if(file.size > 600 * 1048576){ SR.nfErr = "file too big"; return null; }
   const n = Math.max(1, Math.ceil(file.size / SR_NF_PIECE)), big = file.size > 15 * 1048576; let next = 0, done = 0, bad = null;
   if(big) srToast("☁️ Saving the book pages to your account…");
   const work = async () => { while(next < n && !bad){ const k = next++, part = file.slice(k * SR_NF_PIECE, (k + 1) * SR_NF_PIECE);
-      for(let tries = 0; tries < 3; tries++){ try { const r = await fetch(`${SR_NF}?book=${encodeURIComponent(id)}&n=${k}`, {method: "POST", headers: {"Content-Type": "application/octet-stream"}, body: part}); if(r.ok){ done++; break; } if(r.status < 500 && r.status !== 429){ bad = r.status; break; } } catch(e){}
-        if(tries === 2) bad = "net"; else await new Promise(res => setTimeout(res, 800 * (tries + 1))); } } };
+      for(let tries = 0; tries < 3; tries++){ try { const r = await fetch(`${SR_NF}?book=${encodeURIComponent(id)}&n=${k}`, {method: "POST", headers: {"Content-Type": "application/octet-stream"}, body: part}); if(r.ok){ done++; break; } let why = ""; try { why = (await r.json()).error || ""; } catch(e){} SR.nfLast = r.status + (why ? " " + why : ""); if(r.status < 500 && r.status !== 429){ bad = SR.nfLast; break; } } catch(e){ SR.nfLast = "network"; }
+        if(tries === 2) bad = SR.nfLast || "net"; else await new Promise(res => setTimeout(res, 800 * (tries + 1))); } } };
   try { await Promise.all([work(), work(), work()]); } catch(e){ bad = bad || "err"; }
-  if(bad || done !== n){ console.warn("book-file upload", bad); return null; }
+  if(bad || done !== n){ console.warn("book-file upload", bad); SR.nfErr = bad || "incomplete"; return null; }
+  SR.nfErr = "";
   if(big) srToast("✅ Book pages saved — they'll open on all your devices.");
   return {...info, enc: "nf", n};
 }
