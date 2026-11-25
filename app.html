@@ -789,6 +789,7 @@ body.sr-full.sr-focus #sr-reader.sr-pages{height:calc(100vh - 186px);height:calc
 .sr-chkbtn{font:700 14px/1 system-ui,sans-serif;min-height:38px;padding:6px 14px;border-radius:999px;border:2px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
 .sr-pgchk{margin:8px 0 12px;padding:10px 14px;border-radius:14px;border:2px solid var(--line);background:var(--paper);color:var(--ink);font:500 14.5px/1.5 system-ui,sans-serif}
 .sr-pgchk ul{margin:6px 0;padding-left:18px}.sr-pgchk li{margin:4px 0}.sr-pgchk button{font:700 13.5px/1 system-ui,sans-serif;padding:6px 10px;margin-left:6px;border-radius:999px;border:2px solid var(--line);background:#fde047;color:#1f2937;cursor:pointer}
+#sr-reader:not(.sr-pages) > p{content-visibility:auto;contain-intrinsic-size:auto 6em}
 .sr-origbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:6px 0 8px;padding:10px 14px;border-radius:14px;background:#fef3c7;color:#78350f;font:600 14.5px/1.4 system-ui,sans-serif}
 .sr-origbtn{display:inline-flex;align-items:center;min-height:42px;padding:6px 14px;border-radius:999px;background:#f59e0b;color:#fff;font-weight:800;cursor:pointer}
 .sr-pgnum{font:700 14.5px system-ui,sans-serif;color:var(--muted,#64748b);min-width:120px;text-align:center}
@@ -34227,13 +34228,14 @@ function srResume(){ if(!SR.id || $("sr-panel").hidden) return;
 function srMeta(state){ const heads = JSON.stringify(SR.heads).length < 60000 ? SR.heads : {}; const prev = SR.remoteMeta.get(SR.id) || {}, orig = SR.origMeta || prev.orig || srOrigKnown(SR.id) || null; return {id: SR.id, title: SR.title, fmt: SR.fmt, n: SR.paras.length, words: SR.stats ? SR.stats.words : 0, heads, added: SR.added || Date.now(), updated: Date.now(), state, orig, pp: SR.pp && SR.pp.length < 6000 ? SR.pp : null, bookCh: SR.bookCh || prev.bookCh || null, cover: srCoverGet(SR.id) || prev.cover || null}; }
 // writes a book's record to the account without ever losing where its original pages are saved (another device may have saved them)
 async function srMetaPut(id, meta){ if(!SR.rdocs) return;
-  if(!(meta.orig && meta.orig.enc)){ try { const cur = await SR.rdocs.doc(id).get(), o = cur && cur.exists && cur.data() && cur.data().orig; if(o && o.enc){ meta.orig = o; if(SR.id === id) SR.origMeta = o; } } catch(e){} }
+  SR.origAsked = SR.origAsked || new Set();
+  if(!(meta.orig && meta.orig.enc) && /^(pdf|epub|docx|html?)$/i.test(meta.fmt || "") && !SR.origAsked.has(id)){ SR.origAsked.add(id); try { const cur = await SR.rdocs.doc(id).get(), o = cur && cur.exists && cur.data() && cur.data().orig; if(o && o.enc){ meta.orig = o; if(SR.id === id) SR.origMeta = o; } } catch(e){} }
   SR.remoteMeta.set(id, meta); await SR.rdocs.doc(id).set(meta); }
 function srSaveState(now){
   if(!SR.id) return; const st = srCurState(); srLS("sr-doc-" + SR.id, JSON.stringify(st));
   const m = SR.mem.get(SR.id); if(m) m.state = st;
   clearTimeout(SR.remT); const push = () => { if(!SR.rdocs) return; const meta = srMeta(st); SR.remoteMeta.set(SR.id, meta); srMetaPut(SR.id, meta).catch(() => {}); };
-  if(now) push(); else SR.remT = setTimeout(push, 1500);
+  if(now) push(); else SR.remT = setTimeout(push, 5000);
 }
 async function srLibSave(){
   const old = SR.mem.get(SR.id), rec = {id: SR.id, title: SR.title, fmt: SR.fmt, paras: SR.paras, heads: SR.heads, added: SR.added || Date.now(), state: srCurState(), pp: SR.pp, bookCh: SR.bookCh, orig: old && old.orig};
@@ -34295,7 +34297,7 @@ function srCoverArt(d){ let h = 0; for(const ch of String(d.title)) h = (h * 31 
   const icon = {PDF: "📕", EPUB: "📗", DOCX: "📘", HTML: "🌐"}[String(d.fmt || "").toUpperCase()] || "📙";
   return `<span class="sr-cvgen" style="background:linear-gradient(150deg,${pal[0]},${pal[1]})"><b>${esc(d.title)}</b><span><i>${icon}</i><br><em>SMART READER</em></span></span>`; }
 // ☁️ "Check book pages": shows, for every book, whether its real pages are on this device and in the account, tests the account file storage, and can upload now
-const APP_VERSION = "2026-11-25a";
+const APP_VERSION = "2026-11-25b";
 async function srPagesCheck(){ const out = $("sr-pgchkout"); out.hidden = false; out.innerHTML = "Checking…"; const L = [];
   const user = window.MWB && MWB.user && MWB.user(); L.push(`App version: <b>${APP_VERSION}</b>`); L.push(`Signed in: ${user ? "✅ yes" + (user.email ? " (" + esc(user.email) + ")" : "") : "❌ no — sign in so books can be shared between devices"}`);
   L.push(`Account connected to Smart Reader: ${SR.rdocs ? "✅ yes" : "❌ no"}`);
@@ -34437,7 +34439,7 @@ async function srPdfRender(B, goPage){
   body.appendChild(frag); B.whole = true;
   const T = B.pages[Math.max(0, Math.min(B.n - 1, goPage != null ? goPage : (B.chapters[B.ch] ? B.chapters[B.ch].s : 0)))];
   body.scrollTop = T.i ? T.div.offsetTop - body.offsetTop - 8 : 0; await srPdfDraw(T); if(gen !== B.gen) return; body.scrollTop = T.i ? T.div.offsetTop - body.offsetTop - 8 : 0;
-  B.io = new IntersectionObserver(es => es.forEach(e => { const P = B.pages[+e.target.dataset.pg]; if(!P || P.div !== e.target) return; if(e.isIntersecting) srPdfDraw(P); else srPdfFree(P); }), {root: body, rootMargin: "1200px 0px"});
+  B.io = new IntersectionObserver(es => es.forEach(e => { const P = B.pages[+e.target.dataset.pg]; if(!P || P.div !== e.target) return; if(e.isIntersecting) srPdfDraw(P); else srPdfFree(P); }), {root: body, rootMargin: SR_MOBILE ? "500px 0px" : "1200px 0px"});
   B.pages.forEach(P => B.io.observe(P.div));
 }
 async function srPdfLoad(P){ if(P.page) return P.page;
@@ -34449,7 +34451,8 @@ async function srPdfLoad(P){ if(P.page) return P.page;
 // which chapter the page on screen belongs to (the chapter bar follows you as you scroll)
 function srPdfSyncCh(pg){ const B = SR.book; if(!B || B.kind !== "pdf" || !B.whole) return; if(pg == null) pg = srCurPage(); const k = B.chapters.findIndex(c => pg >= c.s && pg < c.e); if(k >= 0 && k !== B.ch){ B.ch = k; srBookBar(); } }
 const SR_MOBILE = /iPad|iPhone|iPod|Android/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-function srPdfFree(P){ if(!P.drawn) return; P.drawn = false; try { if(P.task) P.task.cancel(); } catch(e){} const cv = P.div.querySelector("canvas"); if(cv){ cv.width = 0; cv.height = 0; } }
+function srPdfFree(P){ if(!P.drawn) return; P.drawn = false; try { if(P.task) P.task.cancel(); } catch(e){} const cv = P.div.querySelector("canvas"); if(cv){ cv.width = 0; cv.height = 0; }
+  if(SR_MOBILE && P.tl && !P.div.querySelector(".sr-tl mark, .sr-tl .on")){ P.tl = false; P.tlp = null; const tl = P.div.querySelector(".sr-tl"); if(tl) tl.textContent = ""; } }
 async function srPdfDraw(P){
   if(P.drawn) return; P.drawn = true; try { await srPdfLoad(P); } catch(e){ P.drawn = false; return; } if(!P.drawn) return; const cv = P.div.querySelector("canvas"), maxPx = SR_MOBILE ? 2.2e6 : 6e6;
   let dpr = Math.min(window.devicePixelRatio || 1, SR_MOBILE ? 1.5 : 2); const area = P.vp.width * P.vp.height; if(area * dpr * dpr > maxPx) dpr = Math.max(0.6, Math.sqrt(maxPx / area));
