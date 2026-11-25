@@ -33889,6 +33889,8 @@ function openMath(){ const v = $("view-math"); v.classList.remove("adv"); v.quer
 $("math-back").onclick = () => { if($("view-math").classList.contains("adv")){ try { vtMicStop(); stopAll(); } catch(e){} $("view-math").classList.remove("adv"); $("vt").hidden = true; openFolders(); } else openFolder("group:Math"); };
 
 const BOOK_LIBS = {pdf: "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/legacy/build/pdf.min.mjs", worker: "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/legacy/build/pdf.worker.min.mjs", zip: "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"};
+// the same reader files are also kept with the app itself (vendor/), which is tried first: it doesn't depend on another website being reachable
+const BOOK_LIBS_LOCAL = {pdf: "vendor/pdf.min.mjs", worker: "vendor/pdf.worker.min.mjs", zip: "vendor/jszip.min.js"};
 
 // ---- My Books: add an ebook, read it, summarize it, quiz yourself ----
 const BK_MAX_FILE = 150 * 1024 * 1024, BK_MAX_PDF = 500 * 1024 * 1024, BK_MAX_CHARS = 6000000, BK_PAGE_CHARS = 1800, BK_AI_CHARS = 110000;
@@ -34003,13 +34005,14 @@ function bkLoadScript(src, globalName){
 }
 let bkPdfP = null, bkZipP = null;
 function bkPDF(){
-  return bkPdfP || (bkPdfP = import(new URL(BOOK_LIBS.pdf, location.href).href).then(m => {
-    const lib = m && m.getDocument ? m : (m.default || window.pdfjsLib);
-    lib.GlobalWorkerOptions.workerSrc = new URL(BOOK_LIBS.worker, location.href).href;
+  const load = L => import(new URL(L.pdf, location.href).href).then(m => {
+    const lib = m && m.getDocument ? m : (m.default || window.pdfjsLib); if(!lib || !lib.getDocument) throw new Error("no pdf.js");
+    lib.GlobalWorkerOptions.workerSrc = new URL(L.worker, location.href).href;
     return lib;
-  }).catch(e => { bkPdfP = null; throw {code: "lib"}; }));
+  });
+  return bkPdfP || (bkPdfP = load(BOOK_LIBS_LOCAL).catch(e => { console.warn("pdf reader (app copy)", e); return load(BOOK_LIBS); }).catch(e => { console.warn("pdf reader", e); bkPdfP = null; throw {code: "lib"}; }));
 }
-function bkZip(){ return bkZipP || (bkZipP = bkLoadScript(new URL(BOOK_LIBS.zip, location.href).href, "JSZip").catch(e => { bkZipP = null; throw e; })); }
+function bkZip(){ return bkZipP || (bkZipP = bkLoadScript(new URL(BOOK_LIBS_LOCAL.zip, location.href).href, "JSZip").catch(() => bkLoadScript(new URL(BOOK_LIBS.zip, location.href).href, "JSZip")).catch(e => { bkZipP = null; throw e; })); }
 const bkClean = t => String(t || "").replace(/\r\n?/g, "\n").replace(/[­​﻿]/g, "").replace(/[ \t ]+/g, " ").replace(/ *\n */g, "\n").trim();
 function bkParasToPages(sections){
   // sections: [{title, paras: [string]}] -> {pages: [{t, c}], chapters: [{title, start}]}
@@ -34298,7 +34301,7 @@ function srCoverArt(d){ let h = 0; for(const ch of String(d.title)) h = (h * 31 
   const icon = {PDF: "📕", EPUB: "📗", DOCX: "📘", HTML: "🌐"}[String(d.fmt || "").toUpperCase()] || "📙";
   return `<span class="sr-cvgen" style="background:linear-gradient(150deg,${pal[0]},${pal[1]})"><b>${esc(d.title)}</b><span><i>${icon}</i><br><em>SMART READER</em></span></span>`; }
 // ☁️ "Check book pages": shows, for every book, whether its real pages are on this device and in the account, tests the account file storage, and can upload now
-const APP_VERSION = "2026-11-25d";
+const APP_VERSION = "2026-11-25e";
 async function srPagesCheck(){ const out = $("sr-pgchkout"); out.hidden = false; out.innerHTML = "Checking…"; const L = [];
   const user = window.MWB && MWB.user && MWB.user(); L.push(`App version: <b>${APP_VERSION}</b>`); L.push(`Signed in: ${user ? "✅ yes" + (user.email ? " (" + esc(user.email) + ")" : "") : "❌ no — sign in so books can be shared between devices"}`);
   L.push(`Account connected to Smart Reader: ${SR.rdocs ? "✅ yes" : "❌ no"}`);
