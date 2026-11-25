@@ -34240,7 +34240,7 @@ function srSaveState(now){
 async function srLibSave(){
   const old = SR.mem.get(SR.id), rec = {id: SR.id, title: SR.title, fmt: SR.fmt, paras: SR.paras, heads: SR.heads, added: SR.added || Date.now(), state: srCurState(), pp: SR.pp, bookCh: SR.bookCh, orig: old && old.orig};
   SR.mem.set(SR.id, rec);
-  try { if(JSON.stringify(rec).length < 8e6) await srDBop("readwrite", st => st.put(rec)); } catch(e){}
+  try { if(JSON.stringify({...rec, orig: null}).length < 8e6) await srPutRec(rec); } catch(e){}
   if(SR.rdocs && SR.rparts){ try { const s = JSON.stringify(SR.paras), size = 90000, n = Math.ceil(s.length / size);
       if(n <= 80){ for(let k = 0; k < n; k++) await SR.rparts.doc(SR.id + "_" + k).set({id: SR.id, n: k, total: n, s: s.slice(k * size, (k + 1) * size)}); const meta = srMeta(rec.state); SR.remoteMeta.set(SR.id, meta); await srMetaPut(SR.id, meta); }
       else srToast("This document is very large, so it's saved on this device only.");
@@ -34297,7 +34297,7 @@ function srCoverArt(d){ let h = 0; for(const ch of String(d.title)) h = (h * 31 
   const icon = {PDF: "📕", EPUB: "📗", DOCX: "📘", HTML: "🌐"}[String(d.fmt || "").toUpperCase()] || "📙";
   return `<span class="sr-cvgen" style="background:linear-gradient(150deg,${pal[0]},${pal[1]})"><b>${esc(d.title)}</b><span><i>${icon}</i><br><em>SMART READER</em></span></span>`; }
 // ☁️ "Check book pages": shows, for every book, whether its real pages are on this device and in the account, tests the account file storage, and can upload now
-const APP_VERSION = "2026-11-25b";
+const APP_VERSION = "2026-11-25c";
 async function srPagesCheck(){ const out = $("sr-pgchkout"); out.hidden = false; out.innerHTML = "Checking…"; const L = [];
   const user = window.MWB && MWB.user && MWB.user(); L.push(`App version: <b>${APP_VERSION}</b>`); L.push(`Signed in: ${user ? "✅ yes" + (user.email ? " (" + esc(user.email) + ")" : "") : "❌ no — sign in so books can be shared between devices"}`);
   L.push(`Account connected to Smart Reader: ${SR.rdocs ? "✅ yes" : "❌ no"}`);
@@ -34333,7 +34333,9 @@ async function srLibGet(id){
 async function srLibOpen(id){ $("sr-origbar").hidden = true; srStatus("📖 Opening…"); const d = await srLibGet(id); if(!d){ srStatus("Couldn't open that document. Try opening the file again.", true); return; }
   if(!d.orig && SR.rdocs && !((SR.remoteMeta.get(id) || {}).orig || {}).enc){ try { const cur = await SR.rdocs.doc(id).get(), fresh = cur && cur.exists && cur.data(); if(fresh && fresh.id) SR.remoteMeta.set(id, fresh); } catch(e){} }   // another device may have saved the pages since this one started
   const m = SR.remoteMeta.get(id) || {}; let book = null; SR.origWhy = "";
-  if(d.orig || m.orig){ srStatus("📖 Opening the book pages…"); try { const o = await srOrigLoad(id); if(o) book = await srBookOpen(o.kind, o.buf, o.name, d.bookCh || m.bookCh); else SR.origWhy = SR.origWhy || "download"; } catch(e){ console.warn(e); SR.origWhy = "open"; } }
+  if(d.orig || m.orig){ srStatus("📖 Opening the book pages…"); try { const o = await srOrigLoad(id); if(o) book = await srBookOpen(o.kind, o.buf, o.name, d.bookCh || m.bookCh); else SR.origWhy = SR.origWhy || "download"; } catch(e){ console.warn(e); SR.origWhy = "open"; }
+    if(!book && m.orig && m.orig.enc){ try { const rec = SR.mem.get(id) || await srDBop("readonly", st => st.get(id)); if(rec && rec.orig){ rec.orig = null; SR.mem.set(id, rec); await srDBop("readwrite", st => st.put(rec)); }   // the copy on this device is broken: get a fresh one
+        const o = await srOrigLoad(id); if(o){ book = await srBookOpen(o.kind, o.buf, o.name, d.bookCh || m.bookCh); SR.origWhy = ""; } } catch(e){ console.warn("second try", e); SR.origWhy = SR.origWhy || "open"; } } }
   srStatus(""); SR.added = d.added; srLoad(d.title, d.paras, d.fmt, d.heads, false, {id, book, pp: d.pp || m.pp, bookCh: d.bookCh || m.bookCh, origMeta: m.orig || null});
   if(!book && /^(pdf|epub|docx|html?)$/i.test(d.fmt || "")){ $("sr-origmsg").textContent = (d.orig || m.orig) ? `📖 The real pages couldn't be loaded right now${SR.origWhy === "download" ? " (they couldn't be downloaded from your account — check the internet and open the book again)" : ""}, so you're seeing the text.` : "📖 This book's real pages aren't in your account yet. Open it once on the device where you first added it, and its pages will be saved for all your devices."; $("sr-origbar").hidden = false; SR.origFor = id; }
   else if(book && !IN_CLAUDE && !(m.orig && m.orig.enc)){ SR.backedUp = SR.backedUp || new Set(); if(!SR.backedUp.has(id)){ SR.backedUp.add(id); const loc = await srOrigLocal(id); if(loc && loc.blob) srOrigSave(id, new File([loc.blob], loc.name || "book", {type: loc.type || ""}), loc.kind); } } }
@@ -34813,12 +34815,12 @@ async function srOrigBackfill(local){ if(SR.origFilling || !SR.rdocs || IN_CLAUD
   try { for(const d of local){ const m = SR.remoteMeta.get(d.id); if(!m || (m.orig && m.orig.enc) || SR.origTried.has(d.id)) continue; SR.origTried.add(d.id);
       try { const cur = await SR.rdocs.doc(d.id).get(), o = cur && cur.exists && cur.data() && cur.data().orig; if(o && o.enc){ m.orig = o; continue; } } catch(e){}
       const known = srOrigKnown(d.id); if(known){ m.orig = known; try { await SR.rdocs.doc(d.id).set(m); } catch(e){} continue; }
-      if(!(d.orig && d.orig.blob) || !d.orig.kind) continue;
-      try { await srOrigSave(d.id, new File([d.orig.blob], d.orig.name || "book", {type: d.orig.type || ""}), d.orig.kind, true); } catch(e){ console.warn("book backup", e); }
+      const loc = d.orig && d.orig.kind ? await srOrigLocal(d.id) : null; if(!loc) continue;
+      try { await srOrigSave(d.id, new File([loc.blob], loc.name || "book", {type: loc.type || ""}), loc.kind, true); } catch(e){ console.warn("book backup", e); }
       await new Promise(r => setTimeout(r, 500)); } } finally { SR.origFilling = false; } }
 async function srOrigSave(id, file, kind, quiet){
   const info = {kind, name: file.name || "book", type: file.type || "", size: file.size};
-  try { const rec = SR.mem.get(id) || await srDBop("readonly", st => st.get(id)); if(rec){ rec.orig = {...info, blob: file}; SR.mem.set(id, rec); await srDBop("readwrite", st => st.put(rec)); } } catch(e){}
+  try { const rec = SR.mem.get(id) || await srDBop("readonly", st => st.get(id)); if(rec){ rec.orig = {...info, blob: file}; SR.mem.set(id, rec); await srPutRec(rec); } } catch(e){}
   const A = await srAssets(); let remote = null;
   try { if(A){ if(kind === "pdf" && file.size <= 19.5 * 1048576){ const r = await A.upload(new File([file], (info.name.replace(/[^\w.-]+/g, "_") || "book") + (/\.pdf$/i.test(info.name) ? "" : ".pdf"), {type: "application/pdf"})); remote = {...info, enc: "raw", ids: [r.id]}; }
       else { const ids = [], step = 12 * 1048576; for(let s = 0; s < file.size; s += step){ const b64 = await srB64(file.slice(s, s + step)), r = await A.upload(new File([b64], `book-part-${ids.length}.txt`, {type: "text/plain"})); ids.push(r.id); } remote = {...info, enc: "b64", ids}; } } } catch(e){ console.warn("asset upload", e); remote = null; }
@@ -34849,10 +34851,18 @@ async function srNFLoad(id, o){ const parts = new Array(o.n); let next = 0;
   if(o.n > 1) srStatus("📖 Bringing the book pages from your account…");
   await Promise.all([work(), work(), work(), work()]);
   const blob = new Blob(parts, {type: o.kind === "pdf" ? "application/pdf" : o.type || ""});
-  try { const rec = SR.mem.get(id) || await srDBop("readonly", st => st.get(id)); if(rec && !(rec.orig && rec.orig.blob)){ rec.orig = {kind: o.kind, name: o.name, type: o.type, size: blob.size, blob}; SR.mem.set(id, rec); await srDBop("readwrite", st => st.put(rec)); } } catch(e){} // keep a copy on this device too
+  try { const rec = SR.mem.get(id) || await srDBop("readonly", st => st.get(id)); if(rec && !(rec.orig && (rec.orig.blob || rec.orig.ab))){ const keep = await srOrigStore({kind: o.kind, name: o.name, type: o.type, size: blob.size, blob}); SR.mem.set(id, Object.assign(rec, {orig: {...keep, blob}})); await srDBop("readwrite", st => st.put({...rec, orig: keep})); } } catch(e){} // keep a copy on this device too
   return {kind: o.kind, name: o.name, buf: o.kind === "pdf" ? blob : await blob.arrayBuffer()};
 }
-async function srOrigLocal(id){ try { const rec = SR.mem.get(id) || await srDBop("readonly", st => st.get(id)); if(rec && rec.orig && rec.orig.blob) return rec.orig; } catch(e){} return null; }
+const SR_IOS = /iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+async function srOrigLocal(id){ try { const rec = SR.mem.get(id) || await srDBop("readonly", st => st.get(id)); if(!rec || !rec.orig) return null;
+    if(rec.orig.ab && !rec.orig.blob) rec.orig.blob = new Blob([rec.orig.ab], {type: rec.orig.type || ""});
+    if(!rec.orig.blob) return null;
+    try { await rec.orig.blob.slice(0, 4).arrayBuffer(); } catch(e){ console.warn("saved book file can't be read on this device", e); rec.orig = null; SR.mem.set(id, rec); try { await srDBop("readwrite", st => st.put(rec)); } catch(x){} return null; }
+    return rec.orig; } catch(e){} return null; }
+// iPhones sometimes lose files kept as "blobs" in website storage, so there the file is kept as plain bytes
+async function srOrigStore(o){ if(!SR_IOS || !o || !o.blob) return o; try { if(!o.ab) o.ab = await o.blob.arrayBuffer(); return {...o, blob: null}; } catch(e){ return o; } }
+async function srPutRec(rec){ const keep = rec.orig ? await srOrigStore(rec.orig) : rec.orig; await srDBop("readwrite", st => st.put(keep === rec.orig ? rec : {...rec, orig: keep})); }
 async function srOrigLoad(id){
   const loc = await srOrigLocal(id); if(loc) return {kind: loc.kind, name: loc.name, buf: loc.kind === "pdf" ? loc.blob : await loc.blob.arrayBuffer()}; // PDFs are read straight from the saved file
   const m = SR.remoteMeta.get(id), o = m && m.orig; if(!o) return null;
