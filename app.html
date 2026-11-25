@@ -34010,7 +34010,12 @@ function bkPDF(){
     lib.GlobalWorkerOptions.workerSrc = new URL(L.worker, location.href).href;
     return lib;
   });
-  return bkPdfP || (bkPdfP = load(BOOK_LIBS_LOCAL).catch(e => { console.warn("pdf reader (app copy)", e); return load(BOOK_LIBS); }).catch(e => { console.warn("pdf reader", e); bkPdfP = null; throw {code: "lib"}; }));
+  // older iPhones/iPads (before iOS 16.4) can't run the newest PDF reader, so they get the previous version (3.11), which reads PDFs the same way
+  const load3 = (src, worker) => bkLoadScript(new URL(src, location.href).href, "pdfjsLib").then(lib => { if(!lib || !lib.getDocument) throw new Error("no pdf.js 3"); lib.GlobalWorkerOptions.workerSrc = new URL(worker, location.href).href; return lib; });
+  const old = () => load3("vendor/pdf3.min.js", "vendor/pdf3.worker.min.js").catch(() => load3("https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/legacy/build/pdf.min.js", "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/legacy/build/pdf.worker.min.js"));
+  let modern = true; try { new Function("class A{static{}} return A?.name ?? 1"); } catch(e){ modern = false; }
+  const first = modern ? load(BOOK_LIBS_LOCAL).catch(e => { console.warn("pdf reader (app copy)", e); return load(BOOK_LIBS); }).catch(e => { console.warn("pdf reader 4", e); return old(); }) : old();
+  return bkPdfP || (bkPdfP = first.catch(e => { console.warn("pdf reader", e); window.bkLibErr = String(e && (e.message || e.code) || e); bkPdfP = null; throw {code: "lib"}; }));
 }
 function bkZip(){ return bkZipP || (bkZipP = bkLoadScript(new URL(BOOK_LIBS_LOCAL.zip, location.href).href, "JSZip").catch(() => bkLoadScript(new URL(BOOK_LIBS.zip, location.href).href, "JSZip")).catch(e => { bkZipP = null; throw e; })); }
 const bkClean = t => String(t || "").replace(/\r\n?/g, "\n").replace(/[­​﻿]/g, "").replace(/[ \t ]+/g, " ").replace(/ *\n */g, "\n").trim();
@@ -34191,7 +34196,7 @@ function bkErr(e){
   if(c === "too_big") return e.pdf ? "That PDF is very large (over 500 MB). Try a smaller copy of the book." : "That file is very large (over 150 MB). Try a PDF copy, or a smaller copy of the book.";
   if(c === "unsupported") return `.${e.ext} files can't be opened here. Kindle books (.mobi, .azw) are locked. Try PDF, EPUB, Word (.docx), text or a web page.`;
   if(c === "no_text") return "No words were found. If it's a scanned PDF (pictures of pages), the words can't be read. Try a different copy.";
-  if(c === "lib") return "The book reader couldn't load. Check your internet connection and try again.";
+  if(c === "lib") return "The book reader couldn't load. Check your internet connection and try again." + (window.bkLibErr ? ` (${String(window.bkLibErr).slice(0, 80)})` : "");
   if(c === "bad_file") return "This file seems damaged or isn't really that kind of book.";
   if(e && /password/i.test(e.message || e.name || "")) return "This PDF is locked with a password, so it can't be opened.";
   return "Sorry, that book couldn't be opened. Try another file or format.";
@@ -34302,7 +34307,7 @@ function srCoverArt(d){ let h = 0; for(const ch of String(d.title)) h = (h * 31 
   const icon = {PDF: "📕", EPUB: "📗", DOCX: "📘", HTML: "🌐"}[String(d.fmt || "").toUpperCase()] || "📙";
   return `<span class="sr-cvgen" style="background:linear-gradient(150deg,${pal[0]},${pal[1]})"><b>${esc(d.title)}</b><span><i>${icon}</i><br><em>SMART READER</em></span></span>`; }
 // ☁️ "Check book pages": shows, for every book, whether its real pages are on this device and in the account, tests the account file storage, and can upload now
-const APP_VERSION = "2026-11-25f";
+const APP_VERSION = "2026-11-25g";
 async function srPagesCheck(box){ const out = box || $("sr-pgchkout"); out.hidden = false; out.innerHTML = "Checking…"; const L = [];
   const user = window.MWB && MWB.user && MWB.user(); L.push(`App version: <b>${APP_VERSION}</b>`); L.push(`Signed in: ${user ? "✅ yes" + (user.email ? " (" + esc(user.email) + ")" : "") : "❌ no — sign in so books can be shared between devices"}`);
   L.push(`Account connected to Smart Reader: ${SR.rdocs ? "✅ yes" : "❌ no"}`);
